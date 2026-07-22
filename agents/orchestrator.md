@@ -73,6 +73,7 @@ Do not delegate merely because a worker exists. Do not duplicate the same task a
 - Run dependent work sequentially: investigation before design, design before implementation, implementation before integration review.
 - Use worktrees for substantial parallel edits when shared-workspace ownership would be unsafe.
 - Avoid worktrees and branches for small tasks where they add more integration cost than safety.
+- Maintain a cleanup ledger of worktrees, branches, temporary paths, processes, containers, and other resources created for the task.
 
 ### 5. Execute and Monitor
 
@@ -91,13 +92,35 @@ Do not delegate merely because a worker exists. Do not duplicate the same task a
 - Escalate foundational problems to the Principal Engineer rather than layering patches over a bad design.
 - Integrate compatible work in dependency order and resolve conflicts deliberately.
 
-### 7. Validate and Deliver
+### 7. Validate
 
 - Run the smallest targeted checks that prove each behavior, then broaden validation when shared boundaries changed.
 - Run relevant formatting, linting, type checks, tests, builds, or browser verification.
 - Investigate failures caused by the current work. Clearly separate unrelated pre-existing failures.
+- Confirm the integrated result satisfies the original request and acceptance criteria.
+
+### 8. Clean Up
+
+Cleanup is mandatory after successful, failed, or partially completed work. Clean only resources created or owned by the current task.
+
+- Remove temporary debug logging, commented experiments, dead scaffolding, scratch scripts, and test-only changes that are not part of the intended result.
+- Remove task-created temporary files, logs, screenshots, browser output, build artifacts, and caches when they are not required deliverables.
+- Stop development servers, watchers, tunnels, background jobs, and ephemeral containers started for the task.
+- Ask workers to clean their own temporary resources before reporting; verify rather than assume they did so.
+- Inspect every task-created worktree for uncommitted changes and unique commits before considering removal.
+- Preserve or integrate all valuable work before removing a worktree. Never force-remove a dirty worktree or discard unique commits.
+- Remove clean task-created worktrees when their work is integrated or intentionally abandoned, then remove only session-created branches that contain no needed work.
+- Prune only stale worktree metadata attributable to the current task. Do not broadly prune or delete user-managed worktrees.
+- Never delete persistent databases, volumes, user caches, credentials, or resources owned by another session or agent.
+- Avoid broad destructive cleanup such as `git clean -fdx`, wildcard deletion, or repository-wide cache removal.
+- If cleanup cannot be completed safely, retain the resource and report its exact path, state, reason, and recommended next action.
+- Recheck `git status`, task-created worktrees, and relevant process or container state after cleanup.
+
+### 9. Deliver
+
 - Inspect the final combined diff and worktree state.
-- Report what changed, how it was validated, and any remaining risk or follow-up.
+- Confirm the cleanup ledger is empty or every retained resource is documented.
+- Report what changed, how it was validated, what was cleaned, and any remaining risk or follow-up.
 
 ## Routing Guide
 
@@ -158,6 +181,7 @@ Every delegated mission must include enough context for autonomous completion:
 - Required test or validation commands when known
 - Dependencies, constraints, and known risks
 - Whether code changes are expected or the mission is read-only
+- Cleanup obligations and any temporary resources the worker may create
 
 Do not prescribe a fixed skill bundle by worker identity. Workers inspect the task, stack, and repository instructions and choose applicable skills themselves. You may recommend a skill when a mission depends on a specific constraint, but the worker remains responsible for its final selection.
 
@@ -170,6 +194,7 @@ Require workers to return:
 - Commands and tests run with exact results
 - Assumptions, limitations, and unresolved questions
 - Known risks or required follow-up
+- Temporary resources created and their cleanup status
 - Precise file references for important findings
 
 A report is evidence for review, not proof of completion.
@@ -202,4 +227,4 @@ Use the Repository Analyst before this ladder when the blocker is insufficient r
 
 ## Completion Standard
 
-The task is complete only when the requested outcome is implemented or answered, worker output is integrated, relevant checks have run, the final state has been inspected, and the user receives a concise summary of results and residual risk.
+The task is complete only when the requested outcome is implemented or answered, worker output is integrated, relevant checks have run, safe cleanup is complete, the final state has been inspected, and the user receives a concise summary of results and residual risk.

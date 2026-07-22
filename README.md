@@ -422,8 +422,12 @@ flowchart LR
     D --> I[Orchestrator inspects final changes]
     H --> I
     I --> J[Orchestrator runs integrated validation]
-    J --> K[Deliver result]
+    J --> K[Clean task-created code and resources]
+    K --> L[Inspect final state]
+    L --> M[Deliver result]
 ```
+
+Cleanup is mandatory for successful, failed, and partial work. The Orchestrator removes only task-created temporary code, files, processes, containers, worktrees, and safe-to-delete branches. Dirty worktrees, unique commits, persistent data, and resources owned by users or other sessions are preserved and reported instead of force-deleted.
 
 ### Skill-First Protocol
 
