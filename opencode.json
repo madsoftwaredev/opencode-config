@@ -1,7 +1,49 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "explore": {
+      "disable": true
+    },
+    "general": {
+      "disable": true
+    }
+  },
   "autoupdate": true,
-  "share": "manual",
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+  "default_agent": "orchestrator",
+  "formatter": {
+    "dartfmt": {
+      "command": ["dart", "format", "$FILE"],
+      "extensions": [".dart"]
+    },
+    "eslint": {
+      "command": ["npx", "eslint", "--fix", "$FILE"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".mts", ".cts"]
+    },
+    "gofmt": {
+      "command": ["gofmt", "-w", "$FILE"],
+      "extensions": [".go"]
+    },
+    "prettier": {
+      "command": ["npx", "prettier", "--write", "$FILE"],
+      "extensions": [".json", ".md", ".yml", ".yaml", ".css", ".scss"]
+    },
+    "rubocop": {
+      "command": ["bundle", "exec", "rubocop", "-a", "$FILE"],
+      "extensions": [".rb", ".rake", ".gemspec", ".ru"]
+    },
+    "ruff": {
+      "command": ["bash", "-lc", "ruff check --fix \"$FILE\" && ruff format \"$FILE\""],
+      "extensions": [".py", ".pyi"]
+    },
+    "rustfmt": {
+      "command": ["rustfmt", "$FILE"],
+      "extensions": [".rs"]
+    }
+  },
   "instructions": [
     "instructions/core.md",
     "instructions/documentation.md",
@@ -9,13 +51,110 @@
     "instructions/security.md",
     "instructions/git.md",
     "instructions/api.md",
-    "instructions/database.md"
+    "instructions/database.md",
+    "plugin/shell-strategy/shell_strategy.md"
   ],
-  "compaction": {
-    "auto": true,
-    "prune": true
+  "mcp": {
+    "context7": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "gh_grep": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://mcp.grep.app"
+    },
+    "playwright": {
+      "command": [
+        "npx",
+        "@playwright/mcp@latest",
+        "--browser=chromium",
+        "--caps=core,vision,pdf,testing",
+        "--output-dir=./browser-outputs",
+        "--viewport-size=1920x1080",
+        "--timeout-action=10000"
+      ],
+      "enabled": true,
+      "type": "local"
+    },
+    "sentry": {
+      "enabled": false,
+      "oauth": {},
+      "type": "remote",
+      "url": "https://mcp.sentry.dev/mcp"
+    }
   },
-  "plugin": ["opencode-openai-codex-auth"],
+  "model": "ollama/minimax-m2.7:cloud",
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "chmod *": "ask",
+      "chown *": "ask",
+      "curl *": "ask",
+      "dd *": "ask",
+      "git clean *": "ask",
+      "git commit --amend*": "ask",
+      "git push *": "ask",
+      "git rebase *": "ask",
+      "git reset *": "ask",
+      "mv *": "ask",
+      "rm *": "ask",
+      "sudo *": "ask",
+      "wget *": "ask"
+    },
+    "doom_loop": "ask",
+    "edit": {
+      "*": "allow",
+      "**/.aws/**": "deny",
+      "**/.env": "deny",
+      "**/.env.*": "deny",
+      "**/.ssh/**": "deny",
+      "**/secrets/**": "deny"
+    },
+    "external_directory": {
+      "*": "ask",
+      "/Users/mm/.config/opencode": "allow",
+      "/Users/mm/.config/opencode/**": "allow",
+      "/Users/mm/.claude/skills": "allow",
+      "/Users/mm/.claude/skills/**": "allow",
+      "/Users/mm/.agents": "allow",
+      "/Users/mm/.agents/**": "allow",
+      "/Users/mm/Pictures/Screenshots": "allow",
+      "/Users/mm/Pictures/Screenshots/*": "allow"
+    },
+    "read": {
+      "*": "allow",
+      "**/*credential*": "deny",
+      "**/*credentials*": "deny",
+      "**/*private_key*": "deny",
+      "**/*token*": "deny",
+      "**/.aws/**": "deny",
+      "**/.netrc": "deny",
+      "**/.npmrc": "deny",
+      "**/.pypirc": "deny",
+      "**/.ssh/**": "deny",
+      "**/secrets/**": "deny",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.pem": "deny"
+    },
+    "skill": {
+      "*": "allow"
+    },
+    "task": {
+      "*": "deny"
+    }
+  },
+  "plugin": [
+    "@ex-machina/opencode-anthropic-auth",
+    "opencode-dynamic-context-pruning",
+    "@nick-vi/opencode-type-inject",
+    "opencode-mem"
+  ],
+  "share": "manual",
+  "shell": "zsh",
+  "subagent_depth": 1,
   "watcher": {
     "ignore": [
       "**/.git/**",
@@ -38,662 +177,5 @@
       "**/android/build/**",
       "**/android/app/build/**"
     ]
-  },
-  "permission": {
-    "external_directory": "ask",
-    "doom_loop": "ask",
-    "skill": {
-      "*": "allow"
-    },
-    "read": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.pem": "deny",
-      "**/.npmrc": "deny",
-      "**/.pypirc": "deny",
-      "**/.netrc": "deny",
-      "**/.aws/**": "deny",
-      "**/.ssh/**": "deny",
-      "**/secrets/**": "deny",
-      "**/*credentials*": "deny",
-      "**/*credential*": "deny",
-      "**/*token*": "deny",
-      "**/*private_key*": "deny"
-    },
-    "edit": {
-      "*": "allow",
-      "**/.env": "deny",
-      "**/.env.*": "deny",
-      "**/secrets/**": "deny",
-      "**/.aws/**": "deny",
-      "**/.ssh/**": "deny"
-    },
-    "bash": {
-      "*": "allow",
-      "rm *": "ask",
-      "sudo *": "ask",
-      "chmod *": "ask",
-      "chown *": "ask",
-      "mv *": "ask",
-      "dd *": "ask",
-      "curl *": "ask",
-      "wget *": "ask",
-      "git push *": "ask",
-      "git reset *": "ask",
-      "git clean *": "ask",
-      "git rebase *": "ask",
-      "git commit --amend*": "ask"
-    },
-    "task": {
-      "*": "allow"
-    }
-  },
-  "formatter": {
-    "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
-      "extensions": [".json", ".md", ".yml", ".yaml", ".css", ".scss"]
-    },
-    "eslint": {
-      "command": ["npx", "eslint", "--fix", "$FILE"],
-      "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".mts", ".cts"]
-    },
-    "ruff": {
-      "command": ["bash", "-lc", "ruff check --fix \"$FILE\" && ruff format \"$FILE\""],
-      "extensions": [".py", ".pyi"]
-    },
-    "gofmt": {
-      "command": ["gofmt", "-w", "$FILE"],
-      "extensions": [".go"]
-    },
-    "rustfmt": {
-      "command": ["rustfmt", "$FILE"],
-      "extensions": [".rs"]
-    },
-    "rubocop": {
-      "command": ["bundle", "exec", "rubocop", "-a", "$FILE"],
-      "extensions": [".rb", ".rake", ".gemspec", ".ru"]
-    },
-    "dartfmt": {
-      "command": ["dart", "format", "$FILE"],
-      "extensions": [".dart"]
-    }
-  },
-  "agent": {
-    "qa": {
-      "mode": "primary",
-      "description": "Quick Q&A - answers questions using codebase and external docs",
-      "temperature": 0.2,
-      "maxSteps": 20,
-      "tools": {
-        "edit": false,
-        "write": false,
-        "bash": false
-      },
-      "permission": {
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "build": {
-      "mode": "primary",
-      "permission": {
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "plan": {
-      "mode": "primary",
-      "temperature": 0.1,
-      "permission": {
-        "edit": "deny",
-        "bash": {
-          "*": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "ls*": "allow",
-          "rg*": "allow"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "mega-plan": {
-      "mode": "primary",
-      "description": "Deep planning mode for complex work (architecture, risks, tests, rollout)",
-      "temperature": 0.1,
-      "maxSteps": 40,
-      "permission": {
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.rst": "allow",
-          "*.adoc": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.rst": "allow",
-          "*.adoc": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow"
-        },
-        "bash": {
-          "*": "ask",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "git log*": "allow",
-          "ls*": "allow",
-          "rg*": "allow"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "web-designer": {
-      "mode": "primary",
-      "description": "Senior UI/UX engineer creating beautiful, accessible Next.js + Tailwind + shadcn interfaces",
-      "temperature": 0.3
-    },
-    "code-reviewer": {
-      "mode": "subagent",
-      "description": "Reviews code for quality, DRY violations, over-engineering, and best practices",
-      "temperature": 0.1,
-      "tools": {
-        "write": false,
-        "edit": false,
-        "bash": false
-      }
-    },
-    "security-auditor": {
-      "mode": "subagent",
-      "description": "Audits code for security vulnerabilities and unsafe patterns",
-      "temperature": 0.1,
-      "tools": {
-        "write": false,
-        "edit": false
-      }
-    },
-    "docs-writer": {
-      "mode": "subagent",
-      "description": "Generates and improves documentation with focus on WHY not just WHAT",
-      "temperature": 0.3,
-      "tools": {
-        "bash": false
-      }
-    },
-    "tdd-coach": {
-      "mode": "subagent",
-      "description": "Guides TDD workflow - red/green/refactor cycle",
-      "temperature": 0.2
-    },
-    "refactorer": {
-      "mode": "subagent",
-      "description": "Refactors code for simplicity, DRYness, and maintainability",
-      "temperature": 0.2
-    },
-    "planner": {
-      "mode": "subagent",
-      "description": "Creates implementation plans with clear steps and milestones",
-      "temperature": 0.3,
-      "tools": {
-        "write": false,
-        "edit": false,
-        "bash": false
-      }
-    },
-    "debugger": {
-      "mode": "primary",
-      "description": "Debugs issues by reproducing, tracing, and fixing bugs with minimal, targeted changes",
-      "temperature": 0.2,
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "webfetch": true
-      }
-    },
-    "optimizer": {
-      "mode": "subagent",
-      "description": "Optimizes performance, memory, and responsiveness while preserving behavior",
-      "temperature": 0.2,
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
-    },
-    "test-writer": {
-      "mode": "subagent",
-      "description": "Writes and maintains high-quality tests focused on behavior and edge cases",
-      "temperature": 0.25,
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
-    },
-    "architect": {
-      "mode": "primary",
-      "description": "Systems architect for comprehensive design - architecture, data, APIs, UX, UI, infra",
-      "temperature": 0.2,
-      "steps": 60,
-      "color": "#8B5CF6",
-      "permission": {
-        "read": {
-          "*": "allow"
-        },
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.rst": "allow",
-          "*.adoc": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.rst": "allow",
-          "*.adoc": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow"
-        },
-        "bash": {
-          "*": "allow",
-          "rm *": "deny",
-          "sudo *": "deny",
-          "chmod *": "deny",
-          "chown *": "deny",
-          "dd *": "deny",
-          "mv *": "ask",
-          "curl *": "ask",
-          "wget *": "ask",
-          "git push *": "deny",
-          "git reset *": "deny",
-          "git clean *": "deny",
-          "git rebase *": "deny",
-          "git commit --amend*": "deny"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "marketing-strategist": {
-      "mode": "primary",
-      "description": "Brand strategist and content marketing lead - positioning, messaging, content strategy, and campaign planning",
-      "temperature": 0.4,
-      "maxSteps": 40,
-      "permission": {
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "bash": {
-          "*": "deny"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "biz-dev": {
-      "mode": "primary",
-      "description": "Business development strategist - partnerships, outreach, proposals, deal structuring, and growth opportunities",
-      "temperature": 0.4,
-      "maxSteps": 40,
-      "permission": {
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "bash": {
-          "*": "deny"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "pitch-deck": {
-      "mode": "primary",
-      "description": "Pitch deck strategist and investor relations - fundraising narrative, deck structure, financial modeling, and investor communications",
-      "temperature": 0.3,
-      "maxSteps": 40,
-      "permission": {
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "bash": {
-          "*": "deny"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    },
-    "ops-pm": {
-      "mode": "primary",
-      "description": "Operations and project management - processes, SOPs, timelines, resource planning, and vendor management",
-      "temperature": 0.3,
-      "maxSteps": 40,
-      "permission": {
-        "edit": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "write": {
-          "*": "deny",
-          "*.md": "allow",
-          "*.mdx": "allow",
-          "*.txt": "allow",
-          "*.yaml": "allow",
-          "*.yml": "allow",
-          "*.csv": "allow"
-        },
-        "bash": {
-          "*": "deny"
-        },
-        "task": {
-          "*": "allow"
-        }
-      }
-    }
-  },
-  "mcp": {
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true
-    },
-    "gh_grep": {
-      "type": "remote",
-      "url": "https://mcp.grep.app",
-      "enabled": true
-    },
-    "sentry": {
-      "type": "remote",
-      "url": "https://mcp.sentry.dev/mcp",
-      "enabled": false,
-      "oauth": {}
-    },
-    "playwright": {
-      "type": "local",
-      "command": [
-        "npx",
-        "@playwright/mcp@latest",
-        "--browser=chromium",
-        "--caps=core,vision,pdf,testing",
-        "--output-dir=./browser-outputs",
-        "--viewport-size=1920x1080",
-        "--timeout-action=10000"
-      ],
-      "enabled": true
-    }
-  },
-  "provider": {
-    "openai": {
-      "options": {
-        "reasoningEffort": "medium",
-        "reasoningSummary": "auto",
-        "textVerbosity": "medium",
-        "include": ["reasoning.encrypted_content"],
-        "store": false
-      },
-      "models": {
-        "gpt-5.2": {
-          "name": "GPT 5.2 (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.2-codex": {
-          "name": "GPT 5.2 Codex (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex-max": {
-          "name": "GPT 5.1 Codex Max (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex": {
-          "name": "GPT 5.1 Codex (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1-codex-mini": {
-          "name": "GPT 5.1 Codex Mini (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            }
-          }
-        },
-        "gpt-5.1": {
-          "name": "GPT 5.1 (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "high"
-            }
-          }
-        }
-      }
-    }
   }
 }

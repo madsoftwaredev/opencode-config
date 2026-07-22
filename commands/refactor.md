@@ -1,6 +1,5 @@
 ---
 description: Refactor code for simplicity and maintainability
-agent: refactorer
 ---
 
 Refactor the following:

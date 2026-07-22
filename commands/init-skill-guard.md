@@ -1,6 +1,5 @@
 ---
 description: Install SkillGuard plugin into the current repo
-agent: build
 ---
 
 Install the project-local SkillGuard plugin in the current repo.

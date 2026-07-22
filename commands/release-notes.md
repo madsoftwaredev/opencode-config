@@ -1,6 +1,5 @@
 ---
 description: Draft release notes from recent commits
-agent: build
 ---
 
 Draft release notes.

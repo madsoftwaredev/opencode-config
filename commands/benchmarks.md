@@ -1,6 +1,5 @@
 ---
 description: Lint benchmarks for consistent format
-agent: build
 ---
 
 Run the benchmark linter and fix any issues.

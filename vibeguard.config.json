@@ -1,0 +1,24 @@
+{
+  "enabled": true,
+  "debug": false,
+  "placeholder_prefix": "__VG_",
+  "session": {
+    "ttl": "1h",
+    "max_mappings": 100000
+  },
+  "patterns": {
+    "keywords": [],
+    "regex": [
+      { "pattern": "sk-[A-Za-z0-9]{48,}", "category": "OPENAI_KEY" },
+      { "pattern": "sk-ant-[A-Za-z0-9-]{40,}", "category": "ANTHROPIC_KEY" },
+      { "pattern": "(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36,}", "category": "GITHUB_TOKEN" },
+      { "pattern": "AKIA[0-9A-Z]{16}", "category": "AWS_ACCESS_KEY" },
+      { "pattern": "xoxb-[0-9A-Za-z-]+", "category": "SLACK_TOKEN" },
+      { "pattern": "SG\\.[A-Za-z0-9_-]{22}\\.[A-Za-z0-9_-]{43}", "category": "SENDGRID_KEY" },
+      { "pattern": "AIza[0-9A-Za-z_-]{35}", "category": "GOOGLE_API_KEY" },
+      { "pattern": "-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----", "category": "PRIVATE_KEY" }
+    ],
+    "builtin": ["email", "ipv4", "uuid"],
+    "exclude": ["example.com", "localhost", "127.0.0.1", "0.0.0.0", "test@example.com"]
+  }
+}

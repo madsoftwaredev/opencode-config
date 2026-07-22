@@ -25,7 +25,7 @@ This repository provides a complete OpenCode configuration system with:
 
 - **35+ specialized skills** covering languages, frameworks, and cross-cutting concerns
 - **Router-first architecture** for precise, minimal context loading
-- **18 specialized agents** for different coding tasks
+- **One coding orchestrator and four model-specialized workers**
 - **25+ custom commands** for common workflows
 - **Project-local skill support** for team conventions
 - **Guardrails and linting** to prevent skill drift
@@ -62,65 +62,38 @@ This is the glue that binds everything together: the router-first architecture, 
 
 ## Agent Types
 
-Agents are specialized AI personas configured for specific tasks. Each has tailored permissions, tools, and temperature settings.
+Agents define the model, execution boundary, permissions, and cost profile. Skills define reusable methods and constraints. Skills are selected from the actual task; they are not permanently assigned to a worker.
 
-### Primary Agents (User-Facing)
+### Coding Army
 
-| Agent            | Description                       | Temperature | Max Steps | Key Permissions           |
-| ---------------- | --------------------------------- | ----------- | --------- | ------------------------- |
-| **qa**           | Quick Q&A using codebase and docs | 0.2         | 20        | Read-only (no edits)      |
-| **build**        | General coding and implementation | 0.2         | -         | Full tool access          |
-| **plan**         | Implementation planning           | 0.1         | -         | Read-only, research only  |
-| **mega-plan**    | Deep planning for complex work    | 0.1         | 40        | Docs only, no code edits  |
-| **web-designer** | UI/UX with Next.js + Tailwind     | 0.3         | -         | Full tool access          |
-| **debugger**     | Bug reproduction and fixing       | 0.2         | -         | Full tool access          |
-| **architect**    | Comprehensive system design       | 0.2         | 60        | Docs only, extended steps |
+| Agent                       | Model                      | Reasoning | Responsibility                                                |
+| --------------------------- | -------------------------- | --------- | ------------------------------------------------------------- |
+| **orchestrator**            | `openai/gpt-5.6-terra`     | `high`    | Primary commander, integrator, and final validator            |
+| **principal-engineer**      | `openai/gpt-5.6-sol`       | `xhigh`   | Architecture, high-risk work, deep debugging, and rescue work |
+| **implementation-engineer** | `openai/gpt-5.6-luna`      | `xhigh`   | Default implementation, bug fixing, testing, and integration  |
+| **bounded-worker**          | `deepseek/deepseek-v4-pro` | `max`     | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `neuralwatt/glm-5.2`       | `xhigh`   | Read-only repository mapping and migration planning           |
 
-### Subagents (Task-Specific)
-
-| Agent                | Description                  | Temperature | Use Case                   |
-| -------------------- | ---------------------------- | ----------- | -------------------------- |
-| **code-reviewer**    | Quality, DRY, best practices | 0.1         | Post-implementation review |
-| **security-auditor** | Vulnerability detection      | 0.1         | Security-focused review    |
-| **docs-writer**      | Documentation generation     | 0.3         | API docs, READMEs          |
-| **tdd-coach**        | Red/green/refactor guidance  | 0.2         | Test-driven development    |
-| **refactorer**       | Safe code restructuring      | 0.2         | Improving existing code    |
-| **planner**          | Implementation plans         | 0.3         | Breaking down work         |
-| **optimizer**        | Performance tuning           | 0.2         | Speed/memory optimization  |
-| **test-writer**      | Test creation                | 0.25        | Adding test coverage       |
+The Orchestrator may recommend skills in a mission when a particular constraint matters. Each worker still inspects the task and repository instructions and makes the final skill selection.
 
 ### Agent Selection Flow
 
 ```mermaid
 flowchart TD
-    A[User Request] --> B{Task Type?}
-
-    B -->|Question/Research| C[qa]
-    B -->|Bug Fix| D[debugger]
-    B -->|New Feature| E[build]
-    B -->|UI/UX Work| F[web-designer]
-    B -->|Planning| G{Complexity?}
-    B -->|Architecture| H[architect]
-
-    G -->|Simple| I[plan]
-    G -->|Complex| J[mega-plan]
-
-    C --> K[Execute]
-    D --> K
-    E --> K
-    F --> K
-    I --> K
-    J --> K
-    H --> K
-
-    K --> L{Need Review?}
-    L -->|Yes| M[code-reviewer]
-    L -->|Security| N[security-auditor]
-    L -->|No| O[Done]
-
-    M --> O
-    N --> O
+    A[User Request] --> T[Orchestrator]
+    T -->|Architecture, high risk, hard failure| S[Principal Engineer]
+    T -->|Normal implementation| L[Implementation Engineer]
+    T -->|Bounded repetitive work| D[Bounded Worker]
+    T -->|Large repository analysis| G[Repository Analyst]
+    T -->|Small or integration change| I[Orchestrator implements]
+    S --> V[Orchestrator integrates and validates]
+    L --> V
+    D --> V
+    G --> V
+    I --> V
 ```
+
+Workers cannot delegate further. The Orchestrator assigns disjoint ownership before parallel work and remains responsible for inspecting patches and validating the complete result.
 
 ---
 
@@ -167,6 +140,7 @@ Skills are the heart of this system. Each skill is a router that points to focus
 | **auth**              | Authentication/authorization | sessions-and-csrf, token-auth, authorization-models, recipes-protect-endpoint                                                                                                                                                                                                                                    |
 | **git**               | Git workflows                | commits, staging-and-hygiene, branching-and-prs, troubleshooting                                                                                                                                                                                                                                                 |
 | **gh**                | GitHub CLI                   | prs, issues, actions, repos, api, recipe-address-pr-comments, recipe-review-others-pr                                                                                                                                                                                                                            |
+| **pr-reviews**        | PR review strategy           | review-strategy, coherence-checklist, review-comments                                                                                                                                                                                                                                                            |
 | **devops**            | CI/CD and infra              | dockerfiles-and-images, ci-pipelines, secrets-in-ci, deploy-strategies, recipes-ci-checks                                                                                                                                                                                                                        |
 | **observability**     | Logs, metrics, tracing       | logging-and-correlation-ids, metrics-and-slos, tracing-and-spans, error-tracking-and-release-health, recipes-debug-prod-issue                                                                                                                                                                                    |
 | **performance**       | Optimization playbooks       | profiling-and-measurement, caching-strategies, latency-budgets-and-p99, backend-hot-paths, recipes-perf-investigation                                                                                                                                                                                            |
@@ -279,6 +253,8 @@ Every leaf document must include:
 
 ### Skill Loading Protocol
 
+Skill selection is task-driven rather than agent-driven. The Orchestrator can include recommendations in a mission, but workers must inspect the actual stack and choose the smallest applicable guidance themselves.
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -315,24 +291,26 @@ Commands are auto-discovered by OpenCode (no `opencode.json` wiring required).
 
 ### Development Commands
 
-| Command             | Agent            | Description                      |
-| ------------------- | ---------------- | -------------------------------- |
-| `/skills`           | build            | Mandatory skill loading workflow |
-| `/init-skills`      | build            | Bootstrap project-local skills   |
-| `/init-skill-guard` | build            | Install SkillGuard plugin        |
-| `/tdd`              | tdd-coach        | Start TDD session                |
-| `/plan`             | planner          | Create implementation plan       |
-| `/refactor`         | refactorer       | Refactor for simplicity          |
-| `/review`           | code-reviewer    | Code quality review              |
-| `/security`         | security-auditor | Security audit                   |
-| `/debug`            | debugger         | Debug and fix bugs               |
-| `/optimize`         | optimizer        | Performance optimization         |
-| `/docs`             | docs-writer      | Generate documentation           |
-| `/ui`               | web-designer     | Generate UI components           |
-| `/story`            | web-designer     | Generate Storybook stories       |
-| `/commit`           | build            | Draft commit message             |
-| `/pr`               | build            | Create GitHub PR                 |
-| `/ci`               | build            | Run CI-like checks locally       |
+| Command             | Description                         |
+| ------------------- | ----------------------------------- |
+| `/skills`           | Skill loading workflow              |
+| `/init-skills`      | Bootstrap project-local skills      |
+| `/init-skill-guard` | Install SkillGuard plugin           |
+| `/tdd`              | Start a TDD session                 |
+| `/plan`             | Create an implementation plan       |
+| `/refactor`         | Refactor for simplicity             |
+| `/review`           | Perform a bounded code review       |
+| `/security`         | Perform a security audit            |
+| `/debug`            | Debug and fix bugs                  |
+| `/optimize`         | Investigate and improve performance |
+| `/docs`             | Generate documentation              |
+| `/ui`               | Generate UI components              |
+| `/story`            | Generate Storybook stories          |
+| `/commit`           | Draft a commit message              |
+| `/pr`               | Create a GitHub pull request        |
+| `/ci`               | Run CI-like checks locally          |
+
+Commands do not select an agent. The active Orchestrator session decides whether to execute directly or delegate.
 
 ### Utility Commands
 
@@ -354,8 +332,6 @@ Commands are auto-discovered by OpenCode (no `opencode.json` wiring required).
 ```markdown
 ---
 description: Brief description of what this command does
-agent: agent-name
-subtask: true # Optional: runs as subagent
 ---
 
 Command instructions here...
@@ -436,34 +412,17 @@ $ARGUMENTS will be replaced with user input
 
 ```mermaid
 flowchart LR
-    A[Start Task] --> B{Load Skills}
-    B --> C[Identify Stack]
-    C --> D[Check Local Skills]
-    D --> E[Load Router]
-    E --> F[Load 1-2 Leaves]
-
-    F --> G{Task Type?}
-    G -->|New Feature| H[plan or build]
-    G -->|Bug Fix| I[debug]
-    G -->|Refactor| J[refactor]
-    G -->|UI Work| K[ui]
-
-    H --> L[Implement]
-    I --> L
-    J --> L
-    K --> L
-
-    L --> M{Tests?}
-    M -->|Yes| N[Write Tests]
-    M -->|No| O[Review]
-    N --> O
-
-    O --> P[review]
-    P --> Q{Issues?}
-    Q -->|Yes| R[Fix Issues]
-    R --> P
-    Q -->|No| S[commit]
-    S --> T[Done]
+    A[Start Task] --> B[Orchestrator inspects scope and repository]
+    B --> C{Delegate?}
+    C -->|No| D[Orchestrator implements]
+    C -->|Yes| E[Orchestrator assigns a bounded mission]
+    E --> F[Worker inspects context and selects applicable skills]
+    F --> G[Worker implements and verifies]
+    G --> H[Worker reports evidence and risks]
+    D --> I[Orchestrator inspects final changes]
+    H --> I
+    I --> J[Orchestrator runs integrated validation]
+    J --> K[Deliver result]
 ```
 
 ### Skill-First Protocol
@@ -486,7 +445,7 @@ flowchart LR
 2. Load: nextjs/architecture.md + nextjs/server-actions-and-mutations.md
 3. Load: testing/SKILL.md + testing/node-nextjs.md
 4. Load: security/SKILL.md (if auth/input handling)
-5. Execute with /build agent
+5. The Orchestrator executes or delegates the implementation
 ```
 
 **Rails API Endpoint:**
@@ -497,7 +456,7 @@ flowchart LR
 3. Load: api/SKILL.md + api/recipes-new-endpoint.md
 4. Load: testing/SKILL.md + testing/ruby-rails.md
 5. Load: database/SKILL.md (if DB changes)
-6. Execute with /build agent
+6. The Orchestrator executes or delegates the implementation
 ```
 
 **Python CLI Tool:**
@@ -506,7 +465,7 @@ flowchart LR
 1. Load: python/SKILL.md
 2. Load: python/recipes-cli-tool.md + python/types-and-boundaries.md
 3. Load: testing/SKILL.md + testing/python.md
-4. Execute with /build agent
+4. The Orchestrator executes or delegates the implementation
 ```
 
 ---
@@ -672,6 +631,12 @@ Expected loads:
 │   ├── testing.md
 │   ├── security.md
 │   └── ...
+├── agents/                   # Orchestrator and model-specialized workers
+│   ├── orchestrator.md
+│   ├── principal-engineer.md
+│   ├── implementation-engineer.md
+│   ├── bounded-worker.md
+│   └── repository-analyst.md
 ├── skills/                  # Skill library
 │   ├── ruby/
 │   ├── rails/
@@ -706,7 +671,7 @@ Expected loads:
 This OpenCode configuration provides:
 
 - **35+ specialized skills** with router-first architecture
-- **18 agents** for different coding tasks
+- **One coding orchestrator and four model-specialized workers**
 - **25+ commands** for common workflows
 - **Project-local support** for team conventions
 - **Guardrails and linting** for quality assurance

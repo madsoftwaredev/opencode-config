@@ -1,6 +1,5 @@
 ---
 description: Lint ~/.config/opencode/skills for consistency
-agent: build
 ---
 
 Run the global skills linter and fix any issues.

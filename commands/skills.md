@@ -1,6 +1,5 @@
 ---
 description: Mandatory skill loading workflow (project-local first)
-agent: build
 ---
 
 Before making non-trivial code changes, load the smallest set of skills that constrain the work.

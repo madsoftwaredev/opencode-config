@@ -1,6 +1,5 @@
 ---
 description: Analyze and optimize performance while preserving behavior
-agent: optimizer
 ---
 
 Optimize the performance of:

@@ -7,6 +7,16 @@ tools:
   webfetch: true
   bash: false
 permission:
+  external_directory:
+    "*": ask
+    "/Users/mm/.config/opencode": allow
+    "/Users/mm/.config/opencode/**": allow
+    "/Users/mm/.claude/skills": allow
+    "/Users/mm/.claude/skills/**": allow
+    "/Users/mm/.agents": allow
+    "/Users/mm/.agents/**": allow
+    "/Users/mm/Pictures/Screenshots": allow
+    "/Users/mm/Pictures/Screenshots/*": allow
   edit:
     "*": deny
     "*.md": allow

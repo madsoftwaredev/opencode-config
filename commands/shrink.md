@@ -1,6 +1,5 @@
 ---
 description: Shrink a file to under 250 lines
-agent: refactorer
 ---
 
 This file is too long. Shrink it to under 250 lines:

@@ -1,6 +1,5 @@
 ---
 description: Generate UI components or pages
-agent: web-designer
 ---
 
 Generate a UI component or full page based on the prompt.

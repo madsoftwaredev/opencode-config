@@ -1,6 +1,5 @@
 ---
 description: Bootstrap project-local skills from the repo (project skill)
-agent: build
 ---
 
 Bootstrap project-local skills for this repo under `.opencode/skills/`.

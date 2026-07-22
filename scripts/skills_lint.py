@@ -154,15 +154,25 @@ def lint_skill_dir(skill_dir: Path) -> list[Issue]:
     if not name:
         issues.append(Issue(skill_md, "frontmatter missing required field: name"))
     if not desc:
-        issues.append(Issue(skill_md, "frontmatter missing required field: description"))
+        issues.append(
+            Issue(skill_md, "frontmatter missing required field: description")
+        )
 
     if name and name != skill_dir.name:
         issues.append(
-            Issue(skill_md, f"frontmatter name '{name}' does not match directory '{skill_dir.name}'")
+            Issue(
+                skill_md,
+                f"frontmatter name '{name}' does not match directory '{skill_dir.name}'",
+            )
         )
 
     if name and not SKILL_NAME_RE.fullmatch(name):
-        issues.append(Issue(skill_md, f"invalid skill name '{name}' (must match {SKILL_NAME_RE.pattern})"))
+        issues.append(
+            Issue(
+                skill_md,
+                f"invalid skill name '{name}' (must match {SKILL_NAME_RE.pattern})",
+            )
+        )
 
     refs = _extract_md_code_spans(text)
     refs_by_basename = {Path(r).name for r in refs}
@@ -172,7 +182,7 @@ def lint_skill_dir(skill_dir: Path) -> list[Issue]:
         if ref.startswith("skills/"):
             target = ROOT / ref
         else:
-            target = (skill_dir / ref)
+            target = skill_dir / ref
 
         if not target.exists():
             issues.append(Issue(skill_md, f"references missing file: {ref}"))
@@ -182,7 +192,11 @@ def lint_skill_dir(skill_dir: Path) -> list[Issue]:
         leaves = [p for p in sorted(skill_dir.glob("*.md")) if p.name != "SKILL.md"]
 
         required_refs = min(3, len(leaves))
-        leaf_refs = {name for name in refs_by_basename if name != "SKILL.md" and (skill_dir / name).exists()}
+        leaf_refs = {
+            name
+            for name in refs_by_basename
+            if name != "SKILL.md" and (skill_dir / name).exists()
+        }
         if len(leaf_refs) < required_refs:
             issues.append(
                 Issue(
@@ -193,7 +207,9 @@ def lint_skill_dir(skill_dir: Path) -> list[Issue]:
 
         for leaf in leaves:
             if leaf.name not in refs_by_basename:
-                issues.append(Issue(skill_md, f"SKILL.md does not reference leaf: {leaf.name}"))
+                issues.append(
+                    Issue(skill_md, f"SKILL.md does not reference leaf: {leaf.name}")
+                )
 
     # V2 schema enforcement for migrated skills.
     if skill_dir.name in V2_SKILLS:
@@ -220,7 +236,9 @@ def main(argv: list[str]) -> int:
     )
     args = parser.parse_args(argv)
 
-    skills_dir = Path(args.skills_dir).expanduser() if args.skills_dir else (ROOT / "skills")
+    skills_dir = (
+        Path(args.skills_dir).expanduser() if args.skills_dir else (ROOT / "skills")
+    )
 
     if not skills_dir.exists():
         print(f"skills dir not found: {skills_dir}", file=sys.stderr)
@@ -231,6 +249,10 @@ def main(argv: list[str]) -> int:
     for child in sorted(skills_dir.iterdir()):
         if not child.is_dir():
             continue
+
+        if child.name.startswith("."):
+            continue
+
         issues.extend(lint_skill_dir(child))
 
     if not issues:

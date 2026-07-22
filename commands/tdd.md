@@ -1,6 +1,5 @@
 ---
 description: Start a TDD session for a feature
-agent: tdd-coach
 ---
 
 Let's implement this using TDD (red/green/refactor):

@@ -1,6 +1,5 @@
 ---
 description: Run linting and fix what can be auto-fixed
-agent: build
 ---
 
 Run the project's lint command(s) and fix issues.

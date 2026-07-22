@@ -1,6 +1,5 @@
 ---
 description: Draft a commit message from git diff and stage appropriate files
-agent: build
 ---
 
 Prepare a clean commit for the current work.

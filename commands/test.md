@@ -1,6 +1,5 @@
 ---
 description: Write or update tests for code
-agent: test-writer
 ---
 
 Write or update tests for:

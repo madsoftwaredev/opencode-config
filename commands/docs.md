@@ -1,6 +1,5 @@
 ---
 description: Generate or improve documentation
-agent: docs-writer
 ---
 
 Generate documentation for:

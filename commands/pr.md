@@ -1,6 +1,5 @@
 ---
 description: Create a GitHub PR with a high-quality summary
-agent: build
 ---
 
 Create a PR for the current branch.

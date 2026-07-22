@@ -1,6 +1,5 @@
 ---
 description: Debug and fix a bug with minimal, targeted changes
-agent: debugger
 ---
 
 Debug the following issue:

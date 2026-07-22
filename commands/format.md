@@ -1,6 +1,5 @@
 ---
 description: Format code using configured formatters
-agent: build
 ---
 
 Format the files relevant to:

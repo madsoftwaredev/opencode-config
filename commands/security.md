@@ -1,7 +1,5 @@
 ---
 description: Security audit for vulnerabilities and unsafe patterns
-agent: security-auditor
-subtask: true
 ---
 
 Perform a security audit on:

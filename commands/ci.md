@@ -1,6 +1,5 @@
 ---
 description: Run the closest equivalent of CI locally
-agent: build
 ---
 
 Run the project's CI-like checks.
