@@ -3,7 +3,6 @@ description: Principal engineer for architecture, high-risk changes, difficult d
 mode: subagent
 model: openai/gpt-5.6-sol
 variant: xhigh
-steps: 80
 permission:
   task: deny
 ---

@@ -2,7 +2,6 @@
 description: Business development strategist - partnerships, outreach, proposals, deal structuring, and growth opportunities
 mode: primary
 temperature: 0.4
-maxSteps: 40
 tools:
   webfetch: true
   bash: false

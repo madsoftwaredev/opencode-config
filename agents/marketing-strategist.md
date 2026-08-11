@@ -2,7 +2,6 @@
 description: Brand strategist and content marketing lead - positioning, messaging, content strategy, and campaign planning
 mode: primary
 temperature: 0.4
-maxSteps: 40
 tools:
   webfetch: true
   bash: false

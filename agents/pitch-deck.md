@@ -2,7 +2,6 @@
 description: Pitch deck strategist and investor relations - fundraising narrative, deck structure, financial modeling, and investor communications
 mode: primary
 temperature: 0.3
-maxSteps: 40
 tools:
   webfetch: true
   bash: false

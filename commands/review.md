@@ -6,12 +6,14 @@ Review the following scoped code, diff, PR excerpt, or file list:
 
 $ARGUMENTS
 
+If the scope identifies a live GitHub PR by number or URL, do not use the bounded inline-review path below. Always delegate it to `pr-reviewer` or `economy-pr-reviewer`, require a `.pr-reviews/<number>--<sanitized-title>.md` artifact, and use `pr-review-adjudicator` when the active orchestrator's PR-review rules require validation or filtering.
+
 If no concrete scope is provided, ask for the diff or file list and stop. Do not perform a repository-wide audit.
 
 Budget:
 
 1. Review only the supplied scope and directly related context.
-2. Do not launch other agents.
+2. For non-PR scoped reviews, do not launch other agents.
 3. Report the top 5 findings by default.
 4. If the user explicitly asks for a deep/full/security/performance/API/data/migration review, report up to 10 findings.
 5. Group repeated issues instead of listing every occurrence.

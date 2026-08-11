@@ -1,11 +1,11 @@
 ---
 description: Read-only long-context analyst for repository mapping, execution tracing, dependency analysis, impact assessment, and migration planning
 mode: subagent
-model: neuralwatt/glm-5.2
+model: openai/gpt-5.6-terra
 variant: xhigh
-steps: 60
 permission:
   edit: deny
+  write: deny
   task: deny
   bash:
     "*": deny

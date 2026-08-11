@@ -2,3 +2,5 @@ node_modules
 package.json
 bun.lock
 browser-outputs/
+.DS_Store
+/Archive.zip

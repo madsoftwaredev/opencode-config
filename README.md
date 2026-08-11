@@ -25,7 +25,9 @@ This repository provides a complete OpenCode configuration system with:
 
 - **35+ specialized skills** covering languages, frameworks, and cross-cutting concerns
 - **Router-first architecture** for precise, minimal context loading
-- **One coding orchestrator and four model-specialized workers**
+- **Premium and economy coding tiers with shared specialist workers**
+- **Isolated premium and economy PR-review pipelines with lossless artifacts**
+- **Opt-in full-lifecycle YOLO mode scoped to the current worktree**
 - **25+ custom commands** for common workflows
 - **Project-local skill support** for team conventions
 - **Guardrails and linting** to prevent skill drift
@@ -66,13 +68,77 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 ### Coding Army
 
-| Agent                       | Model                      | Reasoning | Responsibility                                                |
-| --------------------------- | -------------------------- | --------- | ------------------------------------------------------------- |
-| **orchestrator**            | `openai/gpt-5.6-terra`     | `high`    | Primary commander, integrator, and final validator            |
-| **principal-engineer**      | `openai/gpt-5.6-sol`       | `xhigh`   | Architecture, high-risk work, deep debugging, and rescue work |
-| **implementation-engineer** | `openai/gpt-5.6-luna`      | `xhigh`   | Default implementation, bug fixing, testing, and integration  |
-| **bounded-worker**          | `deepseek/deepseek-v4-pro` | `max`     | Narrow, repetitive, isolated, and testable work               |
-| **repository-analyst**      | `neuralwatt/glm-5.2`       | `xhigh`   | Read-only repository mapping and migration planning           |
+#### Premium tier
+
+| Agent                       | Model                  | Reasoning | Responsibility                                                |
+| --------------------------- | ---------------------- | --------- | ------------------------------------------------------------- |
+| **orchestrator**            | `openai/gpt-5.6-sol`   | `xhigh`   | Primary commander, integrator, and final validator            |
+| **principal-engineer**      | `openai/gpt-5.6-sol`   | `xhigh`   | Architecture, high-risk work, deep debugging, and rescue work |
+| **implementation-engineer** | `openai/gpt-5.6-terra` | `xhigh`   | Default implementation, bug fixing, testing, and integration  |
+| **bounded-worker**          | `openai/gpt-5.6-luna`  | `xhigh`   | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `openai/gpt-5.6-terra` | `xhigh`   | Read-only repository mapping and migration planning           |
+
+#### Economy tier
+
+| Agent                               | Model                      | Reasoning | Responsibility                             |
+| ----------------------------------- | -------------------------- | --------- | ------------------------------------------ |
+| **economy-orchestrator**            | `openai/gpt-5.6-terra`     | `xhigh`   | Vision-capable, delegation-default primary |
+| **economy-implementation-engineer** | `openai/gpt-5.6-luna-fast` | `xhigh`   | Cost-efficient implementation              |
+| **economy-bounded-worker**          | `openai/gpt-5.6-luna-fast` | `xhigh`   | Mechanical and tightly scoped work         |
+| **economy-repository-analyst**      | `openai/gpt-5.6-luna-fast` | `xhigh`   | Read-only repository analysis              |
+
+The economy workers use GPT-5.6 Luna Fast to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. OpenAI documents Fast mode as 1.5× model speed at 2.5× credit consumption for GPT-5.6; API-key authentication uses API Fast pricing instead. Luna supports image input, but visual product judgment and acceptance review still belong with the Visual Engineer or UI/UX Analyst.
+
+#### Shared UI specialists
+
+| Agent               | Model                 | Reasoning | Responsibility                                                                    |
+| ------------------- | --------------------- | --------- | --------------------------------------------------------------------------------- |
+| **visual-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | UI implementation, image/PDF inspection, video frame analysis, browser validation |
+| **ui-ux-analyst**   | `opencode/kimi-k3`    | `max`     | UI/UX consultation, planning, validation, and frontend review; no product code    |
+
+Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
+
+#### PR review pipeline
+
+| Agent                              | Mode     | Model                      | Reasoning | Responsibility                                     |
+| ---------------------------------- | -------- | -------------------------- | --------- | -------------------------------------------------- |
+| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`       | `xhigh`   | Premium single and batch PR-review coordination    |
+| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-terra`     | `xhigh`   | Economy single and batch PR-review coordination    |
+| **pr-reviewer**                    | subagent | `openai/gpt-5.6-terra`     | `xhigh`   | Premium target-branch review and findings artifact |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna-fast` | `xhigh`   | Economy target-branch review and findings artifact |
+| **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`       | `xhigh`   | Independent finding validation and user filtering  |
+
+PR reviewers use read-only GitHub operations and never checkout or modify the reviewed source. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
+
+#### YOLO modes
+
+| Agent                     | Command    | Default model        | Reasoning | Worker pool                                            |
+| ------------------------- | ---------- | -------------------- | --------- | ------------------------------------------------------ |
+| **yolo-orchestrator**     | `yolo`     | `openai/gpt-5.6-sol` | `xhigh`   | Premium and economy workers plus shared specialists    |
+| **yolo-eco-orchestrator** | `yolo-eco` | `openai/gpt-5.6-sol` | `xhigh`   | Economy workers plus UI/UX and Principal Engineer only |
+
+Launch the desired mode from the project it should own:
+
+```bash
+yolo
+yolo-eco
+```
+
+Pass a project path or model override when needed:
+
+```bash
+yolo /path/to/project
+yolo-eco /path/to/project
+yolo --model openai/gpt-5.6-terra --variant xhigh
+```
+
+`~/.local/bin/yolo` and `~/.local/bin/yolo-eco` point to versioned launchers in this repository. Both inject `profiles/yolo.json` as the final process-wide configuration layer and enable OpenCode's `--auto` mode. Subagents do not inherit the parent's permissions; the injected profile applies the shared workspace and remote-action boundaries to every descendant while each worker retains its own role-specific denials. Permission requests are automatically approved unless explicitly denied.
+
+Both primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, visual interpretation when needed, integration, conflict repair, final verification, and cleanup. `yolo-eco` technically prevents premium implementation, bounded, repository, and visual workers from being invoked.
+
+YOLO mode allows autonomous local edits, dependency installation, downloads, project containers, local Git history operations, tests, formatting, linting, type checks, builds, browser verification, repair loops, and cleanup. It explicitly denies outside-worktree access, privileged commands, Git pushes and GitHub writes, remote shell and file transfer, cloud and deployment CLIs, infrastructure application or destruction, publishing, and system package managers. A denied action is blocked rather than presented for confirmation.
+
+This is a permission boundary, not an operating-system sandbox: arbitrary project scripts and package lifecycle hooks can still execute with the OpenCode process's user privileges. Use it only for trusted repositories or run OpenCode in a disposable container or VM with only the project mounted.
 
 The Orchestrator may recommend skills in a mission when a particular constraint matters. Each worker still inspects the task and repository instructions and makes the final skill selection.
 
@@ -80,20 +146,28 @@ The Orchestrator may recommend skills in a mission when a particular constraint 
 
 ```mermaid
 flowchart TD
-    A[User Request] --> T[Orchestrator]
-    T -->|Architecture, high risk, hard failure| S[Principal Engineer]
-    T -->|Normal implementation| L[Implementation Engineer]
-    T -->|Bounded repetitive work| D[Bounded Worker]
-    T -->|Large repository analysis| G[Repository Analyst]
-    T -->|Small or integration change| I[Orchestrator implements]
-    S --> V[Orchestrator integrates and validates]
-    L --> V
-    D --> V
-    G --> V
-    I --> V
+    A[User selects primary] --> T[Premium Orchestrator]
+    A --> E[Economy Orchestrator]
+    T --> P[Premium workers]
+    T --> C[Economy workers]
+    E --> C
+    T --> S[Shared specialists]
+    E --> S
+    P --> V[Primary integrates and validates]
+    C --> V
+    S --> V
 ```
 
-Workers cannot delegate further. The Orchestrator assigns disjoint ownership before parallel work and remains responsible for inspecting patches and validating the complete result.
+The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer, Visual Engineer, or UI/UX Analyst when their narrow escalation trigger applies. The premium Implementation Engineer may launch either Bounded Worker; the Economy Implementation Engineer may launch only the Economy Bounded Worker. Every other coding worker is denied subagent access, and depth 2 prevents delegation below a Bounded Worker.
+
+To make the economy tier the default only in a high-consumption project, add this project-local configuration:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "economy-orchestrator"
+}
+```
 
 ---
 
@@ -363,6 +437,7 @@ $ARGUMENTS will be replaced with user input
     "auto": true,
     "prune": true
   },
+  "subagent_depth": 2,
   "plugin": ["opencode-openai-codex-auth"],
   "watcher": {
     "ignore": ["**/node_modules/**", "**/.git/**", "**/dist/**"]
@@ -371,7 +446,7 @@ $ARGUMENTS will be replaced with user input
     "read": { "*": "allow", "*.env": "deny" },
     "edit": { "*": "allow", "**/.env": "deny" },
     "bash": { "*": "allow", "sudo *": "ask" },
-    "task": { "*": "allow" }
+    "task": { "*": "deny" }
   },
   "formatter": {
     "prettier": { "command": [...], "extensions": [...] },
@@ -386,14 +461,15 @@ $ARGUMENTS will be replaced with user input
 
 ### Key Configuration Sections
 
-| Section        | Purpose                                         |
-| -------------- | ----------------------------------------------- |
-| `instructions` | Global rules files loaded into every context    |
-| `permission`   | Fine-grained access control per tool type       |
-| `formatter`    | Auto-formatting on save per file type           |
-| `agent`        | Agent definitions with tools and permissions    |
-| `mcp`          | Model Context Protocol server configurations    |
-| `provider`     | LLM provider settings (OpenAI, Anthropic, etc.) |
+| Section          | Purpose                                                                        |
+| ---------------- | ------------------------------------------------------------------------------ |
+| `instructions`   | Global rules files loaded into every context                                   |
+| `permission`     | Fine-grained access control per tool type                                      |
+| `subagent_depth` | Global maximum delegation depth; agent `task` permissions define allowed edges |
+| `formatter`      | Auto-formatting on save per file type                                          |
+| `agent`          | Agent definitions with tools and permissions                                   |
+| `mcp`            | Model Context Protocol server configurations                                   |
+| `provider`       | LLM provider settings (OpenAI, Anthropic, etc.)                                |
 
 ### MCP Servers Configured
 
@@ -635,12 +711,25 @@ Expected loads:
 │   ├── testing.md
 │   ├── security.md
 │   └── ...
-├── agents/                   # Orchestrator and model-specialized workers
+├── agents/                   # Coding, UI, and PR-review agent tiers
 │   ├── orchestrator.md
+│   ├── economy-orchestrator.md
+│   ├── yolo-orchestrator.md
+│   ├── yolo-eco-orchestrator.md
+│   ├── pr-review-orchestrator.md
+│   ├── economy-pr-review-orchestrator.md
+│   ├── pr-reviewer.md
+│   ├── economy-pr-reviewer.md
+│   ├── pr-review-adjudicator.md
 │   ├── principal-engineer.md
 │   ├── implementation-engineer.md
+│   ├── economy-implementation-engineer.md
 │   ├── bounded-worker.md
-│   └── repository-analyst.md
+│   ├── economy-bounded-worker.md
+│   ├── repository-analyst.md
+│   ├── economy-repository-analyst.md
+│   ├── visual-engineer.md
+│   └── ui-ux-analyst.md
 ├── skills/                  # Skill library
 │   ├── ruby/
 │   ├── rails/
@@ -652,9 +741,14 @@ Expected loads:
 │   ├── init-skills.md
 │   ├── tdd.md
 │   └── ... (25+ commands)
+├── profiles/
+│   └── yolo.json            # Process-wide YOLO safety policy
 ├── scripts/                 # QA utilities
 │   ├── skills_lint.py
-│   └── benchmarks_lint.py
+│   ├── benchmarks_lint.py
+│   ├── yolo                 # Full-stack YOLO launcher
+│   ├── yolo-eco             # Economy-worker YOLO launcher
+│   └── opencode-yolo        # Backward-compatible full-stack alias
 └── templates/               # Project templates
     ├── project-local-skills/
     └── project-local-plugins/
@@ -675,7 +769,7 @@ Expected loads:
 This OpenCode configuration provides:
 
 - **35+ specialized skills** with router-first architecture
-- **One coding orchestrator and four model-specialized workers**
+- **Premium and economy coding tiers with shared specialist workers**
 - **25+ commands** for common workflows
 - **Project-local support** for team conventions
 - **Guardrails and linting** for quality assurance

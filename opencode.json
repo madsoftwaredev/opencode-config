@@ -1,13 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "agent": {
-    "explore": {
-      "disable": true
-    },
-    "general": {
-      "disable": true
-    }
-  },
   "autoupdate": true,
   "compaction": {
     "auto": true,
@@ -154,7 +146,7 @@
   ],
   "share": "manual",
   "shell": "zsh",
-  "subagent_depth": 1,
+  "subagent_depth": 2,
   "watcher": {
     "ignore": [
       "**/.git/**",

@@ -2,7 +2,6 @@
 description: Operations and project management - processes, SOPs, timelines, resource planning, and vendor management
 mode: primary
 temperature: 0.3
-maxSteps: 40
 tools:
   webfetch: true
   bash: false
