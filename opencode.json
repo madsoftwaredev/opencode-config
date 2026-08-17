@@ -57,6 +57,26 @@
       "type": "remote",
       "url": "https://mcp.grep.app"
     },
+    "kravos": {
+      "enabled": true,
+      "oauth": {},
+      "type": "remote",
+      "url": "https://mcp.kravos.ai/api/v1"
+    },
+    "coolify": {
+      "type": "local",
+      "command": ["npx", "-y", "@masonator/coolify-mcp"],
+      "enabled": true,
+      "environment": {
+        "COOLIFY_BASE_URL": "{env:COOLIFY_BASE_URL}",
+        "COOLIFY_ACCESS_TOKEN": "{env:COOLIFY_ACCESS_TOKEN}"
+      }
+    },
+    "mobbin": {
+      "enabled": true,
+      "type": "remote",
+      "url": "https://api.mobbin.com/mcp"
+    },
     "playwright": {
       "command": [
         "npx",
@@ -101,6 +121,7 @@
       "**/.aws/**": "deny",
       "**/.env": "deny",
       "**/.env.*": "deny",
+      "*.env.example": "allow",
       "**/.ssh/**": "deny",
       "**/secrets/**": "deny"
     },
@@ -117,10 +138,6 @@
     },
     "read": {
       "*": "allow",
-      "**/*credential*": "deny",
-      "**/*credentials*": "deny",
-      "**/*private_key*": "deny",
-      "**/*token*": "deny",
       "**/.aws/**": "deny",
       "**/.netrc": "deny",
       "**/.npmrc": "deny",
@@ -129,6 +146,7 @@
       "**/secrets/**": "deny",
       "*.env": "deny",
       "*.env.*": "deny",
+      "*.env.example": "allow",
       "*.pem": "deny"
     },
     "skill": {

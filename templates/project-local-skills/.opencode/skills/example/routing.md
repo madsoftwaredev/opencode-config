@@ -18,7 +18,12 @@ Use this leaf doc to encode the rules that make your repo consistent.
 ## Minimal examples
 
 ```text
-Example: "All new services live under src/services and must return Result<T>"
+Example: "For Rails projects, application services are reserved for demonstrated
+multi-record/transaction/external workflows; when used they return the repository's
+Data Success(value, meta)/Failure(code, errors, error_details, meta) contract with
+errors as field/base arrays. List endpoints use the project's Pundit -> strict
+Ransack allowlists per model -> stable sort -> Kaminari -> Data page -> API
+responder path."
 ```
 
 ## Anti-patterns

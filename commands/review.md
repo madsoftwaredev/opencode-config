@@ -6,7 +6,7 @@ Review the following scoped code, diff, PR excerpt, or file list:
 
 $ARGUMENTS
 
-If the scope identifies a live GitHub PR by number or URL, do not use the bounded inline-review path below. Always delegate it to `pr-reviewer` or `economy-pr-reviewer`, require a `.pr-reviews/<number>--<sanitized-title>.md` artifact, and use `pr-review-adjudicator` when the active orchestrator's PR-review rules require validation or filtering.
+If the scope identifies a live GitHub PR by number or URL, do not use the bounded inline-review path below. Always delegate it to the active family's permitted reviewer: `pr-reviewer`, `economy-pr-reviewer`, or `flash-pr-reviewer`. Require a `.pr-reviews/<number>--<sanitized-title>.md` artifact and use `pr-review-adjudicator` when the active orchestrator's PR-review rules require validation or filtering.
 
 If no concrete scope is provided, ask for the diff or file list and stop. Do not perform a repository-wide audit.
 

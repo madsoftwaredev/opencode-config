@@ -15,4 +15,4 @@ Expected traits:
 
 - Type hints everywhere.
 - Deterministic behavior (no hidden globals).
-- Tests cover error path.
+- Smallest meaningful deterministic test proves a material validation risk.

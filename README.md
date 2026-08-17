@@ -25,9 +25,9 @@ This repository provides a complete OpenCode configuration system with:
 
 - **35+ specialized skills** covering languages, frameworks, and cross-cutting concerns
 - **Router-first architecture** for precise, minimal context loading
-- **Premium and economy coding tiers with shared specialist workers**
+- **Premium, Luna Fast economy, and direct DeepSeek coding families with shared specialist workers**
 - **Isolated premium and economy PR-review pipelines with lossless artifacts**
-- **Opt-in full-lifecycle YOLO mode scoped to the current worktree**
+- **Opt-in full-lifecycle YOLO mode with soft consequential-action gates**
 - **25+ custom commands** for common workflows
 - **Project-local skill support** for team conventions
 - **Guardrails and linting** to prevent skill drift
@@ -64,7 +64,7 @@ This is the glue that binds everything together: the router-first architecture, 
 
 ## Agent Types
 
-Agents define the model, execution boundary, permissions, and cost profile. Skills define reusable methods and constraints. Skills are selected from the actual task; they are not permanently assigned to a worker.
+Agents define the model, execution boundary, permissions, and cost profile. Skills define reusable methods and constraints. Most skills are selected from the actual task; role-contract skills are the deliberate exception and must be loaded by their wrappers before any role work begins.
 
 ### Coding Army
 
@@ -87,41 +87,55 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 | **economy-bounded-worker**          | `openai/gpt-5.6-luna-fast` | `xhigh`   | Mechanical and tightly scoped work         |
 | **economy-repository-analyst**      | `openai/gpt-5.6-luna-fast` | `xhigh`   | Read-only repository analysis              |
 
-The economy workers use GPT-5.6 Luna Fast to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. OpenAI documents Fast mode as 1.5× model speed at 2.5× credit consumption for GPT-5.6; API-key authentication uses API Fast pricing instead. Luna supports image input, but visual product judgment and acceptance review still belong with the Visual Engineer or UI/UX Analyst.
+The economy workers use GPT-5.6 Luna Fast to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. OpenAI documents Fast mode as 1.5× model speed at 2.5× credit consumption for GPT-5.6; API-key authentication uses API Fast pricing instead. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
-#### Shared UI specialists
+#### Flash tier
 
-| Agent               | Model                 | Reasoning | Responsibility                                                                    |
-| ------------------- | --------------------- | --------- | --------------------------------------------------------------------------------- |
-| **visual-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | UI implementation, image/PDF inspection, video frame analysis, browser validation |
-| **ui-ux-analyst**   | `opencode/kimi-k3`    | `max`     | UI/UX consultation, planning, validation, and frontend review; no product code    |
+| Agent                             | Model                        | Reasoning | Responsibility                       |
+| --------------------------------- | ---------------------------- | --------- | ------------------------------------ |
+| **flash-orchestrator**            | `openai/gpt-5.6-sol`         | `xhigh`   | Sol coordinator for the Flash family |
+| **flash-implementation-engineer** | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek implementation       |
+| **flash-bounded-worker**          | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek mechanical work      |
+| **flash-repository-analyst**      | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek read-only analysis   |
+| **flash-vision-scout**            | `openai/gpt-5.6-luna-fast`   | `xhigh`   | Factual local visual inspection only |
+
+Flash workers use `deepseek/deepseek-v4-flash` through the direct DeepSeek provider with the `max` reasoning variant. Direct DeepSeek V4 Flash remains the sole coding and implementation owner, including frontend work and browser validation. Luna Fast is used only by `flash-vision-scout` for factual inspection of exact supplied local images, screenshots, PDFs, and video frames; it never owns implementation, product judgment, or design decisions. The scout is exclusive to the direct DeepSeek Flash family. The Flash orchestrator uses the existing Principal Engineer, UI/UX Analyst, and PR Review Adjudicator for their narrow specialist triggers.
+
+#### Shared UI specialist
+
+| Agent             | Model              | Reasoning | Responsibility                                                                 |
+| ----------------- | ------------------ | --------- | ------------------------------------------------------------------------------ |
+| **ui-ux-analyst** | `opencode/kimi-k3` | `max`     | UI/UX consultation, planning, validation, and frontend review; no product code |
 
 Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
 
 #### PR review pipeline
 
-| Agent                              | Mode     | Model                      | Reasoning | Responsibility                                     |
-| ---------------------------------- | -------- | -------------------------- | --------- | -------------------------------------------------- |
-| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`       | `xhigh`   | Premium single and batch PR-review coordination    |
-| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-terra`     | `xhigh`   | Economy single and batch PR-review coordination    |
-| **pr-reviewer**                    | subagent | `openai/gpt-5.6-terra`     | `xhigh`   | Premium target-branch review and findings artifact |
-| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna-fast` | `xhigh`   | Economy target-branch review and findings artifact |
-| **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`       | `xhigh`   | Independent finding validation and user filtering  |
+| Agent                              | Mode     | Model                        | Reasoning | Responsibility                                     |
+| ---------------------------------- | -------- | ---------------------------- | --------- | -------------------------------------------------- |
+| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`         | `xhigh`   | Premium single and batch PR-review coordination    |
+| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-terra`       | `xhigh`   | Economy single and batch PR-review coordination    |
+| **pr-reviewer**                    | subagent | `openai/gpt-5.6-terra`       | `xhigh`   | Premium target-branch review and findings artifact |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna-fast`   | `xhigh`   | Economy target-branch review and findings artifact |
+| **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4-flash` | `max`     | Flash target-branch review and findings artifact   |
+| **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`         | `xhigh`   | Independent finding validation and user filtering  |
 
-PR reviewers use read-only GitHub operations and never checkout or modify the reviewed source. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
+PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one summary review or set of inline comments, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
 #### YOLO modes
 
-| Agent                     | Command    | Default model        | Reasoning | Worker pool                                            |
-| ------------------------- | ---------- | -------------------- | --------- | ------------------------------------------------------ |
-| **yolo-orchestrator**     | `yolo`     | `openai/gpt-5.6-sol` | `xhigh`   | Premium and economy workers plus shared specialists    |
-| **yolo-eco-orchestrator** | `yolo-eco` | `openai/gpt-5.6-sol` | `xhigh`   | Economy workers plus UI/UX and Principal Engineer only |
+| Agent                       | Command      | Default model        | Reasoning | Worker pool                                            |
+| --------------------------- | ------------ | -------------------- | --------- | ------------------------------------------------------ |
+| **yolo-orchestrator**       | `yolo`       | `openai/gpt-5.6-sol` | `xhigh`   | Premium and economy workers plus shared specialists    |
+| **yolo-eco-orchestrator**   | `yolo-eco`   | `openai/gpt-5.6-sol` | `xhigh`   | Economy workers plus UI/UX and Principal Engineer only |
+| **yolo-flash-orchestrator** | `yolo-flash` | `openai/gpt-5.6-sol` | `xhigh`   | Flash workers, vision scout, UI/UX, and Principal only |
 
 Launch the desired mode from the project it should own:
 
 ```bash
 yolo
 yolo-eco
+yolo-flash
 ```
 
 Pass a project path or model override when needed:
@@ -129,18 +143,23 @@ Pass a project path or model override when needed:
 ```bash
 yolo /path/to/project
 yolo-eco /path/to/project
+yolo-flash /path/to/project
 yolo --model openai/gpt-5.6-terra --variant xhigh
 ```
 
-`~/.local/bin/yolo` and `~/.local/bin/yolo-eco` point to versioned launchers in this repository. Both inject `profiles/yolo.json` as the final process-wide configuration layer and enable OpenCode's `--auto` mode. Subagents do not inherit the parent's permissions; the injected profile applies the shared workspace and remote-action boundaries to every descendant while each worker retains its own role-specific denials. Permission requests are automatically approved unless explicitly denied.
+The versioned `opencode-yolo`, `yolo`, `yolo-eco`, and `yolo-flash` launchers inject `profiles/yolo.json` as a late merged process-wide layer and enable OpenCode's `--auto` mode. Per-agent permissions still apply afterward. The profile allows routine work, marks consequential command patterns as `ask`, and reserves hard `deny` for raw token-display commands only; `--auto` approves those asks.
 
-Both primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, visual interpretation when needed, integration, conflict repair, final verification, and cleanup. `yolo-eco` technically prevents premium implementation, bounded, repository, and visual workers from being invoked.
+All YOLO primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, integration, conflict repair, final verification, and cleanup. The selected implementation engineer owns frontend work and browser validation. `yolo-eco` prevents premium implementation, bounded, and repository workers; `yolo-flash` prevents premium and Luna coding workers, with `flash-vision-scout` as the sole Luna Fast factual-vision exception.
 
-YOLO mode allows autonomous local edits, dependency installation, downloads, project containers, local Git history operations, tests, formatting, linting, type checks, builds, browser verification, repair loops, and cleanup. It explicitly denies outside-worktree access, privileged commands, Git pushes and GitHub writes, remote shell and file transfer, cloud and deployment CLIs, infrastructure application or destruction, publishing, and system package managers. A denied action is blocked rather than presented for confirmation.
+YOLO mode authorizes routine local edits, dependency installation, downloads, project containers, local Git history operations, tests, formatting, linting, type checks, builds, browser verification, repair loops, and cleanup. Outside-worktree access, privileged commands, Git pushes and GitHub writes, remote shell and file transfer, cloud and deployment CLIs, infrastructure or data mutation, publishing, system package tools, and destructive cleanup are consequential `ask` gates when the profile is used without `--auto`.
 
-This is a permission boundary, not an operating-system sandbox: arbitrary project scripts and package lifecycle hooks can still execute with the OpenCode process's user privileges. Use it only for trusted repositories or run OpenCode in a disposable container or VM with only the project mounted.
+An explicit user instruction in the current YOLO session authorizes its named outside-worktree, remote, publish, deploy, system-tool, infrastructure, data-mutation, or destructive action without a config restart or repeated confirmation. If a destructive target or scope is ambiguous, YOLO asks once before acting. It never retrieves, prints, copies, or exposes raw credentials or secrets; configured credentials may be used opaquely.
+
+This is a permission boundary, not an operating-system sandbox: arbitrary project scripts and package lifecycle hooks can still execute with the OpenCode process's user privileges. Use least-privileged credentials and only trusted repositories, or run OpenCode in a disposable container or VM with only the project mounted.
 
 The Orchestrator may recommend skills in a mission when a particular constraint matters. Each worker still inspects the task and repository instructions and makes the final skill selection.
+
+Every delegation-capable primary must send a self-contained mission packet rather than a short task summary. The packet preserves the exact governing user request, verified repository context, decisions, ownership and protected areas, authoritative artifact paths, acceptance criteria, material risks, proportionate validation, cleanup, and report shape. Manual review or no automated test may be the correct validation choice; missions must not invent test work or broad command runs to fill the packet. Repair and dependent missions also carry predecessor evidence and the reason the prior result was rejected, so workers are never expected to know another agent's chat.
 
 ### Agent Selection Flow
 
@@ -148,17 +167,23 @@ The Orchestrator may recommend skills in a mission when a particular constraint 
 flowchart TD
     A[User selects primary] --> T[Premium Orchestrator]
     A --> E[Economy Orchestrator]
+    A --> F[Flash Orchestrator]
     T --> P[Premium workers]
-    T --> C[Economy workers]
+    T --> C[Luna Fast economy workers]
     E --> C
+    F --> D[Direct DeepSeek workers]
+    F --> N[Luna Fast vision scout]
     T --> S[Shared specialists]
     E --> S
+    F --> S
     P --> V[Primary integrates and validates]
     C --> V
+    D --> V
+    N --> V
     S --> V
 ```
 
-The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer, Visual Engineer, or UI/UX Analyst when their narrow escalation trigger applies. The premium Implementation Engineer may launch either Bounded Worker; the Economy Implementation Engineer may launch only the Economy Bounded Worker. Every other coding worker is denied subagent access, and depth 2 prevents delegation below a Bounded Worker.
+The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the Luna Fast scout for cheap factual visual evidence. Every implementation engineer owns its frontend work and browser validation. The Flash Implementation Engineer's only coding delegate is Flash Bounded Worker, while the scout may inspect exact supplied assets only. The premium Implementation Engineer may launch either Bounded Worker; the Economy Implementation Engineer may launch only the Economy Bounded Worker. Every other coding worker is denied subagent access, and depth 2 prevents delegation below a Bounded Worker.
 
 To make the economy tier the default only in a high-consumption project, add this project-local configuration:
 
@@ -173,41 +198,56 @@ To make the economy tier the default only in a high-consumption project, add thi
 
 ## Skills Inventory
 
-Skills are the heart of this system. Each skill is a router that points to focused leaf documents.
+Skills are the heart of this system. Task skills are routers that point to focused leaf documents; role-contract skills are complete single-file contracts.
+
+### Role-contract skills
+
+Role-contract skills are complete behavioral contracts, not routers and not security boundaries. Each matching agent wrapper explicitly loads its contract before inspection, planning, delegation, editing, or review; the wrapper retains the explicit tool and task permissions plus its concrete family routing.
+
+| Skill                                | Required by                                 |
+| ------------------------------------ | ------------------------------------------- |
+| **orchestrator-contract**            | Normal, economy, and Flash orchestrators    |
+| **yolo-orchestrator-contract**       | All YOLO orchestrators                      |
+| **implementation-engineer-contract** | Premium, economy, and Flash implementers    |
+| **bounded-worker-contract**          | Premium, economy, and Flash bounded workers |
+| **repository-analyst-contract**      | Premium, economy, and Flash analysts        |
+| **vision-scout-contract**            | Flash vision scout                          |
+| **pr-reviewer-contract**             | Premium, economy, and Flash PR reviewers    |
+| **pr-review-orchestrator-contract**  | Premium and economy PR-review primaries     |
 
 ### Language Skills
 
-| Skill          | Description                   | Leaf Docs                                                                                                                                                                                           |
-| -------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ruby**       | Ruby 3.x conventions          | style-and-idioms, objects-and-design, errors-and-results, tooling-and-quality, documentation-and-comments                                                                                           |
-| **python**     | Python 3.12+ strict typing    | project-structure, types-and-boundaries, errors-and-results, async-and-concurrency, http-clients-and-retries, tooling-and-quality, documentation-and-comments, recipes-cli-tool, recipes-agent-tool |
-| **typescript** | TypeScript 5.x strict mode    | Complete conventions in single file                                                                                                                                                                 |
-| **javascript** | JavaScript ES2022+ with JSDoc | Complete conventions in single file                                                                                                                                                                 |
-| **go**         | Go 1.22+ idioms               | Complete conventions in single file                                                                                                                                                                 |
-| **rust**       | Rust 2024 Edition             | Complete conventions in single file                                                                                                                                                                 |
-| **swift**      | Swift 5.9+ iOS/macOS          | swift-core, swift-testing, swift-config                                                                                                                                                             |
-| **kotlin**     | Kotlin 2.0+ Android/JVM       | kotlin-core, kotlin-testing, kotlin-config                                                                                                                                                          |
-| **dart**       | Dart 3.x null safety          | project-structure, tooling-and-quality, null-safety-and-types, async-and-streams, errors-and-results, testing                                                                                       |
+| Skill          | Description                       | Leaf Docs                                                                                                                                                                                           |
+| -------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ruby**       | Ruby 3.x conventions              | style-and-idioms, objects-and-design, errors-and-results, tooling-and-quality, documentation-and-comments                                                                                           |
+| **python**     | Python 3.12+ strict typing        | project-structure, types-and-boundaries, errors-and-results, async-and-concurrency, http-clients-and-retries, tooling-and-quality, documentation-and-comments, recipes-cli-tool, recipes-agent-tool |
+| **typescript** | TypeScript module and type design | module-structure, language-patterns, testing and documentation routes                                                                                                                               |
+| **javascript** | JavaScript ES2022+ with JSDoc     | language-patterns, documentation-and-comments, module-structure and testing routes                                                                                                                  |
+| **go**         | Go 1.22+ idioms                   | Complete conventions in single file                                                                                                                                                                 |
+| **rust**       | Rust 2024 Edition                 | Complete conventions in single file                                                                                                                                                                 |
+| **swift**      | Swift 5.9+ iOS/macOS              | swift-core, swift-testing, swift-config                                                                                                                                                             |
+| **kotlin**     | Kotlin 2.0+ Android/JVM           | kotlin-core, kotlin-testing, kotlin-config                                                                                                                                                          |
+| **dart**       | Dart 3.x null safety              | project-structure, tooling-and-quality, null-safety-and-types, async-and-streams, errors-and-results, testing                                                                                       |
 
 ### Framework Skills
 
-| Skill            | Description               | Leaf Docs                                                                                                                                                                                                                                                                                                                                                                     |
-| ---------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **rails**        | Rails 7.x/8.x thin MVC    | thin-mvc-architecture, model-concerns, controller-concerns, service-and-query-objects, form-objects, pundit-policies, callbacks-policy, jobs-and-idempotency, migrations-and-backfills, documentation-and-comments                                                                                                                                                            |
-| **nextjs**       | App Router + RSC          | architecture, auth-and-sessions, middleware-and-route-handlers, validation-and-forms, error-and-loading-boundaries, atomic-components, component-folder-structure, app-router-and-rsc-boundaries, data-fetching-cache-and-revalidation, server-actions-and-mutations, recipes-protected-routes, recipes-server-action-form                                                    |
-| **react**        | React 18/19 + TypeScript  | Complete conventions in single file                                                                                                                                                                                                                                                                                                                                           |
-| **fastapi**      | FastAPI + Pydantic        | Complete conventions in single file                                                                                                                                                                                                                                                                                                                                           |
-| **flutter**      | Flutter iOS/Android       | project-structure, state-management, navigation-and-routing, widgets-layout-and-theming, platform-ux-ios-android, accessibility, performance, animations-and-motion, native-integration-and-permissions, testing, recipes-new-screen-flow, recipes-form-validation                                                                                                            |
-| **react-native** | RN iOS/Android            | project-structure, platform-differences, ui-ux-and-design-system, accessibility, navigation, performance, animations-and-gestures, native-modules-and-bridging, testing, recipes-new-screen-flow                                                                                                                                                                              |
-| **expo**         | Expo managed + dev client | expo-router, app-config-and-secrets, eas-build-and-dev-client, permissions-and-capabilities, updates-and-channels, assets-fonts-and-splash, push-notifications, native-modules-and-prebuild, debugging-and-devtools, recipes-protected-route, recipes-add-native-dependency                                                                                                   |
-| **capacitor**    | Hybrid apps iOS/Android   | project-structure, config-and-environments, native-platforms-ios-android, plugins-and-bridging, permissions-and-privacy, storage-and-secrets, networking-and-auth, deeplinks-and-app-links, push-notifications, performance-and-webview, debugging-and-devtools, builds-and-release, testing, recipes-add-capacitor-to-web-app, recipes-add-plugin, recipes-release-checklist |
-| **ionic**        | Ionic React/Angular/Vue   | framework-flavors, project-structure, routing-and-navigation, ui-components-and-patterns, forms-and-validation, state-and-data, design-system, accessibility, performance, capacitor-integration, testing, recipes-new-screen-flow, recipes-design-system-starter                                                                                                             |
+| Skill            | Description                                                                                                     | Leaf Docs                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **rails**        | Rails conventions, uniform application services and Data contracts, safe persistence, API/collection boundaries | conventional-rails, application-services-and-results, api-contracts-and-responses, collection-search-and-pagination, form-objects, authorization-and-pundit, model-concerns, controller-concerns, callbacks-policy, jobs-and-idempotency, migrations-and-backfills, hotwire-and-browser-behavior, zeitwerk-and-project-structure, documentation-and-comments                  |
+| **nextjs**       | App Router + RSC                                                                                                | architecture, auth-and-sessions, middleware-and-route-handlers, validation-and-forms, error-and-loading-boundaries, atomic-components, component-folder-structure, app-router-and-rsc-boundaries, data-fetching-cache-and-revalidation, server-actions-and-mutations, recipes-protected-routes, recipes-server-action-form                                                    |
+| **react**        | React 18/19                                                                                                     | state-and-effects, component-design-and-performance, module-structure and testing routes                                                                                                                                                                                                                                                                                      |
+| **fastapi**      | FastAPI + Pydantic                                                                                              | Complete conventions in single file                                                                                                                                                                                                                                                                                                                                           |
+| **flutter**      | Flutter iOS/Android                                                                                             | project-structure, state-management, navigation-and-routing, widgets-layout-and-theming, platform-ux-ios-android, accessibility, performance, animations-and-motion, native-integration-and-permissions, testing, recipes-new-screen-flow, recipes-form-validation                                                                                                            |
+| **react-native** | RN iOS/Android                                                                                                  | project-structure, platform-differences, ui-ux-and-design-system, accessibility, navigation, performance, animations-and-gestures, native-modules-and-bridging, testing, recipes-new-screen-flow                                                                                                                                                                              |
+| **expo**         | Expo managed + dev client                                                                                       | expo-router, app-config-and-secrets, eas-build-and-dev-client, permissions-and-capabilities, updates-and-channels, assets-fonts-and-splash, push-notifications, native-modules-and-prebuild, debugging-and-devtools, recipes-protected-route, recipes-add-native-dependency                                                                                                   |
+| **capacitor**    | Hybrid apps iOS/Android                                                                                         | project-structure, config-and-environments, native-platforms-ios-android, plugins-and-bridging, permissions-and-privacy, storage-and-secrets, networking-and-auth, deeplinks-and-app-links, push-notifications, performance-and-webview, debugging-and-devtools, builds-and-release, testing, recipes-add-capacitor-to-web-app, recipes-add-plugin, recipes-release-checklist |
+| **ionic**        | Ionic React/Angular/Vue                                                                                         | framework-flavors, project-structure, routing-and-navigation, ui-components-and-patterns, forms-and-validation, state-and-data, design-system, accessibility, performance, capacitor-integration, testing, recipes-new-screen-flow, recipes-design-system-starter                                                                                                             |
 
 ### Cross-Cutting Skills
 
 | Skill                 | Description                  | Leaf Docs                                                                                                                                                                                                                                                                                                        |
 | --------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **testing**           | TDD operating manual         | tdd-workflow, fixtures-and-test-data, test-doubles-and-mocking-discipline, e2e-playwright, ci-reliability-and-flake-control, contract-testing, property-based-testing, recipes-bug-fix, recipes-playwright-e2e, documentation-and-comments, node-nextjs, typescript, python, ruby-rails, go, rust, swift, kotlin |
+| **testing**           | Risk-based testing router    | tdd-workflow, fixtures-and-test-data, test-doubles-and-mocking-discipline, e2e-playwright, ci-reliability-and-flake-control, contract-testing, property-based-testing, recipes-bug-fix, recipes-playwright-e2e, documentation-and-comments, node-nextjs, typescript, python, ruby-rails, go, rust, swift, kotlin |
 | **security**          | Security checklist           | input-validation, secrets-and-logging, web-threats-csrf-xss, ssrf-and-outbound-http, file-uploads, dependency-hygiene, recipes-webhook-verification                                                                                                                                                              |
 | **database**          | DB patterns                  | migrations-and-backfills, indexes-and-query-patterns, transactions-and-consistency, query-performance-and-n-plus-1, recipes-online-migration                                                                                                                                                                     |
 | **api**               | REST/OpenAPI design          | errors-and-response-shapes, pagination-filtering-sorting, versioning-and-deprecation, openapi-and-examples, idempotency-and-retries, recipes-new-endpoint                                                                                                                                                        |
@@ -236,7 +276,7 @@ Skills are the heart of this system. Each skill is a router that points to focus
 
 ### Router-First Architecture
 
-Every skill follows a consistent router-first pattern:
+Every task skill follows a consistent router-first pattern:
 
 ```
 skills/<name>/
@@ -298,11 +338,11 @@ Every leaf document must include:
 
 ## Common patterns
 
-- Reusable approaches
+- Conditional decision rules, not default libraries or folder ceremony
 
 ## Minimal examples
 
-- 1-3 canonical code examples
+- One canonical good example and, when useful, one contrasting bad example
 
 ## Anti-patterns
 
@@ -310,7 +350,7 @@ Every leaf document must include:
 
 ## Checklist
 
-- Copy-ready verification steps
+- Short decision checklist; no ritual test or command matrix
 
 ## References
 
@@ -319,11 +359,13 @@ Every leaf document must include:
 
 ### Why This Structure Works
 
-1. **Precise Loading** - Agents load only the 1-2 leaf docs needed, not entire skill trees
+1. **Precise Loading** - Agents load only the 1-2 leaf docs needed, not entire task-skill trees
 2. **Consistent Format** - Every doc has the same sections, making them predictable
 3. **Decision-Oriented** - "When to load / When NOT to load" prevents context bloat
-4. **Example-Rich** - Minimal examples give models concrete templates to follow
+4. **Model-Aware Detail** - Routers give strong models concise boundaries; on-demand leaves give lower-cost workers concrete decisions and examples
 5. **Cross-References** - Routing tables link related skills for complete coverage
+
+Use `MUST` only for safety, correctness, public contracts, and framework requirements. Use conditional `SHOULD` defaults for engineering judgment and `MAY` for optional techniques. Remove preference-only syntax rules instead of turning them into policy.
 
 ### Skill Loading Protocol
 
@@ -532,11 +574,12 @@ Cleanup is mandatory for successful, failed, and partial work. The Orchestrator 
 
 ```
 1. Load: rails/SKILL.md
-2. Load: rails/thin-mvc-architecture.md + rails/service-and-query-objects.md
-3. Load: api/SKILL.md + api/recipes-new-endpoint.md
-4. Load: testing/SKILL.md + testing/ruby-rails.md
-5. Load: database/SKILL.md (if DB changes)
-6. The Orchestrator executes or delegates the implementation
+2. Load: rails/conventional-rails.md + rails/api-contracts-and-responses.md
+3. Load: rails/collection-search-and-pagination.md when the endpoint lists/searches; otherwise load the narrow Rails leaf for the demonstrated boundary
+4. Load: api/SKILL.md + api/recipes-new-endpoint.md
+5. Load: testing/SKILL.md + testing/ruby-rails.md when behavior changes
+6. Load: database/SKILL.md (if DB changes)
+7. The Orchestrator executes or delegates the implementation
 ```
 
 **Python CLI Tool:**
@@ -584,7 +627,7 @@ The `project` skill should capture:
 - **Structure** - Where features live (e.g., `src/features/`, `app/`)
 - **Commands** - How to format, lint, test, build (copy-pasteable)
 - **Boundaries** - Architecture rules specific to this repo
-- **Testing** - Test commands and coverage expectations
+- **Testing** - Test commands and risk-based verification expectations
 - **Security** - Any repo-specific security notes
 
 ### SkillGuard Plugin
@@ -643,23 +686,24 @@ npx prettier --check .
 Benchmarks are regression tests for skills:
 
 ```markdown
-Prompt: "Refactor this fat Rails controller action into a service object"
+Prompt: "Implement this demonstrated Rails multi-record workflow with a transaction and external handoff"
 Expected loads:
 
 - skills/rails/SKILL.md
-- skills/rails/service-and-query-objects.md
-- skills/testing/ruby-rails.md
+- skills/rails/application-services-and-results.md
+- skills/rails/api-contracts-and-responses.md
   Expected traits:
-- Controller stays orchestration-only
-- Service uses Result contract
-- Tests cover success + failure paths
+- Application service is used only for the demonstrated multi-record, transaction, or external workflow
+- Ruby 3.2+ Data Success/Failure contracts preserve error hashes with field/base arrays
+- API responses use the uniform success/failure envelopes and collection wrapper when relevant
+- One proportionate deterministic check proves a material risk
 ```
 
 ---
 
 ## Contributing
 
-### Adding a New Skill
+### Adding a New Task Skill
 
 1. **Create the directory:**
 
@@ -691,9 +735,11 @@ Expected loads:
    python3 scripts/skills_lint.py
    ```
 
-### Skill Authoring Principles
+Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md` contains the complete mandatory role behavior so it remains available to constrained modes such as YOLO.
 
-1. **Router-first** - Every skill must have a routing table
+### Task-Skill Authoring Principles
+
+1. **Router-first** - Every task skill must have a routing table
 2. **Narrow leaves** - One topic per leaf document
 3. **Decision-oriented** - "When to load / When NOT to load"
 4. **Example-rich** - 1-3 canonical code examples per leaf
@@ -716,21 +762,35 @@ Expected loads:
 │   ├── economy-orchestrator.md
 │   ├── yolo-orchestrator.md
 │   ├── yolo-eco-orchestrator.md
+│   ├── yolo-flash-orchestrator.md
+│   ├── flash-orchestrator.md
 │   ├── pr-review-orchestrator.md
 │   ├── economy-pr-review-orchestrator.md
 │   ├── pr-reviewer.md
 │   ├── economy-pr-reviewer.md
+│   ├── flash-pr-reviewer.md
 │   ├── pr-review-adjudicator.md
 │   ├── principal-engineer.md
 │   ├── implementation-engineer.md
 │   ├── economy-implementation-engineer.md
+│   ├── flash-implementation-engineer.md
 │   ├── bounded-worker.md
 │   ├── economy-bounded-worker.md
+│   ├── flash-bounded-worker.md
 │   ├── repository-analyst.md
 │   ├── economy-repository-analyst.md
-│   ├── visual-engineer.md
+│   ├── flash-repository-analyst.md
+│   ├── flash-vision-scout.md
 │   └── ui-ux-analyst.md
 ├── skills/                  # Skill library
+│   ├── orchestrator-contract/
+│   ├── yolo-orchestrator-contract/
+│   ├── implementation-engineer-contract/
+│   ├── bounded-worker-contract/
+│   ├── repository-analyst-contract/
+│   ├── vision-scout-contract/
+│   ├── pr-reviewer-contract/
+│   ├── pr-review-orchestrator-contract/
 │   ├── ruby/
 │   ├── rails/
 │   ├── python/
@@ -748,6 +808,7 @@ Expected loads:
 │   ├── benchmarks_lint.py
 │   ├── yolo                 # Full-stack YOLO launcher
 │   ├── yolo-eco             # Economy-worker YOLO launcher
+│   ├── yolo-flash           # Flash-worker YOLO launcher
 │   └── opencode-yolo        # Backward-compatible full-stack alias
 └── templates/               # Project templates
     ├── project-local-skills/
@@ -769,7 +830,7 @@ Expected loads:
 This OpenCode configuration provides:
 
 - **35+ specialized skills** with router-first architecture
-- **Premium and economy coding tiers with shared specialist workers**
+- **Premium, Luna Fast economy, and direct DeepSeek families with shared specialists**
 - **25+ commands** for common workflows
 - **Project-local support** for team conventions
 - **Guardrails and linting** for quality assurance

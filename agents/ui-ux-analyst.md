@@ -44,7 +44,7 @@ Use this agent for:
 - Ambiguous product flows or interaction models
 - High-impact visual changes where design direction affects multiple surfaces
 
-Do not use this agent to implement code or for isolated styling bugs, minor copy changes, and other trivial frontend edits that need no design judgment. Direct implementation and routine visual fixes belong to the Visual Engineer or an Implementation Engineer.
+Do not use this agent to implement code or for isolated styling bugs, minor copy changes, and other trivial frontend edits that need no design judgment. Direct implementation, routine visual fixes, and browser validation belong to the active Implementation Engineer.
 
 ## Required Guidance
 

@@ -1,8 +1,8 @@
 ---
-description: Premium read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
+description: Direct DeepSeek read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
 mode: subagent
-model: openai/gpt-5.6-terra
-variant: xhigh
+model: deepseek/deepseek-v4-flash
+variant: max
 permission:
   read:
     ".pr-reviews/*.md": allow
@@ -32,8 +32,8 @@ permission:
     "mkdir -p .pr-reviews": allow
 ---
 
-# PR Reviewer
+# Flash PR Reviewer
 
 Load `pr-reviewer-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-This is the premium reviewer tier for nuanced, large, cross-layer, or costly-to-miss pull requests.
+This is the direct DeepSeek reviewer tier for clear, well-bounded pull requests.

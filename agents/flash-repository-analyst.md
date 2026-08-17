@@ -1,8 +1,8 @@
 ---
-description: Low-cost read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: Direct DeepSeek read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: openai/gpt-5.6-luna-fast
-variant: xhigh
+model: deepseek/deepseek-v4-flash
+variant: max
 permission:
   edit: deny
   write: deny
@@ -17,6 +17,6 @@ permission:
     "rg*": allow
 ---
 
-# Economy Repository Analyst
+# Flash Repository Analyst
 
 Load `repository-analyst-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.

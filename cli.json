@@ -1,0 +1,31 @@
+{
+  "theme": {
+    "name": "tokyonight",
+    "mode": "dark"
+  },
+  "scroll": {
+    "acceleration": true
+  },
+  "diffs": {
+    "wrap": "word"
+  },
+  "terminal": {
+    "title": false
+  },
+  "session": {
+    "sidebar": "auto",
+    "scrollbar": true,
+    "thinking": "hide",
+    "new_location": "launch"
+  },
+  "animations": true,
+  "tabs": {
+    "layout": "horizontal"
+  },
+  "prompt": {
+    "image_preview": true
+  },
+  "leader": {
+    "timeout": 3000
+  }
+}

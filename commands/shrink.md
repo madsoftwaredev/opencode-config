@@ -1,17 +1,19 @@
 ---
-description: Shrink a file to under 250 lines
+description: Review a large file for meaningful ownership boundaries
 ---
 
-This file is too long. Shrink it to under 250 lines:
+Review this file and simplify or split it only where a meaningful ownership,
+responsibility, or reuse boundary exists:
 
 $ARGUMENTS
 
 Strategies:
 
-1. Extract classes/modules to separate files
-2. Extract repeated logic to shared utilities
-3. Remove dead code
-4. Simplify complex methods
-5. Use language idioms to be more concise
+1. Identify distinct responsibilities and their real owners
+2. Extract only cohesive classes/modules with clear boundaries
+3. Remove dead code and simplify confusing control flow
+4. Remove duplication only when copies change for the same reason
+5. Keep cohesive code together even when the file remains large
 
-Maintain all functionality. Run tests after each extraction.
+Maintain all behavior. Do not create utilities, services, or fragments merely to
+reduce line count. Run proportionate checks for the affected boundaries.

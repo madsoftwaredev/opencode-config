@@ -18,3 +18,4 @@ Expected traits:
 - Server Action returns typed ok/error result.
 - Invalidation uses tags aligned with reads.
 - Client component is a small island and does not fetch directly.
+- Smallest meaningful deterministic test proves a material mutation risk.

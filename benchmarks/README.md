@@ -6,7 +6,7 @@ Each benchmark should specify:
 
 - Prompt (what a developer asks)
 - Expected skill loads (router + 1-2 leaves)
-- Expected output traits (structure + tests + contracts)
+- Expected output traits (structure + proportionate verification + contracts)
 
 See `skills/skill-authoring/benchmarks.md` for the benchmark format.
 
