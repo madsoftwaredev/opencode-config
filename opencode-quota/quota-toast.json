@@ -1,0 +1,15 @@
+{
+  "enabledProviders": "auto",
+  "tuiCommandDisplay": "inline",
+  "tuiSidebarPanel": {
+    "enabled": false
+  },
+  "enableToast": false,
+  "tuiCompactStatus": {
+    "enabled": true
+  },
+  "maintainerAnnouncements": {
+    "enabled": true,
+    "home": true
+  }
+}

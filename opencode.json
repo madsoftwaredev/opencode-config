@@ -15,10 +15,6 @@
       "command": ["npx", "eslint", "--fix", "$FILE"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".mts", ".cts"]
     },
-    "gofmt": {
-      "command": ["gofmt", "-w", "$FILE"],
-      "extensions": [".go"]
-    },
     "prettier": {
       "command": ["npx", "prettier", "--write", "$FILE"],
       "extensions": [".json", ".md", ".yml", ".yaml", ".css", ".scss"]
@@ -26,14 +22,6 @@
     "rubocop": {
       "command": ["bundle", "exec", "rubocop", "-a", "$FILE"],
       "extensions": [".rb", ".rake", ".gemspec", ".ru"]
-    },
-    "ruff": {
-      "command": ["bash", "-lc", "ruff check --fix \"$FILE\" && ruff format \"$FILE\""],
-      "extensions": [".py", ".pyi"]
-    },
-    "rustfmt": {
-      "command": ["rustfmt", "$FILE"],
-      "extensions": [".rs"]
     }
   },
   "instructions": [
@@ -42,7 +30,6 @@
     "instructions/testing.md",
     "instructions/security.md",
     "instructions/git.md",
-    "instructions/api.md",
     "instructions/database.md",
     "plugin/shell-strategy/shell_strategy.md"
   ],
@@ -157,10 +144,20 @@
     }
   },
   "plugin": [
-    "@ex-machina/opencode-anthropic-auth",
     "opencode-dynamic-context-pruning",
+    "@simonwjackson/opencode-direnv",
+    "btw-opencode",
     "@nick-vi/opencode-type-inject",
-    "opencode-mem"
+    "opencode-mem",
+    [
+      "@plannotator/opencode@0.27.4",
+      {
+        "workflow": "manual"
+      }
+    ],
+    "opencode-zellij-namer@1.1.3",
+    "@slkiser/opencode-quota@4.8.2",
+    "opencode-websearch-cited@1.2.0"
   ],
   "share": "manual",
   "shell": "zsh",
@@ -187,5 +184,14 @@
       "**/android/build/**",
       "**/android/app/build/**"
     ]
+  },
+  "provider": {
+    "copilot": {},
+    "openai": {},
+    "openrouter": {},
+    "zai": {},
+    "deepseek": {},
+    "opencode-go": {},
+    "ollama-cloud": {}
   }
 }

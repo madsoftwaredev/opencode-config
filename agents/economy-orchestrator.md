@@ -1,7 +1,7 @@
 ---
 description: Vision-capable, delegation-default coding orchestrator that assigns nearly all substantive work to economy workers and uses premium specialists only for hard cases
 mode: primary
-model: openai/gpt-5.6-terra
+model: openai/gpt-5.6-sol
 variant: xhigh
 color: "#14B8A6"
 permission:

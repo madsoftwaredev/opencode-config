@@ -1,7 +1,7 @@
 ---
-description: Low-cost read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: Fast low-cost Luna read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: openai/gpt-5.6-luna
+model: openai/gpt-5.6-luna-fast
 variant: max
 permission:
   edit: deny
@@ -17,6 +17,6 @@ permission:
     "rg*": allow
 ---
 
-# Economy Repository Analyst
+# Eco Fast Repository Analyst
 
 Load `repository-analyst-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.

@@ -30,5 +30,6 @@ Focus on:
 8. Concurrency/idempotency - duplicate writes, retry safety, race-prone flows?
 9. API and migration safety - contract drift, unsafe schema/data rollout?
 10. File length - only flag it when changed code creates a specific maintainability risk.
+11. Human readability - can a maintainer readily understand the intent, control flow, state changes, and failure paths without decoding cleverness or chasing unnecessary indirection?
 
 Provide specific, actionable feedback with file and line references. If there are no high-confidence findings, say that directly.

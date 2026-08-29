@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eu
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+profile=${OPENCODE_YOLO_CONFIG:-"$config_home/opencode/profiles/yolo.json"}
+export OPENCODE_CONFIG_CONTENT="$(cat "$profile")"
+
+exec opencode --auto --agent yolo-eco-fast-orchestrator "$@"

@@ -28,12 +28,8 @@ MD_CODE_SPAN_RE = re.compile(r"`([^`\n]+?\.md)`")
 
 
 V2_SKILLS = {
-    "api",
-    "auth",
     "capacitor",
-    "database",
     "devops",
-    "dart",
     "flutter",
     "expo",
     "git",
@@ -42,7 +38,6 @@ V2_SKILLS = {
     "nextjs",
     "observability",
     "performance",
-    "python",
     "rails",
     "react-native",
     "refactoring",

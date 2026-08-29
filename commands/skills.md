@@ -14,7 +14,7 @@ Rules:
 
 Workflow:
 
-1. Identify the stack: language + framework + cross-cutting concerns (`security`, `database`, `devops`).
+1. Identify the stack: language + framework + cross-cutting concerns (`security`, `devops`).
 2. Check for project-local routers: `.opencode/skills/<name>/SKILL.md`.
 3. Load those routers; follow their routing tables.
 4. Load global routers only if local routers don't exist.
@@ -23,6 +23,6 @@ Workflow:
 
 Examples:
 
-- Next.js mutation: load `nextjs` + `testing` (+ `security` if auth/input risk)
-- Rails endpoint: load `rails`; add `api` for public contracts, `database` for schema/query/locking work, and `testing` when a material behavior risk needs test guidance
+- Next.js mutation: load `nextjs` + `testing`; use `nextjs/auth-and-sessions.md` for auth/session work or `nextjs/validation-and-forms.md` for input/form work, and add `security` for web-threat or secret-handling concerns
+- Rails endpoint: load `rails`; use `rails/api-contracts-and-responses.md` for public contracts, `rails/authorization-and-pundit.md` for authorization, `rails/collection-search-and-pagination.md` for query/search work, `rails/migrations-and-backfills.md` for schema or data changes, and `rails/application-services-and-results.md` for transaction workflows; add `testing` when a material behavior risk needs test guidance
 - Capacitor plugin: load `capacitor` + `security` (+ `devops` if CI/build)

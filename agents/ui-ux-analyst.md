@@ -1,8 +1,8 @@
 ---
 description: Vision-capable, read-mostly UI/UX consultant for planning, plan validation, frontend review, redesigns, user flows, design systems, and meaningful visual changes
 mode: subagent
-model: opencode/kimi-k3
-variant: max
+model: openai/gpt-5.6-sol
+variant: xhigh
 permission:
   edit:
     "*": deny

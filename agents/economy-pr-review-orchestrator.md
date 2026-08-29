@@ -1,7 +1,7 @@
 ---
 description: Economy primary agent for coordinating isolated PR reviews, artifacts, adjudication, and authorized GitHub publication
 mode: primary
-model: openai/gpt-5.6-terra
+model: openai/gpt-5.6-sol
 variant: xhigh
 color: "#7C3AED"
 permission:

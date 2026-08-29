@@ -1,7 +1,7 @@
 ---
-description: Economy read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
+description: Fast economy Luna read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
 mode: subagent
-model: openai/gpt-5.6-luna
+model: openai/gpt-5.6-luna-fast
 variant: max
 permission:
   read:
@@ -32,8 +32,8 @@ permission:
     "mkdir -p .pr-reviews": allow
 ---
 
-# Economy PR Reviewer
+# Eco Fast PR Reviewer
 
 Load `pr-reviewer-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-This is the economy reviewer tier for clear, low-risk, well-bounded pull requests.
+This is the fast economy reviewer tier for clear, low-risk, well-bounded pull requests.

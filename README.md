@@ -25,7 +25,7 @@ This repository provides a complete OpenCode configuration system with:
 
 - **35+ specialized skills** covering languages, frameworks, and cross-cutting concerns
 - **Router-first architecture** for precise, minimal context loading
-- **Premium, Luna Fast economy, and direct DeepSeek coding families with shared specialist workers**
+- **Premium, Luna economy, and direct DeepSeek coding families with shared specialist workers**
 - **Isolated premium and economy PR-review pipelines with lossless artifacts**
 - **Opt-in full-lifecycle YOLO mode with soft consequential-action gates**
 - **25+ custom commands** for common workflows
@@ -80,14 +80,14 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 #### Economy tier
 
-| Agent                               | Model                      | Reasoning | Responsibility                             |
-| ----------------------------------- | -------------------------- | --------- | ------------------------------------------ |
-| **economy-orchestrator**            | `openai/gpt-5.6-terra`     | `xhigh`   | Vision-capable, delegation-default primary |
-| **economy-implementation-engineer** | `openai/gpt-5.6-luna-fast` | `xhigh`   | Cost-efficient implementation              |
-| **economy-bounded-worker**          | `openai/gpt-5.6-luna-fast` | `xhigh`   | Mechanical and tightly scoped work         |
-| **economy-repository-analyst**      | `openai/gpt-5.6-luna-fast` | `xhigh`   | Read-only repository analysis              |
+| Agent                               | Model                 | Reasoning | Responsibility                             |
+| ----------------------------------- | --------------------- | --------- | ------------------------------------------ |
+| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `xhigh`   | Vision-capable, delegation-default primary |
+| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | Cost-efficient implementation              |
+| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `xhigh`   | Mechanical and tightly scoped work         |
+| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `xhigh`   | Read-only repository analysis              |
 
-The economy workers use GPT-5.6 Luna Fast to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. OpenAI documents Fast mode as 1.5× model speed at 2.5× credit consumption for GPT-5.6; API-key authentication uses API Fast pricing instead. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
+The economy workers use GPT-5.6 Luna to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
 #### Flash tier
 
@@ -103,11 +103,19 @@ Flash workers use `deepseek/deepseek-v4-flash` through the direct DeepSeek provi
 
 #### Shared UI specialist
 
-| Agent             | Model              | Reasoning | Responsibility                                                                 |
-| ----------------- | ------------------ | --------- | ------------------------------------------------------------------------------ |
-| **ui-ux-analyst** | `opencode/kimi-k3` | `max`     | UI/UX consultation, planning, validation, and frontend review; no product code |
+| Agent             | Model                | Reasoning | Responsibility                                                                 |
+| ----------------- | -------------------- | --------- | ------------------------------------------------------------------------------ |
+| **ui-ux-analyst** | `openai/gpt-5.6-sol` | `xhigh`   | UI/UX consultation, planning, validation, and frontend review; no product code |
 
 Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
+
+#### Architecture primary
+
+| Agent                | Mode    | Model                | Reasoning | Responsibility                                                                          |
+| -------------------- | ------- | -------------------- | --------- | --------------------------------------------------------------------------------------- |
+| **system-architect** | primary | `openai/gpt-5.6-sol` | `xhigh`   | Architecture decisions, reviews, migrations, specialist synthesis, and design artifacts |
+
+The System Architect is Markdown-only and can delegate bounded current-state analysis, consequential technical review, and architecture-relevant UI/UX consultation. It does not implement product code; accepted designs hand off to a coding orchestrator through durable artifacts.
 
 #### PR review pipeline
 
@@ -116,11 +124,11 @@ Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestra
 | **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`         | `xhigh`   | Premium single and batch PR-review coordination    |
 | **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-terra`       | `xhigh`   | Economy single and batch PR-review coordination    |
 | **pr-reviewer**                    | subagent | `openai/gpt-5.6-terra`       | `xhigh`   | Premium target-branch review and findings artifact |
-| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna-fast`   | `xhigh`   | Economy target-branch review and findings artifact |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna`        | `xhigh`   | Economy target-branch review and findings artifact |
 | **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4-flash` | `max`     | Flash target-branch review and findings artifact   |
 | **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`         | `xhigh`   | Independent finding validation and user filtering  |
 
-PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one summary review or set of inline comments, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
+PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is an inline comment on its smallest relevant current-diff line; summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
 #### YOLO modes
 
@@ -169,7 +177,7 @@ flowchart TD
     A --> E[Economy Orchestrator]
     A --> F[Flash Orchestrator]
     T --> P[Premium workers]
-    T --> C[Luna Fast economy workers]
+    T --> C[Luna economy workers]
     E --> C
     F --> D[Direct DeepSeek workers]
     F --> N[Luna Fast vision scout]
@@ -217,17 +225,11 @@ Role-contract skills are complete behavioral contracts, not routers and not secu
 
 ### Language Skills
 
-| Skill          | Description                       | Leaf Docs                                                                                                                                                                                           |
-| -------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ruby**       | Ruby 3.x conventions              | style-and-idioms, objects-and-design, errors-and-results, tooling-and-quality, documentation-and-comments                                                                                           |
-| **python**     | Python 3.12+ strict typing        | project-structure, types-and-boundaries, errors-and-results, async-and-concurrency, http-clients-and-retries, tooling-and-quality, documentation-and-comments, recipes-cli-tool, recipes-agent-tool |
-| **typescript** | TypeScript module and type design | module-structure, language-patterns, testing and documentation routes                                                                                                                               |
-| **javascript** | JavaScript ES2022+ with JSDoc     | language-patterns, documentation-and-comments, module-structure and testing routes                                                                                                                  |
-| **go**         | Go 1.22+ idioms                   | Complete conventions in single file                                                                                                                                                                 |
-| **rust**       | Rust 2024 Edition                 | Complete conventions in single file                                                                                                                                                                 |
-| **swift**      | Swift 5.9+ iOS/macOS              | swift-core, swift-testing, swift-config                                                                                                                                                             |
-| **kotlin**     | Kotlin 2.0+ Android/JVM           | kotlin-core, kotlin-testing, kotlin-config                                                                                                                                                          |
-| **dart**       | Dart 3.x null safety              | project-structure, tooling-and-quality, null-safety-and-types, async-and-streams, errors-and-results, testing                                                                                       |
+| Skill          | Description                       | Leaf Docs                                                                                                 |
+| -------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **ruby**       | Ruby 3.x conventions              | style-and-idioms, objects-and-design, errors-and-results, tooling-and-quality, documentation-and-comments |
+| **typescript** | TypeScript module and type design | module-structure, language-patterns, testing and documentation routes                                     |
+| **javascript** | JavaScript ES2022+ with JSDoc     | language-patterns, documentation-and-comments, module-structure and testing routes                        |
 
 ### Framework Skills
 
@@ -236,7 +238,6 @@ Role-contract skills are complete behavioral contracts, not routers and not secu
 | **rails**        | Rails conventions, uniform application services and Data contracts, safe persistence, API/collection boundaries | conventional-rails, application-services-and-results, api-contracts-and-responses, collection-search-and-pagination, form-objects, authorization-and-pundit, model-concerns, controller-concerns, callbacks-policy, jobs-and-idempotency, migrations-and-backfills, hotwire-and-browser-behavior, zeitwerk-and-project-structure, documentation-and-comments                  |
 | **nextjs**       | App Router + RSC                                                                                                | architecture, auth-and-sessions, middleware-and-route-handlers, validation-and-forms, error-and-loading-boundaries, atomic-components, component-folder-structure, app-router-and-rsc-boundaries, data-fetching-cache-and-revalidation, server-actions-and-mutations, recipes-protected-routes, recipes-server-action-form                                                    |
 | **react**        | React 18/19                                                                                                     | state-and-effects, component-design-and-performance, module-structure and testing routes                                                                                                                                                                                                                                                                                      |
-| **fastapi**      | FastAPI + Pydantic                                                                                              | Complete conventions in single file                                                                                                                                                                                                                                                                                                                                           |
 | **flutter**      | Flutter iOS/Android                                                                                             | project-structure, state-management, navigation-and-routing, widgets-layout-and-theming, platform-ux-ios-android, accessibility, performance, animations-and-motion, native-integration-and-permissions, testing, recipes-new-screen-flow, recipes-form-validation                                                                                                            |
 | **react-native** | RN iOS/Android                                                                                                  | project-structure, platform-differences, ui-ux-and-design-system, accessibility, navigation, performance, animations-and-gestures, native-modules-and-bridging, testing, recipes-new-screen-flow                                                                                                                                                                              |
 | **expo**         | Expo managed + dev client                                                                                       | expo-router, app-config-and-secrets, eas-build-and-dev-client, permissions-and-capabilities, updates-and-channels, assets-fonts-and-splash, push-notifications, native-modules-and-prebuild, debugging-and-devtools, recipes-protected-route, recipes-add-native-dependency                                                                                                   |
@@ -245,30 +246,28 @@ Role-contract skills are complete behavioral contracts, not routers and not secu
 
 ### Cross-Cutting Skills
 
-| Skill                 | Description                  | Leaf Docs                                                                                                                                                                                                                                                                                                        |
-| --------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **testing**           | Risk-based testing router    | tdd-workflow, fixtures-and-test-data, test-doubles-and-mocking-discipline, e2e-playwright, ci-reliability-and-flake-control, contract-testing, property-based-testing, recipes-bug-fix, recipes-playwright-e2e, documentation-and-comments, node-nextjs, typescript, python, ruby-rails, go, rust, swift, kotlin |
-| **security**          | Security checklist           | input-validation, secrets-and-logging, web-threats-csrf-xss, ssrf-and-outbound-http, file-uploads, dependency-hygiene, recipes-webhook-verification                                                                                                                                                              |
-| **database**          | DB patterns                  | migrations-and-backfills, indexes-and-query-patterns, transactions-and-consistency, query-performance-and-n-plus-1, recipes-online-migration                                                                                                                                                                     |
-| **api**               | REST/OpenAPI design          | errors-and-response-shapes, pagination-filtering-sorting, versioning-and-deprecation, openapi-and-examples, idempotency-and-retries, recipes-new-endpoint                                                                                                                                                        |
-| **auth**              | Authentication/authorization | sessions-and-csrf, token-auth, authorization-models, recipes-protect-endpoint                                                                                                                                                                                                                                    |
-| **git**               | Git workflows                | commits, staging-and-hygiene, branching-and-prs, troubleshooting                                                                                                                                                                                                                                                 |
-| **gh**                | GitHub CLI                   | prs, issues, actions, repos, api, recipe-address-pr-comments, recipe-review-others-pr                                                                                                                                                                                                                            |
-| **pr-reviews**        | PR review strategy           | review-strategy, coherence-checklist, review-comments                                                                                                                                                                                                                                                            |
-| **devops**            | CI/CD and infra              | dockerfiles-and-images, ci-pipelines, secrets-in-ci, deploy-strategies, recipes-ci-checks                                                                                                                                                                                                                        |
-| **observability**     | Logs, metrics, tracing       | logging-and-correlation-ids, metrics-and-slos, tracing-and-spans, error-tracking-and-release-health, recipes-debug-prod-issue                                                                                                                                                                                    |
-| **performance**       | Optimization playbooks       | profiling-and-measurement, caching-strategies, latency-budgets-and-p99, backend-hot-paths, recipes-perf-investigation                                                                                                                                                                                            |
-| **refactoring**       | Safe restructuring           | refactor-workflow, extract-boundaries, remove-duplication, naming-and-ownership, recipes-large-refactor                                                                                                                                                                                                          |
-| **incident-response** | Production incidents         | triage-and-mitigation, rollback-and-feature-flags, communication-and-updates, postmortems-and-followups, recipes-incident-template                                                                                                                                                                               |
+| Skill                   | Description                                | Leaf Docs                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **testing**             | Risk-based testing router                  | tdd-workflow, fixtures-and-test-data, test-doubles-and-mocking-discipline, e2e-playwright, ci-reliability-and-flake-control, contract-testing, property-based-testing, recipes-bug-fix, recipes-playwright-e2e, documentation-and-comments, node-nextjs, typescript, ruby-rails, swift, kotlin |
+| **security**            | Security checklist                         | input-validation, secrets-and-logging, web-threats-csrf-xss, ssrf-and-outbound-http, file-uploads, dependency-hygiene, recipes-webhook-verification                                                                                                                                            |
+| **git**                 | Git workflows                              | commits, staging-and-hygiene, branching-and-prs, troubleshooting                                                                                                                                                                                                                               |
+| **gh**                  | GitHub CLI                                 | prs, issues, actions, repos, api, recipe-address-pr-comments, recipe-review-others-pr                                                                                                                                                                                                          |
+| **pr-reviews**          | PR review strategy                         | review-strategy, coherence-checklist, review-comments                                                                                                                                                                                                                                          |
+| **devops**              | CI trust, supply chain, and release safety | containers-and-supply-chain, ci-pipelines, ci-trust-and-secrets, deployment-and-release-safety                                                                                                                                                                                                 |
+| **observability**       | Logs, metrics, tracing                     | logging-and-correlation-ids, metrics-and-slos, tracing-and-spans, error-tracking-and-release-health, recipes-debug-prod-issue                                                                                                                                                                  |
+| **performance**         | Optimization playbooks                     | profiling-and-measurement, caching-strategies, latency-budgets-and-p99, backend-hot-paths, recipes-perf-investigation                                                                                                                                                                          |
+| **architecture-design** | Architecture decisions and evolution       | design-workflow, data-and-coordination, quality-attributes, evolution-and-review, documentation-rules, reusable templates                                                                                                                                                                      |
+| **refactoring**         | Safe restructuring                         | refactor-workflow, extract-boundaries, remove-duplication, naming-and-ownership, recipes-large-refactor                                                                                                                                                                                        |
+| **incident-response**   | Production incidents                       | triage-and-mitigation, rollback-and-feature-flags, communication-and-updates, postmortems-and-followups, recipes-incident-template                                                                                                                                                             |
 
 ### Meta Skills
 
-| Skill               | Description                   | Purpose                                                       |
-| ------------------- | ----------------------------- | ------------------------------------------------------------- |
-| **skill-authoring** | Standards for creating skills | authoring-standard, recipes-standard, benchmarks, skills-lint |
-| **documentation**   | Doc style router              | Routes to language-specific doc formats                       |
-| **system-design**   | Design patterns               | Architecture, data modeling, API design, UX flows, UI specs   |
-| **web-design**      | UI/UX implementation          | Routing table for 100+ components across 8 categories         |
+| Skill               | Description                   | Purpose                                                                              |
+| ------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
+| **skill-authoring** | Standards for creating skills | authoring-standard, recipes-standard, benchmarks, skills-lint                        |
+| **documentation**   | Doc style router              | Routes to language-specific doc formats                                              |
+| **system-design**   | Solution specification        | Detailed data models, API contracts, UX flows, UI specs, and implementation handoffs |
+| **web-design**      | UI/UX implementation          | Routing table for 100+ components across 8 categories                                |
 
 ---
 
@@ -472,7 +471,6 @@ $ARGUMENTS will be replaced with user input
     "instructions/testing.md",
     "instructions/security.md",
     "instructions/git.md",
-    "instructions/api.md",
     "instructions/database.md"
   ],
   "compaction": {
@@ -492,8 +490,7 @@ $ARGUMENTS will be replaced with user input
   },
   "formatter": {
     "prettier": { "command": [...], "extensions": [...] },
-    "eslint": { "command": [...], "extensions": [...] },
-    "ruff": { "command": [...], "extensions": [...] }
+    "eslint": { "command": [...], "extensions": [...] }
   },
   "agent": { /* agent definitions */ },
   "mcp": { /* MCP server configs */ },
@@ -566,8 +563,9 @@ Cleanup is mandatory for successful, failed, and partial work. The Orchestrator 
 1. Load: nextjs/SKILL.md
 2. Load: nextjs/architecture.md + nextjs/server-actions-and-mutations.md
 3. Load: testing/SKILL.md + testing/node-nextjs.md
-4. Load: security/SKILL.md (if auth/input handling)
-5. The Orchestrator executes or delegates the implementation
+4. Load: nextjs/auth-and-sessions.md for auth/session work or nextjs/validation-and-forms.md for input handling
+5. Load: security/SKILL.md when a web-threat or secret-handling concern is present
+6. The Orchestrator executes or delegates the implementation
 ```
 
 **Rails API Endpoint:**
@@ -576,19 +574,10 @@ Cleanup is mandatory for successful, failed, and partial work. The Orchestrator 
 1. Load: rails/SKILL.md
 2. Load: rails/conventional-rails.md + rails/api-contracts-and-responses.md
 3. Load: rails/collection-search-and-pagination.md when the endpoint lists/searches; otherwise load the narrow Rails leaf for the demonstrated boundary
-4. Load: api/SKILL.md + api/recipes-new-endpoint.md
-5. Load: testing/SKILL.md + testing/ruby-rails.md when behavior changes
-6. Load: database/SKILL.md (if DB changes)
+4. Load: rails/authorization-and-pundit.md when access rules change
+5. Load: rails/migrations-and-backfills.md for schema/data changes, rails/collection-search-and-pagination.md for query/search work, or rails/application-services-and-results.md for transaction workflows
+6. Load: testing/SKILL.md + testing/ruby-rails.md when behavior changes
 7. The Orchestrator executes or delegates the implementation
-```
-
-**Python CLI Tool:**
-
-```
-1. Load: python/SKILL.md
-2. Load: python/recipes-cli-tool.md + python/types-and-boundaries.md
-3. Load: testing/SKILL.md + testing/python.md
-4. The Orchestrator executes or delegates the implementation
 ```
 
 ---
@@ -770,6 +759,7 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 │   ├── economy-pr-reviewer.md
 │   ├── flash-pr-reviewer.md
 │   ├── pr-review-adjudicator.md
+│   ├── system-architect.md
 │   ├── principal-engineer.md
 │   ├── implementation-engineer.md
 │   ├── economy-implementation-engineer.md
@@ -791,9 +781,9 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 │   ├── vision-scout-contract/
 │   ├── pr-reviewer-contract/
 │   ├── pr-review-orchestrator-contract/
+│   ├── architecture-design/
 │   ├── ruby/
 │   ├── rails/
-│   ├── python/
 │   ├── nextjs/
 │   └── ... (35+ skills)
 ├── commands/                # Custom commands
@@ -830,7 +820,7 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 This OpenCode configuration provides:
 
 - **35+ specialized skills** with router-first architecture
-- **Premium, Luna Fast economy, and direct DeepSeek families with shared specialists**
+- **Premium, Luna economy, and direct DeepSeek families with shared specialists**
 - **25+ commands** for common workflows
 - **Project-local support** for team conventions
 - **Guardrails and linting** for quality assurance
