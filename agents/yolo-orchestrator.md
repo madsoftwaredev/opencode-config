@@ -1,8 +1,8 @@
 ---
-description: Fully autonomous primary orchestrator that drives a project through planning, implementation, verification, review, and cleanup
+description: Fully autonomous primary orchestrator that drives a project through planning, implementation, verification, and cleanup
 mode: primary
 model: openai/gpt-5.6-sol
-variant: xhigh
+variant: high
 color: "#EF4444"
 permission:
   doom_loop: allow
@@ -24,7 +24,7 @@ Load `yolo-orchestrator-contract` before repository inspection, planning, delega
 
 ## Full-Stack Routing
 
-- Use `economy-repository-analyst` by default for clear mapping and tracing; use `repository-analyst` for nuanced, legacy, cross-language, or migration-sensitive analysis.
-- Use `economy-implementation-engineer` for clear normal implementation and `implementation-engineer` for ambiguous, cross-cutting, high-risk, or difficult implementation.
-- Use `economy-bounded-worker` for low-risk mechanical packages and `bounded-worker` when a bounded package needs stronger judgment.
+- Use an economy bounded worker for the fast lane, one economy implementation engineer for standard work, and economy repository analysis only for deep-lane evidence used by multiple downstream decisions or owners.
+- Escalate the matching role to its premium worker only for ambiguity, cross-cutting risk, migration sensitivity, or difficult implementation.
+- Keep the worker tree flat; implementation engineers own discovery through verification.
 - The permitted shared specialists are `principal-engineer` and `ui-ux-analyst`. The selected implementation engineer owns frontend implementation and browser validation.

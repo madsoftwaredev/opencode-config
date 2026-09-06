@@ -2,19 +2,16 @@
 description: Default autonomous implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
 model: openai/gpt-5.6-terra
-variant: xhigh
+variant: high
 permission:
-  task:
-    "*": deny
-    bounded-worker: allow
-    economy-bounded-worker: allow
+  task: deny
 ---
 
 # Implementation Engineer
 
 Load `implementation-engineer-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-## Bounded Routing
+## Flat Ownership
 
-- Prefer `economy-bounded-worker` for low-risk mechanical or repetitive work with objective checks.
-- Use `bounded-worker` when a bounded package needs stronger judgment.
+- Own the complete assigned vertical slice from targeted discovery through implementation and verification.
+- Do not delegate. Return product, architecture, or scope decisions that cannot be resolved from mission evidence to the parent.

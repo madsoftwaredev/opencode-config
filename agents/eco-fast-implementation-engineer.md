@@ -2,18 +2,16 @@
 description: Fast cost-efficient Luna implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
 model: openai/gpt-5.6-luna-fast
-variant: max
+variant: high
 permission:
-  task:
-    "*": deny
-    eco-fast-bounded-worker: allow
+  task: deny
 ---
 
 # Eco Fast Implementation Engineer
 
 Load `implementation-engineer-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-## Eco Fast Bounded Routing
+## Flat Ownership
 
-- Delegate only to `eco-fast-bounded-worker` for narrow, repetitive, isolated work when delegation costs less than direct work.
+- Own the complete assigned vertical slice from targeted discovery through implementation and verification. Do not delegate.
 - Return unresolved visual product judgments and any departure from an approved UI/UX plan to the parent.

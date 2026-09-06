@@ -10,26 +10,24 @@ If the scope identifies a live GitHub PR by number or URL, do not use the bounde
 
 If no concrete scope is provided, ask for the diff or file list and stop. Do not perform a repository-wide audit.
 
+This is a general review, not an audit. If the request asks what additional security, performance, resilience, observability, architecture, or hardening controls should exist, stop and direct the user to `/audit`.
+
 Budget:
 
 1. Review only the supplied scope and directly related context.
 2. For non-PR scoped reviews, do not launch other agents.
 3. Report the top 5 findings by default.
-4. If the user explicitly asks for a deep/full/security/performance/API/data/migration review, report up to 10 findings.
+4. A deep review may inspect more context only when the user explicitly requests it; it remains tied to existing intent and contracts and reports up to 10 findings.
 5. Group repeated issues instead of listing every occurrence.
 
-Focus on:
+Every finding must cite one scope basis: an explicit requirement, accepted-plan item, existing contract on the reviewed path, or regression introduced by the supplied change.
 
-1. Simplicity - could this be simpler?
-2. DRY violations - any repeated logic?
-3. Documentation - are public APIs documented?
-4. Type safety - explicit types, proper error handling?
-5. Data access - any N+1 DB calls, query-in-loop patterns, or chatty I/O?
-6. Correctness at boundaries - null/error states, transactions, race conditions?
-7. Security basics - auth/authz gaps, input validation, sensitive data exposure?
-8. Concurrency/idempotency - duplicate writes, retry safety, race-prone flows?
-9. API and migration safety - contract drift, unsafe schema/data rollout?
-10. File length - only flag it when changed code creates a specific maintainability risk.
-11. Human readability - can a maintainer readily understand the intent, control flow, state changes, and failure paths without decoding cleverness or chasing unnecessary indirection?
+Focus on concrete defects and gaps:
 
-Provide specific, actionable feedback with file and line references. If there are no high-confidence findings, say that directly.
+1. Incorrect behavior or regressions against the supplied intent.
+2. Existing boundary, authorization, data, API, migration, or error contracts bypassed by the scoped code.
+3. Concrete race, duplicate-write, unsafe-query, or changed hot-path risks.
+4. Missing proportionate coverage for material behavior introduced or changed by the scope.
+5. Maintainability problems only when they create demonstrated drift, misuse, or fragile changes inside the reviewed boundary.
+
+Do not report optional refactors, documentation improvements, hardening, generalized missing controls, or personal preferences. Provide specific findings with file and line references. If there are no high-confidence findings, say that directly.

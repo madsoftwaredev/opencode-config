@@ -2,7 +2,7 @@
 description: Read-only long-context analyst for repository mapping, execution tracing, dependency analysis, impact assessment, and migration planning
 mode: subagent
 model: openai/gpt-5.6-terra
-variant: xhigh
+variant: high
 permission:
   edit: deny
   write: deny

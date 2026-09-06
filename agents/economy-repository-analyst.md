@@ -2,7 +2,7 @@
 description: Low-cost read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
 model: openai/gpt-5.6-luna
-variant: max
+variant: high
 permission:
   edit: deny
   write: deny

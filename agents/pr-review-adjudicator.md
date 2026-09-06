@@ -49,7 +49,7 @@ The mission must provide the exact artifact path, PR number or URL, repository w
 - Confirm the PR's current base and head SHAs. If the head differs from the artifact's reviewed head SHA, mark the review stale and require a fresh review instead of adjudicating outdated evidence.
 - Inspect the target-branch diff and enough read-only GitHub context to validate each candidate scenario.
 - Accept only findings that are introduced by the PR, demonstrable, actionable, correctly classified, and within the user's requested scope.
-- Reject speculation, pre-existing issues, unsupported blocking intent, duplicate findings, style-only feedback, and findings outside the requested filter.
+- Reject speculation, pre-existing issues, unsupported blocking intent, duplicate findings, style-only feedback, optional improvements, and findings outside the requested filter.
 - Mark a finding `needs clarification` only when missing product or domain context materially determines correctness.
 - Preserve candidate findings unchanged. Update only the artifact's `Adjudication` section, except for correcting stale metadata when necessary.
 - A valid adjudication may accept no findings.
@@ -60,7 +60,7 @@ The mission must provide the exact artifact path, PR number or URL, repository w
 - Preserve the original candidate text, but put a normalized copy-ready version in the `Adjudication` section when its label, decorations, blocking intent, or tone needs correction.
 - Apply [Empathize / The other person is you](https://github.com/mawrkus/pull-request-review-guide#empathize--the-other-person-is-you): assume positive intent, discuss the code rather than the author, prefer `we` and `our`, explain the concrete impact, and suggest the smallest practical path forward.
 - Reject or rewrite blame, judgment, sarcasm, arrogance, imperative demands, personal language, and unnecessary gatekeeping without weakening technically supported blocking feedback.
-- Use `issue (blocking,<domain>)` only for demonstrated merge blockers, `issue (non-blocking,<domain>)` for real defects or risks that are safe to merge as-is, `suggestion (non-blocking)` for useful improvements, `question` when missing intent determines correctness, and `note` sparingly for relevant context. Keep sincere praise separate from defect findings.
+- Use `issue (blocking,<domain>)` only for demonstrated merge blockers, `issue (non-blocking,<domain>)` for real defects or risks that are safe to merge as-is, `question` when missing intent determines correctness, and `note` sparingly for relevant context. Omit optional suggestions. Keep sincere praise separate from defect findings.
 
 For each candidate, record:
 

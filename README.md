@@ -72,20 +72,20 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 | Agent                       | Model                  | Reasoning | Responsibility                                                |
 | --------------------------- | ---------------------- | --------- | ------------------------------------------------------------- |
-| **orchestrator**            | `openai/gpt-5.6-sol`   | `xhigh`   | Primary commander, integrator, and final validator            |
+| **orchestrator**            | `openai/gpt-5.6-sol`   | `high`    | Primary commander, integrator, and final validator            |
 | **principal-engineer**      | `openai/gpt-5.6-sol`   | `xhigh`   | Architecture, high-risk work, deep debugging, and rescue work |
-| **implementation-engineer** | `openai/gpt-5.6-terra` | `xhigh`   | Default implementation, bug fixing, testing, and integration  |
-| **bounded-worker**          | `openai/gpt-5.6-luna`  | `xhigh`   | Narrow, repetitive, isolated, and testable work               |
-| **repository-analyst**      | `openai/gpt-5.6-terra` | `xhigh`   | Read-only repository mapping and migration planning           |
+| **implementation-engineer** | `openai/gpt-5.6-terra` | `high`    | Default implementation, bug fixing, testing, and integration  |
+| **bounded-worker**          | `openai/gpt-5.6-luna`  | `medium`  | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `openai/gpt-5.6-terra` | `high`    | Read-only repository mapping and migration planning           |
 
 #### Economy tier
 
 | Agent                               | Model                 | Reasoning | Responsibility                             |
 | ----------------------------------- | --------------------- | --------- | ------------------------------------------ |
-| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `xhigh`   | Vision-capable, delegation-default primary |
-| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | Cost-efficient implementation              |
-| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `xhigh`   | Mechanical and tightly scoped work         |
-| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `xhigh`   | Read-only repository analysis              |
+| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Vision-capable, delegation-default primary |
+| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `high`    | Cost-efficient implementation              |
+| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `medium`  | Mechanical and tightly scoped work         |
+| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `high`    | Read-only repository analysis              |
 
 The economy workers use GPT-5.6 Luna to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
@@ -93,7 +93,7 @@ The economy workers use GPT-5.6 Luna to draw from ChatGPT usage when OpenAI is a
 
 | Agent                             | Model                        | Reasoning | Responsibility                       |
 | --------------------------------- | ---------------------------- | --------- | ------------------------------------ |
-| **flash-orchestrator**            | `openai/gpt-5.6-sol`         | `xhigh`   | Sol coordinator for the Flash family |
+| **flash-orchestrator**            | `openai/gpt-5.6-sol`         | `high`    | Sol coordinator for the Flash family |
 | **flash-implementation-engineer** | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek implementation       |
 | **flash-bounded-worker**          | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek mechanical work      |
 | **flash-repository-analyst**      | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek read-only analysis   |
@@ -115,7 +115,15 @@ Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestra
 | -------------------- | ------- | -------------------- | --------- | --------------------------------------------------------------------------------------- |
 | **system-architect** | primary | `openai/gpt-5.6-sol` | `xhigh`   | Architecture decisions, reviews, migrations, specialist synthesis, and design artifacts |
 
-The System Architect is Markdown-only and can delegate bounded current-state analysis, consequential technical review, and architecture-relevant UI/UX consultation. It does not implement product code; accepted designs hand off to a coding orchestrator through durable artifacts.
+The System Architect is Markdown-only and can delegate bounded current-state analysis, consequential technical review, architecture-relevant UI/UX consultation, and an explicitly scoped current-state code audit. Audit is not automatic for architecture work and does not authorize implementation. Accepted designs hand off to a coding orchestrator through durable artifacts.
+
+#### Explicit code audit
+
+| Agent            | Mode | Model                | Reasoning | Responsibility                                                   |
+| ---------------- | ---- | -------------------- | --------- | ---------------------------------------------------------------- |
+| **code-auditor** | all  | `openai/gpt-5.6-sol` | `high`    | Explicit read-only audits for named code and system risk domains |
+
+Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Auditor. Normal orchestrators and implementation workers are denied the `code-audit` skill, and the Code Auditor cannot edit or delegate. It may identify missing controls because audit is explicit, but its findings remain recommendations until the user selects them in a separate implementation request. System Architect is the only role with a controlled exception, limited to an explicitly named current-state audit inside an architecture mission.
 
 #### PR review pipeline
 
@@ -128,15 +136,15 @@ The System Architect is Markdown-only and can delegate bounded current-state ana
 | **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4-flash` | `max`     | Flash target-branch review and findings artifact   |
 | **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`         | `xhigh`   | Independent finding validation and user filtering  |
 
-PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is an inline comment on its smallest relevant current-diff line; summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
+PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is grounded in PR intent, an existing contract, or a regression introduced by the diff and appears as an inline comment on its smallest relevant current-diff line; optional suggestions and generalized hardening belong to audit instead. Summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
 #### YOLO modes
 
 | Agent                       | Command      | Default model        | Reasoning | Worker pool                                            |
 | --------------------------- | ------------ | -------------------- | --------- | ------------------------------------------------------ |
-| **yolo-orchestrator**       | `yolo`       | `openai/gpt-5.6-sol` | `xhigh`   | Premium and economy workers plus shared specialists    |
-| **yolo-eco-orchestrator**   | `yolo-eco`   | `openai/gpt-5.6-sol` | `xhigh`   | Economy workers plus UI/UX and Principal Engineer only |
-| **yolo-flash-orchestrator** | `yolo-flash` | `openai/gpt-5.6-sol` | `xhigh`   | Flash workers, vision scout, UI/UX, and Principal only |
+| **yolo-orchestrator**       | `yolo`       | `openai/gpt-5.6-sol` | `high`    | Premium and economy workers plus shared specialists    |
+| **yolo-eco-orchestrator**   | `yolo-eco`   | `openai/gpt-5.6-sol` | `high`    | Economy workers plus UI/UX and Principal Engineer only |
+| **yolo-flash-orchestrator** | `yolo-flash` | `openai/gpt-5.6-sol` | `high`    | Flash workers, vision scout, UI/UX, and Principal only |
 
 Launch the desired mode from the project it should own:
 
@@ -167,31 +175,28 @@ This is a permission boundary, not an operating-system sandbox: arbitrary projec
 
 The Orchestrator may recommend skills in a mission when a particular constraint matters. Each worker still inspects the task and repository instructions and makes the final skill selection.
 
-Every delegation-capable primary must send a self-contained mission packet rather than a short task summary. The packet preserves the exact governing user request, verified repository context, decisions, ownership and protected areas, authoritative artifact paths, acceptance criteria, material risks, proportionate validation, cleanup, and report shape. Manual review or no automated test may be the correct validation choice; missions must not invent test work or broad command runs to fill the packet. Repair and dependent missions also carry predecessor evidence and the reason the prior result was rejected, so workers are never expected to know another agent's chat.
+Every delegation-capable primary chooses the lowest sufficient execution lane:
+
+- **Fast:** one bounded worker for an exact plan, prompt, documentation, simple configuration, or mechanical change.
+- **Standard:** one implementation engineer owns targeted discovery, implementation, and verification for a complete vertical slice.
+- **Deep:** analysts or specialists are added only for a named shared, architectural, security, migration, cross-language, repeated-failure, or costly-to-miss risk.
+
+Fast and standard missions use a compact packet containing an observable outcome, exact ownership, verified task-specific facts, acceptance criteria, the smallest useful check, and protected areas. Deep missions add only the context required by their named risk. The native `task_id` returned by a task is the canonical worker handle: corrections, failed validation, in-scope review feedback, and required same-owner follow-up work resume that task with the same `task_id` and `subagent_type`, passing only the new evidence or correction. Review verifies the request, accepted plan, existing contracts, and introduced regressions; it does not authorize audit or adjacent improvements. Fresh tasks are reserved for independent ownership or judgment. Long workflows preserve their task ID mappings in an existing plan or shared context capsule. OpenCode's native task UI shows the working state and opens the child session when selected.
 
 ### Agent Selection Flow
 
 ```mermaid
 flowchart TD
-    A[User selects primary] --> T[Premium Orchestrator]
-    A --> E[Economy Orchestrator]
-    A --> F[Flash Orchestrator]
-    T --> P[Premium workers]
-    T --> C[Luna economy workers]
-    E --> C
-    F --> D[Direct DeepSeek workers]
-    F --> N[Luna Fast vision scout]
-    T --> S[Shared specialists]
-    E --> S
-    F --> S
-    P --> V[Primary integrates and validates]
-    C --> V
-    D --> V
-    N --> V
+    A[User selects primary] --> O[Orchestrator classifies the task]
+    O --> F[Fast lane: one bounded worker]
+    O --> S[Standard lane: one implementation owner]
+    O --> D[Deep lane: named analyst or specialist need]
+    F --> V[Primary integrates and validates]
     S --> V
+    D --> V
 ```
 
-The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the Luna Fast scout for cheap factual visual evidence. Every implementation engineer owns its frontend work and browser validation. The Flash Implementation Engineer's only coding delegate is Flash Bounded Worker, while the scout may inspect exact supplied assets only. The premium Implementation Engineer may launch either Bounded Worker; the Economy Implementation Engineer may launch only the Economy Bounded Worker. Every other coding worker is denied subagent access, and depth 2 prevents delegation below a Bounded Worker.
+The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the Luna Fast scout for cheap factual visual evidence. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
 
 To make the economy tier the default only in a high-consumption project, add this project-local configuration:
 
@@ -253,6 +258,7 @@ Role-contract skills are complete behavioral contracts, not routers and not secu
 | **git**                 | Git workflows                              | commits, staging-and-hygiene, branching-and-prs, troubleshooting                                                                                                                                                                                                                               |
 | **gh**                  | GitHub CLI                                 | prs, issues, actions, repos, api, recipe-address-pr-comments, recipe-review-others-pr                                                                                                                                                                                                          |
 | **pr-reviews**          | PR review strategy                         | review-strategy, coherence-checklist, review-comments                                                                                                                                                                                                                                          |
+| **code-audit**          | Explicit read-only audit router            | Routes named audit domains to existing security, performance, observability, devops, architecture-design, and testing skills                                                                                                                                                                   |
 | **devops**              | CI trust, supply chain, and release safety | containers-and-supply-chain, ci-pipelines, ci-trust-and-secrets, deployment-and-release-safety                                                                                                                                                                                                 |
 | **observability**       | Logs, metrics, tracing                     | logging-and-correlation-ids, metrics-and-slos, tracing-and-spans, error-tracking-and-release-health, recipes-debug-prod-issue                                                                                                                                                                  |
 | **performance**         | Optimization playbooks                     | profiling-and-measurement, caching-strategies, latency-budgets-and-p99, backend-hot-paths, recipes-perf-investigation                                                                                                                                                                          |
@@ -406,26 +412,28 @@ Commands are auto-discovered by OpenCode (no `opencode.json` wiring required).
 
 ### Development Commands
 
-| Command             | Description                         |
-| ------------------- | ----------------------------------- |
-| `/skills`           | Skill loading workflow              |
-| `/init-skills`      | Bootstrap project-local skills      |
-| `/init-skill-guard` | Install SkillGuard plugin           |
-| `/tdd`              | Start a TDD session                 |
-| `/plan`             | Create an implementation plan       |
-| `/refactor`         | Refactor for simplicity             |
-| `/review`           | Perform a bounded code review       |
-| `/security`         | Perform a security audit            |
-| `/debug`            | Debug and fix bugs                  |
-| `/optimize`         | Investigate and improve performance |
-| `/docs`             | Generate documentation              |
-| `/ui`               | Generate UI components              |
-| `/story`            | Generate Storybook stories          |
-| `/commit`           | Draft a commit message              |
-| `/pr`               | Create a GitHub pull request        |
-| `/ci`               | Run CI-like checks locally          |
+| Command             | Description                              |
+| ------------------- | ---------------------------------------- |
+| `/skills`           | Skill loading workflow                   |
+| `/init-skills`      | Bootstrap project-local skills           |
+| `/init-skill-guard` | Install SkillGuard plugin                |
+| `/tdd`              | Start a TDD session                      |
+| `/plan`             | Create an implementation plan            |
+| `/update-plan`      | Update an existing plan directly         |
+| `/refactor`         | Refactor for simplicity                  |
+| `/review`           | Perform a bounded code review            |
+| `/audit`            | Run an explicit read-only audit          |
+| `/security`         | Run an explicit read-only security audit |
+| `/debug`            | Debug and fix bugs                       |
+| `/optimize`         | Investigate and improve performance      |
+| `/docs`             | Generate documentation                   |
+| `/ui`               | Generate UI components                   |
+| `/story`            | Generate Storybook stories               |
+| `/commit`           | Draft a commit message                   |
+| `/pr`               | Create a GitHub pull request             |
+| `/ci`               | Run CI-like checks locally               |
 
-Commands do not select an agent. The active Orchestrator session decides whether to execute directly or delegate.
+Commands do not select an agent. The active Orchestrator selects the fast, standard, or deep execution lane.
 
 ### Utility Commands
 
@@ -465,19 +473,12 @@ $ARGUMENTS will be replaced with user input
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": true,
   "share": "manual",
-  "instructions": [
-    "instructions/core.md",
-    "instructions/documentation.md",
-    "instructions/testing.md",
-    "instructions/security.md",
-    "instructions/git.md",
-    "instructions/database.md"
-  ],
+  "instructions": ["plugin/shell-strategy/shell_strategy.md"],
   "compaction": {
     "auto": true,
     "prune": true
   },
-  "subagent_depth": 2,
+  "subagent_depth": 1,
   "plugin": ["opencode-openai-codex-auth"],
   "watcher": {
     "ignore": ["**/node_modules/**", "**/.git/**", "**/dist/**"]
@@ -502,7 +503,7 @@ $ARGUMENTS will be replaced with user input
 
 | Section          | Purpose                                                                        |
 | ---------------- | ------------------------------------------------------------------------------ |
-| `instructions`   | Global rules files loaded into every context                                   |
+| `instructions`   | Minimal process rules loaded into every context                                |
 | `permission`     | Fine-grained access control per tool type                                      |
 | `subagent_depth` | Global maximum delegation depth; agent `task` permissions define allowed edges |
 | `formatter`      | Auto-formatting on save per file type                                          |
@@ -527,15 +528,15 @@ $ARGUMENTS will be replaced with user input
 
 ```mermaid
 flowchart LR
-    A[Start Task] --> B[Orchestrator inspects scope and repository]
-    B --> C{Delegate?}
-    C -->|No| D[Orchestrator implements]
-    C -->|Yes| E[Orchestrator assigns a bounded mission]
-    E --> F[Worker inspects context and selects applicable skills]
-    F --> G[Worker implements and verifies]
-    G --> H[Worker reports evidence and risks]
-    D --> I[Orchestrator inspects final changes]
-    H --> I
+    A[Start Task] --> B[Orchestrator confirms target and worktree state]
+    B --> C{Lowest sufficient lane}
+    C -->|Fast| E[One bounded worker]
+    C -->|Standard| F[One implementation owner]
+    C -->|Deep| G[Named analyst or specialist need]
+    E --> H[Worker changes and verifies owned scope]
+    F --> H
+    G --> H
+    H --> I[Orchestrator inspects final changes]
     I --> J[Orchestrator runs integrated validation]
     J --> K[Clean task-created code and resources]
     K --> L[Inspect final state]
@@ -554,6 +555,8 @@ Cleanup is mandatory for successful, failed, and partial work. The Orchestrator 
 4. **Load 1-2 leaf docs** - Follow the routing table
 5. **Load testing** - If behavior changes, load `testing` skill
 6. **Load documentation** - If public APIs change, load `documentation` skill
+
+Plan, prompt, documentation, and simple configuration changes normally skip stack skills and use direct review, schema, format, or syntax validation.
 
 ### Example Workflows
 
@@ -672,7 +675,7 @@ npx prettier --check .
 
 ### Benchmarks
 
-Benchmarks are regression tests for skills:
+Benchmarks are regression tests for skill routing and orchestration behavior. See `benchmarks/orchestration.md` for the lane and cost comparison suite.
 
 ```markdown
 Prompt: "Implement this demonstrated Rails multi-record workflow with a transaction and external handoff"
@@ -741,11 +744,6 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 ~/.config/opencode/
 ├── opencode.json          # Main configuration
 ├── AGENTS.md              # Global rules
-├── instructions/            # Modular instruction files
-│   ├── core.md
-│   ├── testing.md
-│   ├── security.md
-│   └── ...
 ├── agents/                   # Coding, UI, and PR-review agent tiers
 │   ├── orchestrator.md
 │   ├── economy-orchestrator.md
@@ -760,6 +758,7 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 │   ├── flash-pr-reviewer.md
 │   ├── pr-review-adjudicator.md
 │   ├── system-architect.md
+│   ├── code-auditor.md
 │   ├── principal-engineer.md
 │   ├── implementation-engineer.md
 │   ├── economy-implementation-engineer.md
@@ -781,6 +780,7 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 │   ├── vision-scout-contract/
 │   ├── pr-reviewer-contract/
 │   ├── pr-review-orchestrator-contract/
+│   ├── code-audit/
 │   ├── architecture-design/
 │   ├── ruby/
 │   ├── rails/
@@ -790,7 +790,11 @@ Role-contract skills intentionally have no leaves: their wrapper-gated `SKILL.md
 │   ├── skills.md
 │   ├── init-skills.md
 │   ├── tdd.md
+│   ├── audit.md
+│   ├── update-plan.md
 │   └── ... (25+ commands)
+├── plugin/
+│   └── shell-strategy/      # Minimal non-interactive shell rules
 ├── profiles/
 │   └── yolo.json            # Process-wide YOLO safety policy
 ├── scripts/                 # QA utilities
