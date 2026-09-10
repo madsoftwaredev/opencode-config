@@ -1,21 +1,12 @@
 ---
-description: Create an implementation plan for a feature or task
+description: Create a repository-grounded plan with recommendations, risks, questions, and Mermaid diagrams
+agent: planner
 ---
 
-Create an implementation plan for:
+Use the planning skill to create or update a Markdown implementation plan for:
 
 $ARGUMENTS
 
-Include:
+Inspect relevant repository evidence, recommend an approach, and use the question tool for consequential unresolved choices. Include actionable risks, concrete steps, proportionate verification, and a readable Mermaid diagram.
 
-1. Clear goal and success criteria
-2. Technical approach
-3. Step-by-step breakdown (each step < 30 min)
-4. Risks and mitigations
-5. Open questions to resolve
-
-Routing:
-
-- If this updates an existing plan, use the fast artifact lane: one bounded worker, no repository analyst, no implementation engineer, and diff-focused validation.
-- If this creates a new plan, give one owner the complete planning outcome unless a named deep-lane risk requires shared analysis.
-- Do not create a plan for the act of updating a plan.
+Save in the existing `.plans` or `plans` directory at the active repository root; if neither exists, create `.plans`. Follow the skill's selection and update rules. Return the exact path and a concise summary. Do not implement the plan.

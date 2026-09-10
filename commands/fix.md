@@ -13,6 +13,6 @@ Approach:
 3. Add a failing regression test only when it is stable, proportionate, and protects against material recurrence; otherwise use targeted/manual verification and say why
 4. Fix the bug
 5. Verify the chosen automated or targeted/manual check passes
-6. Check for similar issues elsewhere
+6. Check shared callers or the same owning implementation only when the root cause indicates a shared regression; report unrelated findings without expanding the fix
 
 Don't just patch - fix the root cause.
