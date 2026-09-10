@@ -68,83 +68,160 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 ### Coding Army
 
-#### Premium tier
+#### Mid tier
 
-| Agent                       | Model                  | Reasoning | Responsibility                                                |
-| --------------------------- | ---------------------- | --------- | ------------------------------------------------------------- |
-| **orchestrator**            | `openai/gpt-5.6-sol`   | `high`    | Primary commander, integrator, and final validator            |
-| **principal-engineer**      | `openai/gpt-5.6-sol`   | `xhigh`   | Architecture, high-risk work, deep debugging, and rescue work |
-| **implementation-engineer** | `openai/gpt-5.6-terra` | `high`    | Default implementation, bug fixing, testing, and integration  |
-| **bounded-worker**          | `openai/gpt-5.6-luna`  | `medium`  | Narrow, repetitive, isolated, and testable work               |
-| **repository-analyst**      | `openai/gpt-5.6-terra` | `high`    | Read-only repository mapping and migration planning           |
+| Agent                       | Model                 | Reasoning | Responsibility                                                |
+| --------------------------- | --------------------- | --------- | ------------------------------------------------------------- |
+| **orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Primary commander, integrator, and final validator            |
+| **principal-engineer**      | `openai/gpt-6-astra`  | `high`    | Architecture, high-risk work, deep debugging, and rescue work |
+| **implementation-engineer** | `openai/gpt-5.6-sol`  | `medium`  | Implementation, debugging, testing, and integration           |
+| **bounded-worker**          | `openai/gpt-5.6-luna` | `high`    | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `openai/gpt-5.6-sol`  | `medium`  | Read-only repository mapping and migration planning           |
+
+The global default agent is `economy-orchestrator`; the global model fallback remains Astra for roles that inherit it. All ten named coding, YOLO, and PR-review orchestrators explicitly use Sol high. Other primaries and non-orchestrator roles retain their role-specific assignments below. Workers use the role-specific assignments below, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to the eight coding and YOLO orchestrators. Other permissions and depth 1 are preserved. Restart OpenCode after configuration or prompt edits and start a new session; existing sessions or explicit overrides can retain different settings.
 
 #### Economy tier
 
-| Agent                               | Model                 | Reasoning | Responsibility                             |
-| ----------------------------------- | --------------------- | --------- | ------------------------------------------ |
-| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Vision-capable, delegation-default primary |
-| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `high`    | Cost-efficient implementation              |
-| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `medium`  | Mechanical and tightly scoped work         |
-| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `high`    | Read-only repository analysis              |
+| Agent                               | Model                 | Reasoning | Responsibility                     |
+| ----------------------------------- | --------------------- | --------- | ---------------------------------- |
+| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Weekly default coordinator         |
+| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | Cost-efficient implementation      |
+| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `high`    | Mechanical and tightly scoped work |
+| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `high`    | Read-only repository analysis      |
 
-The economy workers use GPT-5.6 Luna to draw from ChatGPT usage when OpenAI is authenticated through ChatGPT. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
+Use the `eco-max` profile deliberately for substantial implementation that justifies Luna max; file count alone is not the trigger. Route unfamiliar terminal/debugging/integration work to Mid, or use a permitted stronger specialist for a named capability gap. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
 #### Flash tier
 
-| Agent                             | Model                        | Reasoning | Responsibility                       |
-| --------------------------------- | ---------------------------- | --------- | ------------------------------------ |
-| **flash-orchestrator**            | `openai/gpt-5.6-sol`         | `high`    | Sol coordinator for the Flash family |
-| **flash-implementation-engineer** | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek implementation       |
-| **flash-bounded-worker**          | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek mechanical work      |
-| **flash-repository-analyst**      | `deepseek/deepseek-v4-flash` | `max`     | Direct DeepSeek read-only analysis   |
-| **flash-vision-scout**            | `openai/gpt-5.6-luna-fast`   | `xhigh`   | Factual local visual inspection only |
+| Agent                             | Model                                          | Reasoning | Responsibility                      |
+| --------------------------------- | ---------------------------------------------- | --------- | ----------------------------------- |
+| **flash-orchestrator**            | `openai/gpt-5.6-sol`                           | `high`    | Coordinator for the Flash pool      |
+| **flash-implementation-engineer** | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek implementation      |
+| **flash-bounded-worker**          | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek mechanical work     |
+| **flash-repository-analyst**      | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek read-only analysis  |
+| **flash-vision-scout**            | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Factual local image inspection only |
 
-Flash workers use `deepseek/deepseek-v4-flash` through the direct DeepSeek provider with the `max` reasoning variant. Direct DeepSeek V4 Flash remains the sole coding and implementation owner, including frontend work and browser validation. Luna Fast is used only by `flash-vision-scout` for factual inspection of exact supplied local images, screenshots, PDFs, and video frames; it never owns implementation, product judgment, or design decisions. The scout is exclusive to the direct DeepSeek Flash family. The Flash orchestrator uses the existing Principal Engineer, UI/UX Analyst, and PR Review Adjudicator for their narrow specialist triggers.
+Flash workers use the vision-capable V4.1 Flash beta directly at `https://api.deepseek.com`, not an intermediary provider. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high`; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
+
+The temporary `deepseek/deepseek-v4.1-flash-expires-on-0910` beta is also available through `/models`, using the existing DeepSeek connection. Its announcement indicates expiry on September 10, 2026; the exact cutoff is unconfirmed. The configuration carries forward V4 Flash's pricing metadata and 384K output limit pending published beta specifications, but caps context at 258K so Flash sessions auto-compact earlier (per-model lever; `compaction.reserved` is global-only), with text/image input and `low`/`high`/`max` reasoning variants. Both normal and YOLO Flash use the updated worker pool without changing the global default. Reassign these workers when the beta expires; no automatic fallback is configured.
+
+#### Eco Fast tier
+
+| Agent                                | Model                      | Reasoning | Responsibility                             |
+| ------------------------------------ | -------------------------- | --------- | ------------------------------------------ |
+| **eco-fast-orchestrator**            | `openai/gpt-5.6-sol`       | `high`    | Coordinator for the Eco Fast pool          |
+| **eco-fast-implementation-engineer** | `openai/gpt-5.6-luna-fast` | `xhigh`   | Complete implementation ownership          |
+| **eco-fast-bounded-worker**          | `openai/gpt-5.6-luna-fast` | `high`    | Narrow mechanical work                     |
+| **eco-fast-repository-analyst**      | `openai/gpt-5.6-luna-fast` | `high`    | Read-only repository analysis              |
+| **eco-fast-pr-reviewer**             | `openai/gpt-5.6-luna-fast` | `max`     | Target-branch review and findings artifact |
+
+Fast routes are installed OpenCode model aliases mapping to the same underlying model with `serviceTier: priority`. They preserve reasoning effort and verification requirements. Bare Eco Fast entry points accelerate their named pool; shared specialists retain their normal settings unless the `fast` profile is selected. Priority processing may consume more allowance or cost and does not guarantee a measured end-to-end speedup.
+
+#### Optional execution profiles
+
+Profiles reuse existing agents and permissions. Select a profile directory for the process; do not assume a parent `--model` or `--variant` changes pinned children.
+
+```bash
+# Normal weekly default; Mid is explicitly selected when needed.
+opencode
+opencode --agent orchestrator
+
+# High: named orchestrators and the implementation owner use Sol high.
+OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/high" opencode
+
+# Mid Fast, High Fast, or Eco Fast including shared review/specialist calls.
+OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/fast" opencode
+OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/high-fast" opencode
+OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/fast" opencode --agent eco-fast-orchestrator
+
+# Deliberate Luna max implementation, without raising coordinator effort.
+OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/eco-max" opencode
+```
+
+The same profile directories work with existing YOLO launchers, for example `OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/high-fast" yolo`. No launcher or YOLO permission changes are needed. `eco-max` can also be used with `yolo-eco` or `yolo-eco-fast`. Select High before a difficult mission; use the existing Astra high principal for a named deeper reasoning need. Worker-only overrides can be explicit, for example `OPENCODE_CONFIG_CONTENT='{"agent":{"implementation-engineer":{"variant":"high"}}}'` with a High profile and plain `opencode`. Existing YOLO launchers own `OPENCODE_CONFIG_CONTENT`, so do not use that variable to layer custom overrides through them.
+
+These profile directories load after normal project configuration in OpenCode 1.18.29; inline or managed settings can still override them. They are deliberate process-wide choices, not live task-level switches. Unset `OPENCODE_CONFIG_DIR` and restart to return to base assignments. Do not rewrite role files or discard unrelated changes to leave a preset. Validate actual accepted work before claiming savings; no paid performance calibration was performed.
 
 #### Shared UI specialist
 
 | Agent             | Model                | Reasoning | Responsibility                                                                 |
 | ----------------- | -------------------- | --------- | ------------------------------------------------------------------------------ |
-| **ui-ux-analyst** | `openai/gpt-5.6-sol` | `xhigh`   | UI/UX consultation, planning, validation, and frontend review; no product code |
+| **ui-ux-analyst** | `openai/gpt-6-astra` | `medium`  | UI/UX consultation, planning, validation, and frontend review; no product code |
 
 Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
+
+The [UI/UX handoff protocol](skills/orchestrator-contract/ui-ux-handoff.md) adds stable requirement IDs, per-item revisions, and a JSON acceptance block inside that same Markdown file. UI/UX owns source requirements and review verdicts; the parent records scope decisions; workers acknowledge reads and supply implementation evidence. The parent resumes the same worker for repairs and the UI/UX owner for bounded acceptance review. Shared-artifact writes are serialized. Trivial frontend fixes and small inline consultations do not need this protocol.
+
+Before claiming completion, the parent runs `node "$HOME/.config/opencode/scripts/ui-ux-acceptance.mjs" "path/to/UI_UX_PLAN.md" --revision 1` with the actual path and accepted artifact revision. All accepted IDs need current read/evidence/review revisions and an evidence-backed UI/UX pass. Excluding a required item needs an actual user scope-change reference. The read-only checker detects structural gaps, not visual correctness or fabricated evidence; it is an instruction-level acceptance requirement, not a runtime completion lock. UI/UX remains shell-denied and returns its evidence to the parent. Run its regression checks with `bun test scripts/ui-ux-acceptance.test.js`.
+
+#### Shared 3D specialist
+
+| Agent          | Model                | Reasoning | Responsibility                                               |
+| -------------- | -------------------- | --------- | ------------------------------------------------------------ |
+| **3d-modeler** | `openai/gpt-6-astra` | `high`    | Blender asset creation, scene editing, and validated exports |
+
+Use `@3d-modeler` directly or let any coding/YOLO orchestrator assign requested 3D asset work. The modeler owns the asset lifecycle, including applicable geometry, UVs, materials, lighting, rigs, animation, optimization, and export checks. It uses the existing Blender MCP connection when available, preserves unrelated scene content, and does not delegate. Live scene mutation is serialized under one owner; it is not safe to run multiple modeling workers against the same Blender session.
+
+The orchestrator passes the verbatim modeling request, exact accepted design-artifact paths, and export requirements. The modeler returns exact source/export paths and, for substantial work, a task-local Markdown handoff covering applicable units, axes, origins, dependencies, clips, licensing, evidence, and remaining checks. The implementation engineer reads that handoff for application integration; UI/UX retains product-design judgment. Existing Fast profiles do not retarget this agent: it remains Astra high. Blender must be running with its MCP server connected for live scene work; configuring the agent does not start or repair Blender.
 
 #### Architecture primary
 
 | Agent                | Mode    | Model                | Reasoning | Responsibility                                                                          |
 | -------------------- | ------- | -------------------- | --------- | --------------------------------------------------------------------------------------- |
-| **system-architect** | primary | `openai/gpt-5.6-sol` | `xhigh`   | Architecture decisions, reviews, migrations, specialist synthesis, and design artifacts |
+| **system-architect** | primary | `openai/gpt-6-astra` | `xhigh`   | Architecture decisions, reviews, migrations, specialist synthesis, and design artifacts |
 
 The System Architect is Markdown-only and can delegate bounded current-state analysis, consequential technical review, architecture-relevant UI/UX consultation, and an explicitly scoped current-state code audit. Audit is not automatic for architecture work and does not authorize implementation. Accepted designs hand off to a coding orchestrator through durable artifacts.
+
+#### Repository planner
+
+Use `/plan <task>` or select `planner` for a repository-focused implementation plan. `/update-plan <change>` revises the same document. The planner uses Sol high, leaves the default agent unchanged, and can investigate code but edit only Markdown plans under `.plans` or `plans`.
+
+The planner recommends an approach, asks consequential questions through OpenCode's question tool with a recommended answer, and explains risks, steps, and verification in plain language. Architecture and system-design skills support relevant decisions; they are not mandatory stages or separate document packages. All three use small Mermaid diagrams with text explanations in their main saved documents.
+
+Plans use the existing `.plans` or `plans` directory at the active repository root. If both exist, the relevant existing plan or convention wins; otherwise `.plans` is preferred. If neither exists, the planner creates `.plans`. Follow-ups update the existing plan. A ready plan is not authorization to implement, commit, or deploy.
+
+Plan-file permissions also cover new project directories without Git. With GPT models, OpenCode exposes `apply_patch` for file creation and updates instead of separate `write` and `edit` tools; the `edit` permission controls those operations.
+
+All configured MCP tools are available to the planner, including Context7, Coolify, and project-provided Plane tools. The planning instructions restrict their use to investigation; remote mutation tools are not hidden by a per-server deny list. File, shell, delegation, and external-directory restrictions still apply. Empty MCP resource lists do not establish that the server's tools are unavailable.
+
+The main document explains what was found, the recommended approach, risks and unknowns, implementation steps, and verification or rollout. Skill guidance is shared through `skills/planning/`, `skills/architecture-design/`, and `skills/system-design/`; this installation's `skills` directory points to `~/.agent-configs/skills`. Restart OpenCode after changes to load the new agent, commands, and guidance.
+
+The other delegating non-coding primaries use Sol: `biz-dev` uses medium and `ops-pm` uses high. Their existing tool and artifact restrictions are unchanged. `raw` still inherits unless explicitly overridden; hidden built-in utilities are not retuned by this rollout. UI/UX, 3D modeling, adjudication, architecture, principal engineering, and exceptional review have explicit Astra assignments. Fast profiles use Sol Fast for the migrated implementation, repository, and standard-review roles; Astra exceptions retain their existing Fast routes where configured.
 
 #### Explicit code audit
 
 | Agent            | Mode | Model                | Reasoning | Responsibility                                                   |
 | ---------------- | ---- | -------------------- | --------- | ---------------------------------------------------------------- |
-| **code-auditor** | all  | `openai/gpt-5.6-sol` | `high`    | Explicit read-only audits for named code and system risk domains |
+| **code-auditor** | all  | `openai/gpt-5.6-sol` | `medium`  | Explicit read-only audits for named code and system risk domains |
 
 Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Auditor. Normal orchestrators and implementation workers are denied the `code-audit` skill, and the Code Auditor cannot edit or delegate. It may identify missing controls because audit is explicit, but its findings remain recommendations until the user selects them in a separate implementation request. System Architect is the only role with a controlled exception, limited to an explicitly named current-state audit inside an architecture mission.
 
 #### PR review pipeline
 
-| Agent                              | Mode     | Model                        | Reasoning | Responsibility                                     |
-| ---------------------------------- | -------- | ---------------------------- | --------- | -------------------------------------------------- |
-| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`         | `xhigh`   | Premium single and batch PR-review coordination    |
-| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-terra`       | `xhigh`   | Economy single and batch PR-review coordination    |
-| **pr-reviewer**                    | subagent | `openai/gpt-5.6-terra`       | `xhigh`   | Premium target-branch review and findings artifact |
-| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna`        | `xhigh`   | Economy target-branch review and findings artifact |
-| **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4-flash` | `max`     | Flash target-branch review and findings artifact   |
-| **pr-review-adjudicator**          | subagent | `openai/gpt-5.6-sol`         | `xhigh`   | Independent finding validation and user filtering  |
+| Agent                              | Mode     | Model                                          | Reasoning | Responsibility                                      |
+| ---------------------------------- | -------- | ---------------------------------------------- | --------- | --------------------------------------------------- |
+| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`                           | `high`    | Standard single and batch PR-review coordination    |
+| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-sol`                           | `high`    | Economy single and batch PR-review coordination     |
+| **pr-reviewer**                    | subagent | `openai/gpt-5.6-sol`                           | `medium`  | Consequential and normal expert-level PR review     |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna`                          | `max`     | Economy target-branch review and findings artifact  |
+| **exceptional-pr-reviewer**        | subagent | `openai/gpt-6-astra`                           | `xhigh`   | Only necessary beyond-expert reasoning              |
+| **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Flash target-branch review and findings artifact    |
+| **pr-review-adjudicator**          | subagent | `openai/gpt-6-astra`                           | `high`    | Unresolved material disputes or explicit validation |
 
 PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is grounded in PR intent, an existing contract, or a regression introduced by the diff and appears as an inline comment on its smallest relevant current-diff line; optional suggestions and generalized hardening belong to audit instead. Summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
+Choose one appropriate reviewer. Economy uses Luna max, Standard uses Sol medium, and Exceptional uses Astra xhigh only for a named beyond-expert correctness question. Large diffs, sensitive domains, or blocking findings alone do not trigger Exceptional review. Adjudication uses Astra high and is not a routine stage: use it only for unresolved material disputes after evidence exchange, conflicting findings affecting decisions, or explicitly requested independent validation. Accepted findings, clean reviews, and simple user filters do not need adjudication. See the [review routing policy](skills/pr-review-orchestrator-contract/review-routing.md). Effort labels are provider-specific, not comparable token budgets or quality guarantees.
+
+All eight review roles permit external access to the global skill trees under `~/.config/opencode/skills`, `~/.agents/skills`, `~/.claude/skills`, and the canonical `~/.agent-configs/skills` target. This lets contracts and their companion documents load from other project directories. Their read restrictions still apply; edits remain limited to review artifacts, and unrelated external access remains denied. Validate new required skill reads with the target agent's permissions from outside this configuration repository, not with the editing agent's broader access.
+
 #### YOLO modes
 
-| Agent                       | Command      | Default model        | Reasoning | Worker pool                                            |
-| --------------------------- | ------------ | -------------------- | --------- | ------------------------------------------------------ |
-| **yolo-orchestrator**       | `yolo`       | `openai/gpt-5.6-sol` | `high`    | Premium and economy workers plus shared specialists    |
-| **yolo-eco-orchestrator**   | `yolo-eco`   | `openai/gpt-5.6-sol` | `high`    | Economy workers plus UI/UX and Principal Engineer only |
-| **yolo-flash-orchestrator** | `yolo-flash` | `openai/gpt-5.6-sol` | `high`    | Flash workers, vision scout, UI/UX, and Principal only |
+| Agent                          | Command         | Default model        | Reasoning | Worker pool                                                                     |
+| ------------------------------ | --------------- | -------------------- | --------- | ------------------------------------------------------------------------------- |
+| **yolo-orchestrator**          | `yolo`          | `openai/gpt-5.6-sol` | `high`    | Mid and economy workers plus shared UI/UX, 3D, and principal specialists        |
+| **yolo-eco-orchestrator**      | `yolo-eco`      | `openai/gpt-5.6-sol` | `high`    | Economy workers plus shared UI/UX, 3D, and principal specialists                |
+| **yolo-flash-orchestrator**    | `yolo-flash`    | `openai/gpt-5.6-sol` | `high`    | Flash workers and vision scout plus shared UI/UX, 3D, and principal specialists |
+| **yolo-eco-fast-orchestrator** | `yolo-eco-fast` | `openai/gpt-5.6-sol` | `high`    | Eco Fast workers plus shared UI/UX, 3D, and principal specialists               |
 
 Launch the desired mode from the project it should own:
 
@@ -152,6 +229,7 @@ Launch the desired mode from the project it should own:
 yolo
 yolo-eco
 yolo-flash
+yolo-eco-fast
 ```
 
 Pass a project path or model override when needed:
@@ -160,12 +238,14 @@ Pass a project path or model override when needed:
 yolo /path/to/project
 yolo-eco /path/to/project
 yolo-flash /path/to/project
-yolo --model openai/gpt-5.6-terra --variant xhigh
+yolo --model openai/gpt-6-astra --variant medium
 ```
 
-The versioned `opencode-yolo`, `yolo`, `yolo-eco`, and `yolo-flash` launchers inject `profiles/yolo.json` as a late merged process-wide layer and enable OpenCode's `--auto` mode. Per-agent permissions still apply afterward. The profile allows routine work, marks consequential command patterns as `ask`, and reserves hard `deny` for raw token-display commands only; `--auto` approves those asks.
+The versioned `opencode-yolo`, `yolo`, `yolo-eco`, `yolo-flash`, and `yolo-eco-fast` launchers select their named agent without a hardcoded model. They inject `profiles/yolo.json` as a late merged process-wide layer and enable OpenCode's `--auto` mode. Per-agent permissions still apply afterward. The profile allows routine work, marks consequential command patterns as `ask`, and denies raw token-display commands and worker use of the user-facing `question` tool; `--auto` approves permission asks, not denied tools.
 
-All YOLO primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, integration, conflict repair, final verification, and cleanup. The selected implementation engineer owns frontend work and browser validation. `yolo-eco` prevents premium implementation, bounded, and repository workers; `yolo-flash` prevents premium and Luna coding workers, with `flash-vision-scout` as the sole Luna Fast factual-vision exception.
+Only the four YOLO parents retain the user-facing `question` tool under this profile. Workers decide routine in-scope details and return unresolved decisions, evidence, recommendations, and dependent work to the parent. The parent answers within existing authority, resumes the same worker, and continues; it asks the user only for genuinely unavailable information, access, or authorization after finishing unaffected work. This does not invent user approval, weaken destructive-operation or publication boundaries, or change normal-mode worker permissions. Selecting a YOLO agent without the YOLO profile does not install these profile-specific tool restrictions.
+
+All YOLO primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, integration, conflict repair, final verification, and cleanup. The selected implementation engineer owns frontend work and browser validation. Economy, Flash, and Eco Fast YOLO modes retain their named worker pools; Flash alone also has its factual-vision scout. All ten named coding and PR-review orchestrators use Sol high; the Flash worker pool uses direct DeepSeek Vision.
 
 YOLO mode authorizes routine local edits, dependency installation, downloads, project containers, local Git history operations, tests, formatting, linting, type checks, builds, browser verification, repair loops, and cleanup. Outside-worktree access, privileged commands, Git pushes and GitHub writes, remote shell and file transfer, cloud and deployment CLIs, infrastructure or data mutation, publishing, system package tools, and destructive cleanup are consequential `ask` gates when the profile is used without `--auto`.
 
@@ -179,9 +259,13 @@ Every delegation-capable primary chooses the lowest sufficient execution lane:
 
 - **Fast:** one bounded worker for an exact plan, prompt, documentation, simple configuration, or mechanical change.
 - **Standard:** one implementation engineer owns targeted discovery, implementation, and verification for a complete vertical slice.
-- **Deep:** analysts or specialists are added only for a named shared, architectural, security, migration, cross-language, repeated-failure, or costly-to-miss risk.
+- **Deep:** independent deliverables or judgments run in parallel when useful; analysts or specialists address named shared, architectural, security, migration, cross-language, repeated-failure, or costly-to-miss risks. Coupled work stays with its existing owner.
 
-Fast and standard missions use a compact packet containing an observable outcome, exact ownership, verified task-specific facts, acceptance criteria, the smallest useful check, and protected areas. Deep missions add only the context required by their named risk. The native `task_id` returned by a task is the canonical worker handle: corrections, failed validation, in-scope review feedback, and required same-owner follow-up work resume that task with the same `task_id` and `subagent_type`, passing only the new evidence or correction. Review verifies the request, accepted plan, existing contracts, and introduced regressions; it does not authorize audit or adjacent improvements. Fresh tasks are reserved for independent ownership or judgment. Long workflows preserve their task ID mappings in an existing plan or shared context capsule. OpenCode's native task UI shows the working state and opens the child session when selected.
+Fast and standard missions use a compact packet containing an observable outcome, ownership, verified facts, acceptance criteria, proportionate verification, and protected areas. Deep missions add only the context needed for independent owners or named risks.
+
+Feature and component ownership persists across authorized follow-ups. Resume the same native `task_id` and `subagent_type` for corrections, validation failures, review feedback, and related requirements, even after completion. Send only the delta. Preserve task mappings, decisions, verification results, and remaining work through compaction summaries and existing handoff artifacts. Fresh tasks are for independent ownership or judgment, or unavailable or unusable sessions; give a replacement the retained evidence and name any context gap.
+
+The parent inspects the result and reuses valid worker evidence rather than repeating discovery and checks. Investigate gaps, changed evidence, or integration risks as needed. Review verifies accepted scope and existing contracts; it does not authorize adjacent work. The repeatable scenarios in [orchestration benchmarks](benchmarks/orchestration.md) check continuity, parallel ownership, scope, and proportionate verification. OpenCode's native task UI opens the child session when selected.
 
 ### Agent Selection Flow
 
@@ -196,9 +280,9 @@ flowchart TD
     D --> V
 ```
 
-The premium Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the Luna Fast scout for cheap factual visual evidence. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
+The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All eight coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
 
-To make the economy tier the default only in a high-consumption project, add this project-local configuration:
+Economy is already the global default. A project can explicitly retain that choice with:
 
 ```json
 {
@@ -211,7 +295,7 @@ To make the economy tier the default only in a high-consumption project, add thi
 
 ## Skills Inventory
 
-Skills are the heart of this system. Task skills are routers that point to focused leaf documents; role-contract skills are complete single-file contracts.
+Task skills use routers when separate topics benefit from on-demand retrieval. Focused skills and role contracts may be self-contained.
 
 ### Role-contract skills
 
@@ -268,12 +352,13 @@ Role-contract skills are complete behavioral contracts, not routers and not secu
 
 ### Meta Skills
 
-| Skill               | Description                   | Purpose                                                                              |
-| ------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
-| **skill-authoring** | Standards for creating skills | authoring-standard, recipes-standard, benchmarks, skills-lint                        |
-| **documentation**   | Doc style router              | Routes to language-specific doc formats                                              |
-| **system-design**   | Solution specification        | Detailed data models, API contracts, UX flows, UI specs, and implementation handoffs |
-| **web-design**      | UI/UX implementation          | Routing table for 100+ components across 8 categories                                |
+| Skill               | Description                     | Purpose                                                                                                 |
+| ------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **skill-authoring** | Standards for creating skills   | authoring-standard, recipes-standard, benchmarks, skills-lint                                           |
+| **documentation**   | Doc style router                | Routes to language-specific doc formats                                                                 |
+| **system-design**   | Behavior across system parts    | Data and interfaces, workflows and states, failure behavior, and implementation contracts               |
+| **planning**        | Repository implementation plans | Evidence, recommended choices, questions, risks, Mermaid diagrams, steps, verification, and saved plans |
+| **web-design**      | UI/UX implementation            | Routing table for 100+ components across 8 categories                                                   |
 
 ---
 
@@ -324,7 +409,7 @@ description: One sentence describing what this skill covers
 
 #### Leaf Document Structure
 
-Every leaf document must include:
+Use these leaf sections where they help explain the task; examples are conditional on usefulness:
 
 ```markdown
 # Topic Name
@@ -364,8 +449,8 @@ Every leaf document must include:
 
 ### Why This Structure Works
 
-1. **Precise Loading** - Agents load only the 1-2 leaf docs needed, not entire task-skill trees
-2. **Consistent Format** - Every doc has the same sections, making them predictable
+1. **Precise Loading** - Agents load only needed guidance; no leaves are required when the skill itself is sufficient
+2. **Consistent Format** - Familiar sections aid retrieval without forcing repetitive examples or empty scaffolding
 3. **Decision-Oriented** - "When to load / When NOT to load" prevents context bloat
 4. **Model-Aware Detail** - Routers give strong models concise boundaries; on-demand leaves give lower-cost workers concrete decisions and examples
 5. **Cross-References** - Routing tables link related skills for complete coverage
@@ -388,15 +473,17 @@ sequenceDiagram
     Agent->>Agent: Identify stack
     Agent->>Router: Load router skill
     Router->>Agent: Return routing table
-    Agent->>Leaf: Load 1-2 relevant leaves
-    Leaf->>Agent: Return guidance
+    opt More task-specific guidance needed
+        Agent->>Leaf: Load relevant leaves
+        Leaf->>Agent: Return guidance
+    end
 
     alt Security/DB/API concern
         Agent->>Cross: Load cross-cutting skill
         Cross->>Agent: Return safety guidance
     end
 
-    alt Behavior changes
+    alt Behavior changes need verification guidance
         Agent->>Cross: Load testing skill
         Cross->>Agent: Return test patterns
     end
@@ -433,7 +520,7 @@ Commands are auto-discovered by OpenCode (no `opencode.json` wiring required).
 | `/pr`               | Create a GitHub pull request             |
 | `/ci`               | Run CI-like checks locally               |
 
-Commands do not select an agent. The active Orchestrator selects the fast, standard, or deep execution lane.
+Most development commands use the active agent. `/plan` and `/update-plan` select the dedicated `planner`; explicit audit commands select their audit role. Coding orchestrators otherwise select the fast, standard, or deep execution lane.
 
 ### Utility Commands
 
@@ -471,6 +558,8 @@ $ARGUMENTS will be replaced with user input
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "openai/gpt-6-astra",
+  "default_agent": "economy-orchestrator",
   "autoupdate": true,
   "share": "manual",
   "instructions": ["plugin/shell-strategy/shell_strategy.md"],
@@ -511,14 +600,34 @@ $ARGUMENTS will be replaced with user input
 | `mcp`            | Model Context Protocol server configurations                                   |
 | `provider`       | LLM provider settings (OpenAI, Anthropic, etc.)                                |
 
+### Compaction Model
+
+The hidden `compaction` agent is pinned globally to `opencode-go/deepseek-v4-flash` with the `max` variant in `opencode.json` (1M context / 384K output per Models.dev, so it fits large sessions; Go allowance instead of OpenAI spend). Normal and YOLO sessions, including worker sessions and the High/Fast presets, use this setting unless a project or profile explicitly overrides it. Coding agents, title generation, and session-summary generation retain their existing model routing; automatic compaction and pruning remain enabled.
+
+OpenCode 1.18.29 selects the compaction model correctly but applies the conversation's variant when preparing the request. The auto-loaded `plugin/compaction-variant.ts` hook reapplies the configured compaction variant to request options only when the compaction model matches. It preserves the built-in summary prompt and does not change the conversation's model or variant. An unsupported configured variant fails explicitly. See the [version-matched request builder](https://github.com/anomalyco/opencode/blob/v1.18.29/packages/opencode/src/session/llm/request.ts).
+
+**Temporary workaround, remove when upstream fixes it:** On an OpenCode upgrade, check whether native automatic and manual compaction both honor `agent.compaction.variant`, including when the conversation uses `medium` or `xhigh` and compaction is configured as `max`. Once confirmed without the hook, delete `plugin/compaction-variant.ts` and `scripts/compaction-variant.test.js`, and remove this workaround documentation. Keep the `agent.compaction` model/variant configuration. This is a maintenance reminder, not automatic monitoring or permission to remove the hook before the native fix is verified.
+
+Run the focused regression checks with `bun test scripts/compaction-variant.test.js`. Quit and restart OpenCode after changing the compaction configuration or hook.
+
 ### MCP Servers Configured
 
-| Server         | Purpose                              |
-| -------------- | ------------------------------------ |
-| **context7**   | Up-to-date library documentation     |
-| **gh_grep**    | Search GitHub code examples          |
-| **playwright** | Browser automation and E2E testing   |
-| **sentry**     | Error tracking (disabled by default) |
+| Server         | Purpose                                             |
+| -------------- | --------------------------------------------------- |
+| **context7**   | Up-to-date library documentation                    |
+| **gh_grep**    | Search GitHub code examples                         |
+| **playwright** | Optional browser MCP fallback (disabled by default) |
+| **sentry**     | Error tracking (disabled by default)                |
+
+### Manual Browser Workflow
+
+Use the installed **agent-browser CLI** for agent-driven browsing, responsive inspection, screenshots, and manual UI QA. Load [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) only when browser interaction is needed. The installed version was verified as 0.27.0; consult its help or bundled skill for version-matched commands rather than assuming newer website flags exist.
+
+Each browser-owning worker uses a unique named session and preserves that name with its `task_id` for follow-ups. Parallel workers do not share a default browser. Shell-denied specialists receive evidence through the parent from the existing browser owner; no shell permission is widened. Headed mode or the local dashboard supports human viewing and handoff, with automation paused while the user interacts.
+
+Playwright MCP remains configured but disabled so its tool schemas are not exposed by default. If a task needs it, enable `mcp.playwright.enabled` through OpenCode's MCP controls when available, or set it to `true` in the relevant configuration and restart OpenCode. Do not silently enable it or switch browser contexts mid-task.
+
+**Playwright Test suites are unchanged.** Use the repository's existing test runner and E2E authorization policy. Changing the manual browsing tool does not authorize new E2E or screenshot tests.
 
 ---
 
@@ -552,8 +661,8 @@ Cleanup is mandatory for successful, failed, and partial work. The Orchestrator 
 1. **Identify the stack** - Language + framework + cross-cutting concerns
 2. **Check project-local first** - Look in `.opencode/skills/`
 3. **Load router skill(s)** - The `SKILL.md` for your stack
-4. **Load 1-2 leaf docs** - Follow the routing table
-5. **Load testing** - If behavior changes, load `testing` skill
+4. **Load needed leaf docs** - Follow the routing table only when more guidance is needed; reuse already loaded guidance
+5. **Load testing** - When a behavior change needs verification guidance
 6. **Load documentation** - If public APIs change, load `documentation` skill
 
 Plan, prompt, documentation, and simple configuration changes normally skip stack skills and use direct review, schema, format, or syntax validation.
@@ -568,7 +677,7 @@ Plan, prompt, documentation, and simple configuration changes normally skip stac
 3. Load: testing/SKILL.md + testing/node-nextjs.md
 4. Load: nextjs/auth-and-sessions.md for auth/session work or nextjs/validation-and-forms.md for input handling
 5. Load: security/SKILL.md when a web-threat or secret-handling concern is present
-6. The Orchestrator executes or delegates the implementation
+6. The Orchestrator assigns or resumes the implementation owner, then integrates and validates the result
 ```
 
 **Rails API Endpoint:**
@@ -580,7 +689,7 @@ Plan, prompt, documentation, and simple configuration changes normally skip stac
 4. Load: rails/authorization-and-pundit.md when access rules change
 5. Load: rails/migrations-and-backfills.md for schema/data changes, rails/collection-search-and-pagination.md for query/search work, or rails/application-services-and-results.md for transaction workflows
 6. Load: testing/SKILL.md + testing/ruby-rails.md when behavior changes
-7. The Orchestrator executes or delegates the implementation
+7. The Orchestrator assigns or resumes the implementation owner, then integrates and validates the result
 ```
 
 ---
