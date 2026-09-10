@@ -52,7 +52,6 @@ V2_REQUIRED_HEADINGS = [
     "## When to load",
     "## When NOT to load",
     "## Core rules",
-    "## Minimal examples",
     "## Anti-patterns",
     "## Checklist",
 ]

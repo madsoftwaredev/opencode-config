@@ -1,7 +1,7 @@
 # Project Rules
 
-> IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for any tasks.
-> Before writing code, first explore the project structure, then invoke the skills, rules and standards for documentation.
+> Ground decisions in relevant repository evidence and current documentation.
+> Before non-trivial code changes, inspect the owned boundary and load the guidance needed for the task.
 
 > Copy this to your project root as `AGENTS.md` and customize.
 
@@ -9,7 +9,7 @@
 
 - Prefer project-local skills under `.opencode/skills/` (if present).
 - If the repo does not define the needed skill(s), load the corresponding global skills from `~/.config/opencode/skills/`.
-- Load router skill(s) first, then 1-2 relevant leaf docs.
+- Load applicable skills and only the leaves needed; zero leaves is valid when the skill itself is sufficient. Reuse guidance already loaded unless it changed or is unavailable.
 - If behavior changes: assess the material risk and load `testing` (and the stack test leaf) when test or verification guidance is needed.
 - If public APIs change: load `documentation` (and the language doc style).
 
@@ -18,11 +18,11 @@ If no relevant project-local skills exist, do not block work; fall back to globa
 ## Testing Policy
 
 - Tests are risk-based, not count- or coverage-driven. Commit deterministic automated coverage only for distinct material behavior or recurrence risk when proportionate.
-- TDD is optional unless `/tdd` is invoked. Prefer the lowest test level and stop once each material risk has one proving check; do not require success/edge/error matrices.
+- TDD is optional unless `/tdd` is invoked. Prefer the lowest proving test level and enough complementary checks for material risks, without a fixed test-count cap or ritual success/edge/error matrices.
 - Add regression tests only when stable, proportionate, and protective; otherwise use targeted/manual verification and explain why no test was added.
 - Avoid incidental exact text, pixel/screenshot, wall-clock timing, private implementation, framework, and duplicate-permutation assertions. Screenshots are manual QA evidence by default.
 - For non-Rails stacks, E2E is opt-in: do not add, run, or scaffold it unless explicitly required by the task or repository. Rails system tests may be proportionate for a critical journey with existing test infrastructure.
-- Run targeted checks at logical checkpoints; broaden only for shared or high-risk boundaries.
+- Complete required checks. After they pass, repeat or broaden only for new edits, failures, unresolved risks, or repository requirements. Report unrelated failures without repairing them; pause only when they prevent trustworthy verification.
 
 ## Project Overview
 
@@ -81,11 +81,15 @@ tests/
 
 <!-- Common commands for this project -->
 
+- Prefer existing project lint-fix and format/write commands for tool-correctable issues, using the repository's package manager and installed versions. Inspect scripts before adding flags; scope corrections to owned files and review the diff. Manually fix only what the tools cannot safely correct, then run the relevant check. Read-only tasks use check mode only.
+
 ```bash
 # Run tests
 # Start dev server
 # Build
 # Lint
+# Lint fix (safe autocorrection)
+# Format (write) / format check
 ```
 
 ## Important Files

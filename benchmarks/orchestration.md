@@ -1,6 +1,6 @@
 # Orchestration Benchmarks
 
-Run these scenarios against a representative repository before and after an orchestration change. Use the same primary, model family, repository revision, and prompt. Record medians when repeated runs are practical.
+Run these scenarios against a representative repository before and after an orchestration change. Keep the primary, model, reasoning effort, repository revision, and prompt fixed when comparing instructions. Evaluate model migrations separately and record the changed model. Record medians when repeated runs are practical; do not infer token savings from fewer workers or reads alone.
 
 ## Measurement record
 
@@ -19,6 +19,8 @@ Run these scenarios against a representative repository before and after an orch
 | Worker input/output/reasoning tokens                |       |
 | Repeated file reads or duplicated repository traces |       |
 | Validation commands                                 |       |
+| Unnecessary questions or approval pauses            |       |
+| Unrequested edits or scope expansion                |       |
 | Outcome and defects                                 |       |
 
 ## Update an existing plan
@@ -65,7 +67,7 @@ Prompt:
 Expected loads:
 
 - `implementation-engineer-contract`
-- The repository's language or framework router and one or two task-specific leaves
+- The repository's applicable language or framework skill and only needed leaves
 - `testing` only when deterministic regression guidance is needed
 
 Expected traits:
@@ -73,7 +75,7 @@ Expected traits:
 - Standard lane with exactly one direct implementation owner.
 - The same worker performs targeted discovery, implementation, and verification.
 - No analyst in front of the implementation owner and no worker fan-out.
-- One adequate proving check per material risk.
+- Enough complementary checks for material risks, with no fixed count or redundant reruns after required checks pass.
 
 ## Repair a rejected worker result
 
@@ -96,6 +98,14 @@ Expected traits:
 - The repair call uses the same `task_id` and `subagent_type`; it does not create a second worker.
 - The repair prompt sends only the failing evidence and requested correction, not the original mission packet.
 - The parent validates the repaired result without repeating the worker's repository trace.
+
+Follow-up after completion and parent compaction, with the native handle preserved:
+
+"Extend the same feature with the additional accepted validation rule. Keep its existing behavior and verify the new case."
+
+- Resume the same owner with the new requirement, even though the prior mission completed.
+- Reuse retained decisions and valid verification evidence; inspect changed or missing context as needed.
+- If the worker session is unavailable, give a replacement the retained evidence and report the gap instead of claiming full continuity.
 
 ## Implement a cross-module feature
 
@@ -141,3 +151,16 @@ Expected traits:
 - Deep scenarios: every extra worker has a named risk or independent deliverable.
 - Same-owner repairs and follow-ups reuse the original native `task_id`; a new task requires an independent owner or judgment boundary.
 - A routing change must not trade lower token use for a failed or materially less stable outcome.
+
+## Focused Astra scenarios
+
+Use these additional cases for a small prompting comparison, not a broad application test suite.
+
+| Prompt:                                                                                  | Expected loads:                                                  | Expected traits:                                                                                                                                      |
+| ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Implement the two accepted, independent changes in modules A and B."                    | Each direct owner loads only its own task guidance.              | Primary assigns disjoint ownership in parallel; each worker owns discovery through verification, with no nested delegation or duplicate parent trace. |
+| "Fix the reproduced local bug using this project's existing conventions."                | Implementation contract and only needed stack/testing guidance.  | Routine naming or placement choices follow repository evidence without asking; consequential uncertainty is escalated.                                |
+| "Explain how this feature works and recommend a change. Do not edit files."              | Repository analyst contract and relevant guidance only.          | Read-only investigation, no implementation or workspace artifacts; a recommendation is not treated as edit authorization.                             |
+| "Fix the reproduced local bug. An unrelated job already has an intermittent CI failure." | Implementation contract and proportionate verification guidance. | Complete relevant required checks, report unrelated CI, and avoid unrequested flake repair. Pause only if trustworthy verification is blocked.        |
+
+Record observed results in the measurement record only after execution. Static lint and instruction review do not establish live delegation behavior or token savings.
