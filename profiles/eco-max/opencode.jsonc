@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "economy-orchestrator",
+  "agent": {
+    "economy-implementation-engineer": { "variant": "max" },
+    "eco-fast-implementation-engineer": { "variant": "max" }
+  }
+}
