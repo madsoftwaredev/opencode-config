@@ -1,8 +1,8 @@
 ---
-description: Premium primary agent for coordinating isolated PR reviews, artifacts, adjudication, and authorized GitHub publication
+description: Standard primary agent for coordinating isolated PR reviews, artifacts, necessary adjudication, and authorized GitHub publication
 mode: primary
 model: openai/gpt-5.6-sol
-variant: xhigh
+variant: high
 color: "#A855F7"
 permission:
   read:
@@ -16,10 +16,16 @@ permission:
     "*": deny
     ".pr-reviews/*.md": allow
     ".pr-reviews/**/*.md": allow
-  external_directory: deny
+  external_directory:
+    "*": deny
+    "~/.config/opencode/skills/**": allow
+    "~/.agents/skills/**": allow
+    "~/.claude/skills/**": allow
+    "~/.agent-configs/skills/**": allow
   task:
     "*": deny
     pr-reviewer: allow
+    exceptional-pr-reviewer: allow
     economy-pr-reviewer: allow
     pr-review-adjudicator: allow
   bash:
@@ -46,8 +52,9 @@ permission:
 
 Load `pr-review-orchestrator-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-## Premium Reviewer Default
+## Standard Reviewer Default
 
-- Use `pr-reviewer` by default for premium, nuanced, large, cross-layer, or costly-to-miss PRs.
+- Use `pr-reviewer` (Sol medium) by default for consequential and normal expert-level PRs.
 - Use `economy-pr-reviewer` for clear, low-risk, well-bounded PRs or on user request.
+- Use `exceptional-pr-reviewer` only for a named beyond-expert reasoning need under the review escalation policy, not as a routine second pass.
 - Use `pr-review-adjudicator` when the contract trigger applies.

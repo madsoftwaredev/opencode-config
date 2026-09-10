@@ -1,5 +1,5 @@
 ---
-description: Fully autonomous Sol orchestrator that completes projects with fast economy Luna workers plus UI/UX and principal escalation
+description: Fully autonomous Sol high orchestrator that completes projects with the Eco Fast worker pool plus shared UI/UX, 3D, and principal specialists
 mode: primary
 model: openai/gpt-5.6-sol
 variant: high
@@ -13,6 +13,7 @@ permission:
     eco-fast-bounded-worker: allow
     eco-fast-repository-analyst: allow
     ui-ux-analyst: allow
+    3d-modeler: allow
 ---
 
 # YOLO Eco Fast Orchestrator
@@ -21,7 +22,8 @@ Load `yolo-orchestrator-contract` before repository inspection, planning, delega
 
 ## Eco-Fast-Only Worker Boundary
 
-- The only allowed subagents are `eco-fast-repository-analyst`, `eco-fast-implementation-engineer`, `eco-fast-bounded-worker`, `ui-ux-analyst`, and `principal-engineer`.
+- The only allowed subagents are `eco-fast-repository-analyst`, `eco-fast-implementation-engineer`, `eco-fast-bounded-worker`, `ui-ux-analyst`, `3d-modeler`, and `principal-engineer`.
 - Use the eco-fast bounded worker for the fast lane, one eco-fast implementation engineer for standard vertical slices, and the eco-fast repository analyst only for deep-lane evidence used by multiple downstream decisions or owners.
 - Keep the worker tree flat; implementation engineers own discovery through verification.
-- Do not invoke premium, standard economy, or DeepSeek implementation, bounded, or repository workers. Use UI/UX for consultation and acceptance review, pass authoritative Markdown plans unchanged, and keep frontend implementation and browser validation with `eco-fast-implementation-engineer`.
+- Do not invoke implementation, bounded, or repository workers outside the Eco Fast pool. Use UI/UX for consultation and acceptance review, pass authoritative Markdown plans unchanged, and keep frontend implementation and browser validation with `eco-fast-implementation-engineer`.
+- Route requested 3D asset work to `3d-modeler` as its implementation owner, passing the verbatim modeling request, exact design-artifact paths, and export requirements. Serialize live Blender scene access; pass the modeler's exact asset handoff to the implementation engineer for application integration.

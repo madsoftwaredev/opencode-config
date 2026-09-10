@@ -1,5 +1,5 @@
 ---
-description: Fast economy Luna read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
+description: Luna Fast read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
 mode: subagent
 model: openai/gpt-5.6-luna-fast
 variant: max
@@ -15,7 +15,12 @@ permission:
     "*": deny
     ".pr-reviews/*.md": allow
     ".pr-reviews/**/*.md": allow
-  external_directory: deny
+  external_directory:
+    "*": deny
+    "~/.config/opencode/skills/**": allow
+    "~/.agents/skills/**": allow
+    "~/.claude/skills/**": allow
+    "~/.agent-configs/skills/**": allow
   task: deny
   bash:
     "*": deny

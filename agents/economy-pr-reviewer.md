@@ -15,7 +15,12 @@ permission:
     "*": deny
     ".pr-reviews/*.md": allow
     ".pr-reviews/**/*.md": allow
-  external_directory: deny
+  external_directory:
+    "*": deny
+    "~/.config/opencode/skills/**": allow
+    "~/.agents/skills/**": allow
+    "~/.claude/skills/**": allow
+    "~/.agent-configs/skills/**": allow
   task: deny
   bash:
     "*": deny

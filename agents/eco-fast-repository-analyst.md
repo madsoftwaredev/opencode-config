@@ -1,5 +1,5 @@
 ---
-description: Fast low-cost Luna read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: Luna Fast read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
 model: openai/gpt-5.6-luna-fast
 variant: high

@@ -2,7 +2,7 @@
 description: Explicitly invoked read-only auditor for named code and system risk domains; reports evidence without implementing fixes
 mode: all
 model: openai/gpt-5.6-sol
-variant: high
+variant: medium
 color: "#D97706"
 permission:
   edit: deny

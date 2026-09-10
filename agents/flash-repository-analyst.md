@@ -1,7 +1,7 @@
 ---
-description: Direct DeepSeek read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: Direct DeepSeek vision-capable read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: deepseek/deepseek-v4.1-flash-expires-on-0910
 variant: max
 permission:
   edit: deny

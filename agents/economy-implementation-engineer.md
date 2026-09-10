@@ -2,7 +2,7 @@
 description: Cost-efficient implementer for normal features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
 model: openai/gpt-5.6-luna
-variant: high
+variant: xhigh
 permission:
   task: deny
 ---

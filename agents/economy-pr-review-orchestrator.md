@@ -2,7 +2,7 @@
 description: Economy primary agent for coordinating isolated PR reviews, artifacts, adjudication, and authorized GitHub publication
 mode: primary
 model: openai/gpt-5.6-sol
-variant: xhigh
+variant: high
 color: "#7C3AED"
 permission:
   read:
@@ -16,10 +16,16 @@ permission:
     "*": deny
     ".pr-reviews/*.md": allow
     ".pr-reviews/**/*.md": allow
-  external_directory: deny
+  external_directory:
+    "*": deny
+    "~/.config/opencode/skills/**": allow
+    "~/.agents/skills/**": allow
+    "~/.claude/skills/**": allow
+    "~/.agent-configs/skills/**": allow
   task:
     "*": deny
     pr-reviewer: allow
+    exceptional-pr-reviewer: allow
     economy-pr-reviewer: allow
     pr-review-adjudicator: allow
   bash:
@@ -48,6 +54,7 @@ Load `pr-review-orchestrator-contract` before repository inspection, planning, d
 
 ## Economy Reviewer Default
 
-- Use `economy-pr-reviewer` by default.
-- Use `pr-reviewer` only for exceptionally large, ambiguous, cross-layer, security-sensitive, data-sensitive, migration-heavy, contract-heavy, or costly-to-review-incorrectly PRs.
+- Use `economy-pr-reviewer` (Luna max) by default for routine bounded PRs.
+- Use `pr-reviewer` (Sol medium) for consequential and normal expert-level PRs.
+- Use `exceptional-pr-reviewer` only for a named beyond-expert reasoning need under the review escalation policy, not as a routine second pass.
 - Use `pr-review-adjudicator` only when the contract trigger applies.

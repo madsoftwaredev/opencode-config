@@ -1,7 +1,7 @@
 ---
-description: Direct DeepSeek worker for narrow, repetitive, isolated, and objectively verifiable implementation tasks
+description: Direct DeepSeek vision-capable worker for narrow, repetitive, isolated, and objectively verifiable implementation tasks
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: deepseek/deepseek-v4.1-flash-expires-on-0910
 variant: max
 permission:
   task: deny

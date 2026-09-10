@@ -12,7 +12,9 @@ permission:
     economy-repository-analyst: allow
     principal-engineer: allow
     ui-ux-analyst: allow
+    3d-modeler: allow
     pr-reviewer: allow
+    exceptional-pr-reviewer: allow
     economy-pr-reviewer: allow
     pr-review-adjudicator: allow
 ---
@@ -25,5 +27,6 @@ Load `orchestrator-contract` before repository inspection, planning, delegation,
 
 - Use `economy-bounded-worker` for the fast lane, `economy-implementation-engineer` for one-owner standard vertical slices, and `economy-repository-analyst` only when deep-lane mapping will serve multiple downstream decisions or owners.
 - Keep the worker tree flat. The implementation engineer owns discovery, implementation, and verification without bounded-worker fan-out.
-- Use `economy-pr-reviewer` by default. Escalate to `pr-reviewer` only for exceptionally large, ambiguous, cross-layer, security-sensitive, data-sensitive, migration-heavy, or contract-heavy PRs.
-- The permitted shared specialists are `principal-engineer`, `ui-ux-analyst`, and `pr-review-adjudicator`. The Economy Implementation Engineer owns frontend implementation and browser validation.
+- When review is needed, use `economy-pr-reviewer` (Luna max) for routine bounded PRs and `pr-reviewer` (Sol medium) for consequential or normal expert-level review. Use `exceptional-pr-reviewer` only for a named beyond-expert reasoning need under the review escalation policy.
+- The permitted shared specialists are `principal-engineer`, `ui-ux-analyst`, `3d-modeler`, and `pr-review-adjudicator`. The Economy Implementation Engineer owns frontend implementation and browser validation.
+- Route requested 3D asset work to `3d-modeler` as its implementation owner, passing the verbatim modeling request, exact design-artifact paths, and export requirements. Serialize live Blender scene access; pass the modeler's exact asset handoff to the implementation engineer for application integration.

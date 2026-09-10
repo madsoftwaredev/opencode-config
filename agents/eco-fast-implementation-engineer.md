@@ -1,8 +1,8 @@
 ---
-description: Fast cost-efficient Luna implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
+description: Luna Fast implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
 model: openai/gpt-5.6-luna-fast
-variant: high
+variant: xhigh
 permission:
   task: deny
 ---

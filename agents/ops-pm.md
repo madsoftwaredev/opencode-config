@@ -2,8 +2,7 @@
 description: Operations and project management - processes, SOPs, timelines, resource planning, and vendor management
 mode: primary
 model: openai/gpt-5.6-sol
-variant: xhigh
-temperature: 0.3
+variant: high
 tools:
   webfetch: true
   bash: false
