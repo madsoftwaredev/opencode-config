@@ -1,7 +1,7 @@
 ---
 description: Low-cost MiMo Flash worker for narrow, repetitive, isolated, and objectively verifiable implementation tasks
 mode: subagent
-model: openrouter/xiaomi/mimo-v2.6-flash#thinking
+model: opencode-go/mimo-v2.6-flash
 permissions:
   - action: external_directory
     resource: "~/.config/opencode/skills/**"

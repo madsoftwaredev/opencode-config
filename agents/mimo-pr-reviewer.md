@@ -1,7 +1,7 @@
 ---
 description: MiMo read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
 mode: subagent
-model: openrouter/xiaomi/mimo-v2.6-flash#thinking
+model: opencode-go/mimo-v2.6-flash
 permissions:
   - action: read
     resource: ".pr-reviews/*.md"

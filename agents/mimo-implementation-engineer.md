@@ -1,7 +1,7 @@
 ---
 description: MiMo Pro implementer for normal features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: openrouter/xiaomi/mimo-v2.6-pro#thinking
+model: opencode-go/mimo-v2.6-pro
 permissions:
   - action: external_directory
     resource: "~/.config/opencode/skills/**"

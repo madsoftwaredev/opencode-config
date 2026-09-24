@@ -1,7 +1,7 @@
 ---
 description: Vision-capable MiMo coding orchestrator with fast, standard, and deep execution lanes using MiMo workers, all with thinking enabled
 mode: primary
-model: openrouter/xiaomi/mimo-v2.6-pro#thinking
+model: opencode-go/mimo-v2.6-pro
 color: "#F43F5E"
 permissions:
   - action: external_directory
@@ -57,7 +57,7 @@ Load `orchestrator-contract` before repository inspection, planning, delegation,
 
 ## MiMo Preset
 
-All MiMo roles run `xiaomi/mimo` models pinned with the `#thinking` variant in configuration. This supersedes the named Sol, Luna, and DeepSeek presets in `model-routing.md`; follow that document only for escalation, reserve, and effort principles. Do not load `economy-delegation`; the MiMo family is not an Economy, Eco Fast, or Flash worker family.
+All MiMo roles run `opencode-go` MiMo models in configuration: `mimo-v2.6-pro` for orchestration, implementation, and analysis; `mimo-v2.6-flash` for bounded work and routine review. Thinking is always on for this catalog (`reasoning: true` with no toggle or effort options), so no thinking variant exists or applies. This supersedes the named Sol, Luna, and DeepSeek presets in `model-routing.md`; follow that document only for escalation, reserve, and effort principles. Do not load `economy-delegation`; the MiMo family is not an Economy, Eco Fast, or Flash worker family.
 
 ## MiMo Routing
 

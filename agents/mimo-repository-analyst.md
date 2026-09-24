@@ -1,7 +1,7 @@
 ---
 description: Read-only MiMo analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: openrouter/xiaomi/mimo-v2.6-pro#thinking
+model: opencode-go/mimo-v2.6-pro
 permissions:
   - action: edit
     resource: "*"
