@@ -45,6 +45,7 @@ V2_SKILLS = {
     "skill-authoring",
     "testing",
     "security",
+    "ui-ux",
 }
 
 

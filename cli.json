@@ -1,16 +1,18 @@
 {
   "theme": {
-    "name": "tokyonight",
-    "mode": "dark"
+    "name": "aura",
+    "mode": "system"
   },
   "scroll": {
     "acceleration": true
   },
   "diffs": {
-    "wrap": "word"
+    "wrap": "word",
+    "view": "unified",
+    "single": true
   },
   "terminal": {
-    "title": false
+    "title": true
   },
   "session": {
     "sidebar": "auto",
@@ -20,12 +22,19 @@
   },
   "animations": true,
   "tabs": {
-    "layout": "horizontal"
+    "layout": "vertical",
+    "scope": "cwd"
   },
   "prompt": {
-    "image_preview": true
+    "image_preview": true,
+    "paste": "compact"
   },
   "leader": {
     "timeout": 3000
+  },
+  "mouse": true,
+  "attention": {
+    "notifications": true,
+    "sound": false
   }
 }

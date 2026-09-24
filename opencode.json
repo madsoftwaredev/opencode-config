@@ -1,30 +1,16 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "agent": {
-    "compaction": {
-      "model": "opencode-go/deepseek-v4-flash",
-      "variant": "max"
+  "agents": {
+    "build": {
+      "model": "deepseek/deepseek-flash"
     }
   },
-  "autoupdate": true,
+  "update": "auto",
   "compaction": {
-    "auto": true,
-    "prune": true
+    "auto": true
   },
-  "default_agent": "build",
+  "default_agent": "exp-orchestrator",
   "formatter": {
-    "dartfmt": {
-      "command": ["dart", "format", "$FILE"],
-      "extensions": [".dart"]
-    },
-    "eslint": {
-      "command": ["npx", "eslint", "--fix", "$FILE"],
-      "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".mts", ".cts"]
-    },
-    "prettier": {
-      "command": ["npx", "prettier", "--write", "$FILE"],
-      "extensions": [".json", ".md", ".yml", ".yaml", ".css", ".scss"]
-    },
     "rubocop": {
       "command": ["bundle", "exec", "rubocop", "-a", "$FILE"],
       "extensions": [".rb", ".rake", ".gemspec", ".ru"]
@@ -32,152 +18,145 @@
   },
   "instructions": ["plugin/shell-strategy/shell_strategy.md"],
   "mcp": {
-    "context7": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp"
-    },
-    "gh_grep": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.grep.app"
-    },
-    "gamelab-mcp": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://mcp.gamelabstudio.co/sse",
-      "headers": {
-        "X-API-Key": "{env:GAMELAB_API_KEY}"
-      }
-    },
-    "kravos": {
-      "enabled": true,
-      "oauth": {},
-      "type": "remote",
-      "url": "https://mcp.kravos.ai/api/v1"
-    },
-    "coolify": {
-      "type": "local",
-      "command": ["npx", "-y", "@masonator/coolify-mcp"],
-      "enabled": true,
-      "environment": {
-        "COOLIFY_BASE_URL": "{env:COOLIFY_BASE_URL}",
-        "COOLIFY_ACCESS_TOKEN": "{env:COOLIFY_ACCESS_TOKEN}"
-      }
-    },
-    "mobbin": {
-      "enabled": true,
-      "type": "remote",
-      "url": "https://api.mobbin.com/mcp"
-    },
-    "playwright": {
-      "command": [
-        "npx",
-        "@playwright/mcp@latest",
-        "--browser=chromium",
-        "--caps=core,vision,pdf,testing",
-        "--output-dir=./browser-outputs",
-        "--viewport-size=1920x1080",
-        "--timeout-action=10000"
-      ],
-      "enabled": false,
-      "type": "local"
-    },
-    "blender-mcp": {
-      "command": ["/Users/mm/.local/bin/uvx", "blender-mcp"],
-      "enabled": true,
-      "environment": {
-        "BLENDER_HOST": "localhost",
-        "BLENDER_PORT": "9876"
+    "servers": {
+      "context7": {
+        "type": "remote",
+        "url": "https://mcp.context7.com/mcp"
       },
-      "type": "local"
-    },
-    "sentry": {
-      "enabled": false,
-      "oauth": {},
-      "type": "remote",
-      "url": "https://mcp.sentry.dev/mcp"
+      "gh_grep": {
+        "type": "remote",
+        "url": "https://mcp.grep.app"
+      },
+      "gamelab-mcp": {
+        "type": "remote",
+        "url": "https://mcp.gamelabstudio.co/mcp",
+        "headers": {
+          "X-API-Key": "{env:GAMELAB_API_KEY}"
+        }
+      },
+      "kravos": {
+        "oauth": {},
+        "type": "remote",
+        "url": "https://mcp.kravos.ai/api/v1"
+      },
+      "coolify": {
+        "type": "local",
+        "command": ["npx", "-y", "@masonator/coolify-mcp"],
+        "environment": {
+          "COOLIFY_BASE_URL": "{env:COOLIFY_BASE_URL}",
+          "COOLIFY_ACCESS_TOKEN": "{env:COOLIFY_ACCESS_TOKEN}"
+        }
+      },
+      "mobbin": {
+        "type": "remote",
+        "url": "https://api.mobbin.com/mcp"
+      },
+      "playwright": {
+        "command": [
+          "npx",
+          "@playwright/mcp@latest",
+          "--browser=chromium",
+          "--caps=core,vision,pdf,testing",
+          "--output-dir=./browser-outputs",
+          "--viewport-size=1920x1080",
+          "--timeout-action=10000"
+        ],
+        "disabled": true,
+        "type": "local"
+      },
+      "blender-mcp": {
+        "command": ["/Users/mm/.local/bin/uvx", "blender-mcp"],
+        "environment": {
+          "BLENDER_HOST": "localhost",
+          "BLENDER_PORT": "9876"
+        },
+        "type": "local"
+      },
+      "sentry": {
+        "oauth": {},
+        "type": "remote",
+        "url": "https://mcp.sentry.dev/mcp",
+        "disabled": true
+      }
     }
   },
   "model": "openai/gpt-6-astra",
-  "permission": {
-    "bash": {
-      "*": "allow",
-      "chmod *": "ask",
-      "chown *": "ask",
-      "curl *": "ask",
-      "dd *": "ask",
-      "git clean *": "ask",
-      "git commit --amend*": "ask",
-      "git push *": "ask",
-      "git rebase *": "ask",
-      "git reset *": "ask",
-      "mv *": "ask",
-      "rm *": "ask",
-      "sudo *": "ask",
-      "wget *": "ask"
-    },
-    "doom_loop": "ask",
-    "edit": {
-      "*": "allow",
-      "**/.aws/**": "deny",
-      "**/.env": "deny",
-      "**/.env.*": "deny",
-      "*.env.example": "allow",
-      "**/.ssh/**": "deny",
-      "**/secrets/**": "deny"
-    },
-    "external_directory": {
-      "*": "ask",
-      "/Users/mm/.config/opencode": "allow",
-      "/Users/mm/.config/opencode/**": "allow",
-      "/Users/mm/.claude/skills": "allow",
-      "/Users/mm/.claude/skills/**": "allow",
-      "/Users/mm/.agents": "allow",
-      "/Users/mm/.agents/**": "allow",
-      "/Users/mm/Pictures/Screenshots": "allow",
-      "/Users/mm/Pictures/Screenshots/*": "allow"
-    },
-    "read": {
-      "*": "allow",
-      "**/.aws/**": "deny",
-      "**/.netrc": "deny",
-      "**/.npmrc": "deny",
-      "**/.pypirc": "deny",
-      "**/.ssh/**": "deny",
-      "**/secrets/**": "deny",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow",
-      "*.pem": "deny"
-    },
-    "skill": {
-      "*": "allow",
-      "code-audit": "deny"
-    },
-    "task": {
-      "*": "deny"
-    }
-  },
-  "plugin": [
-    "opencode-dynamic-context-pruning",
-    "@simonwjackson/opencode-direnv",
-    "btw-opencode",
-    "@nick-vi/opencode-type-inject",
-    "opencode-mem",
-    [
-      "@plannotator/opencode@0.27.4",
-      {
-        "workflow": "manual"
+  "plugins": [
+    {
+      "package": "./plugins/compaction-model",
+      "options": {
+        "model": "opencode-go/deepseek-v4.1-flash#max"
       }
-    ],
-    "opencode-zellij-namer@1.1.3",
-    "@slkiser/opencode-quota@4.8.2",
-    "opencode-websearch-cited@1.2.0"
+    }
+  ],
+  "permissions": [
+    { "action": "shell", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "chmod *", "effect": "ask" },
+    { "action": "shell", "resource": "chown *", "effect": "ask" },
+    { "action": "shell", "resource": "curl *", "effect": "ask" },
+    { "action": "shell", "resource": "dd *", "effect": "ask" },
+    { "action": "shell", "resource": "git clean *", "effect": "ask" },
+    { "action": "shell", "resource": "git commit --amend*", "effect": "ask" },
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "git rebase *", "effect": "ask" },
+    { "action": "shell", "resource": "git reset *", "effect": "ask" },
+    { "action": "shell", "resource": "mv *", "effect": "ask" },
+    { "action": "shell", "resource": "rm *", "effect": "ask" },
+    { "action": "shell", "resource": "sudo *", "effect": "ask" },
+    { "action": "shell", "resource": "wget *", "effect": "ask" },
+    { "action": "doom_loop", "resource": "*", "effect": "ask" },
+    { "action": "edit", "resource": "*", "effect": "allow" },
+    { "action": "edit", "resource": "**/.aws/**", "effect": "deny" },
+    { "action": "edit", "resource": "**/.env", "effect": "deny" },
+    { "action": "edit", "resource": "**/.env.*", "effect": "deny" },
+    { "action": "edit", "resource": "*.env.example", "effect": "allow" },
+    { "action": "edit", "resource": "**/.ssh/**", "effect": "deny" },
+    { "action": "edit", "resource": "**/secrets/**", "effect": "deny" },
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    { "action": "external_directory", "resource": "/Users/mm/.config/opencode", "effect": "allow" },
+    {
+      "action": "external_directory",
+      "resource": "/Users/mm/.config/opencode/**",
+      "effect": "allow"
+    },
+    { "action": "external_directory", "resource": "/Users/mm/.claude/skills", "effect": "allow" },
+    {
+      "action": "external_directory",
+      "resource": "/Users/mm/.claude/skills/**",
+      "effect": "allow"
+    },
+    { "action": "external_directory", "resource": "/Users/mm/.agents", "effect": "allow" },
+    { "action": "external_directory", "resource": "/Users/mm/.agents/**", "effect": "allow" },
+    {
+      "action": "external_directory",
+      "resource": "/Users/mm/Pictures/Screenshots",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/Users/mm/Pictures/Screenshots/*",
+      "effect": "allow"
+    },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "**/.aws/**", "effect": "deny" },
+    { "action": "read", "resource": "**/.netrc", "effect": "deny" },
+    { "action": "read", "resource": "**/.npmrc", "effect": "deny" },
+    { "action": "read", "resource": "**/.pypirc", "effect": "deny" },
+    { "action": "read", "resource": "**/.ssh/**", "effect": "deny" },
+    { "action": "read", "resource": "**/secrets/**", "effect": "deny" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "read", "resource": "*.env.example", "effect": "allow" },
+    { "action": "read", "resource": "*.pem", "effect": "deny" },
+    { "action": "skill", "resource": "*", "effect": "allow" },
+    { "action": "skill", "resource": "code-audit", "effect": "deny" },
+    { "action": "subagent", "resource": "*", "effect": "deny" }
   ],
   "share": "manual",
   "shell": "zsh",
-  "subagent_depth": 1,
+  "experimental": {
+    "subagent_depth": 1
+  },
   "watcher": {
     "ignore": [
       "**/.git/**",
@@ -201,52 +180,213 @@
       "**/android/app/build/**"
     ]
   },
-  "provider": {
+  "providers": {
     "copilot": {},
-    "openai": {},
-    "openrouter": {},
-    "zai": {},
-    "deepseek": {
+    "openai": {
       "models": {
-        "deepseek-v4.1-flash-expires-on-0910": {
-          "name": "DeepSeek V4.1 Flash (Beta, expires Sep 10)",
-          "family": "deepseek-flash",
-          "status": "beta",
-          "attachment": true,
-          "reasoning": true,
-          "temperature": true,
-          "tool_call": true,
-          "interleaved": {
-            "field": "reasoning_content"
-          },
-          "cost": {
-            "input": 0.14,
-            "output": 0.28,
-            "cache_read": 0.0028
-          },
+        "gpt-5.4": {
           "limit": {
-            "context": 258000,
-            "output": 384000
-          },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.4-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.4-mini": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.4-mini-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.5": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.5-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-luna": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-luna-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-sol": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-sol-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-terra": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-5.6-terra-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-astra": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-astra-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-luna": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-luna-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-sol": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-sol-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
           }
         }
       }
     },
-    "opencode-go": {},
+    "openrouter": {
+      "models": {
+        "xiaomi/mimo-v2.6-flash": {
+          "body": {
+            "chat_template_kwargs": {
+              "enable_thinking": true
+            }
+          },
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "xiaomi/mimo-v2.6-pro": {
+          "body": {
+            "chat_template_kwargs": {
+              "enable_thinking": true
+            }
+          },
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "xiaomi/mimo-v2.6-pro-ultraspeed": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        }
+      }
+    },
+    "zai": {},
+    "deepseek": {
+      "models": {
+        "deepseek-flash": {
+          "limit": {
+            "context": 258000,
+            "output": 384000
+          }
+        }
+      }
+    },
+    "opencode": {
+      "models": {
+        "mimo-v2.6-flash-free": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        }
+      }
+    },
+    "opencode-go": {
+      "models": {
+        "mimo-v2.6-flash": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "mimo-v2.6-pro": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        }
+      }
+    },
     "ollama-cloud": {}
   }
 }
