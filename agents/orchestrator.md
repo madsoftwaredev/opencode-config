@@ -1,25 +1,51 @@
 ---
 description: Primary coding commander that inspects requests, routes role-specialized workers, integrates their work, and validates the final result
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#22C55E"
-permission:
-  task:
-    "*": deny
-    principal-engineer: allow
-    implementation-engineer: allow
-    bounded-worker: allow
-    repository-analyst: allow
-    economy-implementation-engineer: allow
-    economy-bounded-worker: allow
-    economy-repository-analyst: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
-    pr-reviewer: allow
-    exceptional-pr-reviewer: allow
-    economy-pr-reviewer: allow
-    pr-review-adjudicator: allow
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "economy-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "economy-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "economy-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
+  - action: subagent
+    resource: "pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "exceptional-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "economy-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "pr-review-adjudicator"
+    effect: allow
 ---
 
 # Orchestrator

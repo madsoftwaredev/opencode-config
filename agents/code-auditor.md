@@ -1,22 +1,39 @@
 ---
 description: Explicitly invoked read-only auditor for named code and system risk domains; reports evidence without implementing fixes
 mode: all
-model: openai/gpt-5.6-sol
-variant: medium
+model: openai/gpt-6-sol#medium
 color: "#D97706"
-permission:
-  edit: deny
-  write: deny
-  task: deny
-  bash:
-    "*": deny
-    "git diff*": allow
-    "git log*": allow
-    "git show*": allow
-    "git status*": allow
-  skill:
-    "*": allow
-    code-audit: allow
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git diff*"
+    effect: allow
+  - action: shell
+    resource: "git log*"
+    effect: allow
+  - action: shell
+    resource: "git show*"
+    effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: skill
+    resource: "*"
+    effect: allow
+  - action: skill
+    resource: "code-audit"
+    effect: allow
 ---
 
 # Code Auditor

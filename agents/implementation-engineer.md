@@ -1,10 +1,11 @@
 ---
 description: Default autonomous implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: openai/gpt-5.6-sol
-variant: medium
-permission:
-  task: deny
+model: openai/gpt-6-sol#medium
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
 
 # Implementation Engineer

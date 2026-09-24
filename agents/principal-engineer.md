@@ -1,10 +1,11 @@
 ---
 description: Principal engineer for architecture, high-risk changes, difficult debugging, rescue implementation, and critical technical review
 mode: subagent
-model: openai/gpt-6-astra
-variant: high
-permission:
-  task: deny
+model: openai/gpt-6-astra#high
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
 
 # Principal Engineer

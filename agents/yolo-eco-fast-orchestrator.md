@@ -1,19 +1,33 @@
 ---
 description: Fully autonomous Sol high orchestrator that completes projects with the Eco Fast worker pool plus shared UI/UX, 3D, and principal specialists
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#06B6D4"
-permission:
-  doom_loop: allow
-  task:
-    "*": deny
-    principal-engineer: allow
-    eco-fast-implementation-engineer: allow
-    eco-fast-bounded-worker: allow
-    eco-fast-repository-analyst: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
+permissions:
+  - action: doom_loop
+    resource: "*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
 ---
 
 # YOLO Eco Fast Orchestrator

@@ -1,40 +1,86 @@
 ---
-description: Standard Sol read-only reviewer for consequential and normal expert-level PRs, with complete findings in a Markdown artifact
+description: Standard DeepSeek read-only reviewer for consequential and normal expert-level PRs, with complete findings in a Markdown artifact
 mode: subagent
-model: openai/gpt-5.6-sol
-variant: medium
-permission:
-  read:
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  edit:
-    "*": deny
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  write:
-    "*": deny
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  external_directory:
-    "*": deny
-    "~/.config/opencode/skills/**": allow
-    "~/.agents/skills/**": allow
-    "~/.claude/skills/**": allow
-    "~/.agent-configs/skills/**": allow
-  task: deny
-  bash:
-    "*": deny
-    "gh auth status*": allow
-    "gh repo view *": allow
-    "gh pr view *": allow
-    "gh pr diff *": allow
-    "gh pr checks *": allow
-    "gh api --method GET *": allow
-    "gh api -X GET *": allow
-    "git check-ignore *": allow
-    "git status*": allow
-    "mkdir .pr-reviews": allow
-    "mkdir -p .pr-reviews": allow
+model: opencode-go/deepseek-v4.1-flash#max
+permissions:
+  - action: read
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: read
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: edit
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: edit
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: external_directory
+    resource: "*"
+    effect: deny
+  - action: external_directory
+    resource: "~/.config/opencode/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agents/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.claude/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agent-configs/skills/**"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "gh auth status*"
+    effect: allow
+  - action: shell
+    resource: "gh repo view *"
+    effect: allow
+  - action: shell
+    resource: "gh pr view *"
+    effect: allow
+  - action: shell
+    resource: "gh pr diff *"
+    effect: allow
+  - action: shell
+    resource: "gh pr checks *"
+    effect: allow
+  - action: shell
+    resource: "gh api --method GET *"
+    effect: allow
+  - action: shell
+    resource: "gh api -X GET *"
+    effect: allow
+  - action: shell
+    resource: "git check-ignore *"
+    effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: shell
+    resource: "mkdir .pr-reviews"
+    effect: allow
+  - action: shell
+    resource: "mkdir -p .pr-reviews"
+    effect: allow
 ---
 
 # PR Reviewer

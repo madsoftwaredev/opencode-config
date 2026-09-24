@@ -1,69 +1,168 @@
 ---
 description: Repository-focused planning primary that asks useful questions with recommendations and writes clear Markdown plans with risks and Mermaid diagrams; no product-code changes
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#14B8A6"
-permission:
-  "*": allow
-  read:
-    "*": allow
-    "**/.aws/**": deny
-    "**/.netrc": deny
-    "**/.npmrc": deny
-    "**/.pypirc": deny
-    "**/.ssh/**": deny
-    "**/secrets/**": deny
-    "*.env": deny
-    "*.env.*": deny
-    "*.env.example": allow
-    "*.pem": deny
-  glob: allow
-  grep: allow
-  list: allow
-  lsp: allow
-  edit:
-    "*": deny
-    ".plans/*.md": allow
-    "plans/*.md": allow
-    "**/.plans/*.md": allow
-    "**/plans/*.md": allow
-    "skills/**": deny
-    "**/.config/opencode/skills/**": deny
-    "**/.agents/skills/**": deny
-    "**/.claude/skills/**": deny
-    "**/.agent-configs/skills/**": deny
-  external_directory:
-    "*": deny
-    "~/.config/opencode/skills/**": allow
-    "~/.agents/skills/**": allow
-    "~/.claude/skills/**": allow
-    "~/.agent-configs/skills/**": allow
-  bash:
-    "*": deny
-    "git status": allow
-    "git status --short": allow
-    "git rev-parse --show-toplevel": allow
-    "git diff --no-ext-diff --no-textconv": allow
-    "git diff --cached --no-ext-diff --no-textconv": allow
-    "mkdir .plans": allow
-    "mkdir -p .plans": allow
-  task:
-    "*": deny
-    repository-analyst: allow
-    economy-repository-analyst: allow
-  skill:
-    "*": allow
-    code-audit: deny
-  question: allow
-  todowrite: allow
-  webfetch: allow
-  websearch: allow
-  "context7_*": allow
-  "gh_grep_*": allow
-  worktree_create: deny
-  worktree_delete: deny
-  doom_loop: ask
+permissions:
+  - action: "*"
+    resource: "*"
+    effect: allow
+  - action: read
+    resource: "*"
+    effect: allow
+  - action: read
+    resource: "**/.aws/**"
+    effect: deny
+  - action: read
+    resource: "**/.netrc"
+    effect: deny
+  - action: read
+    resource: "**/.npmrc"
+    effect: deny
+  - action: read
+    resource: "**/.pypirc"
+    effect: deny
+  - action: read
+    resource: "**/.ssh/**"
+    effect: deny
+  - action: read
+    resource: "**/secrets/**"
+    effect: deny
+  - action: read
+    resource: "*.env"
+    effect: deny
+  - action: read
+    resource: "*.env.*"
+    effect: deny
+  - action: read
+    resource: "*.env.example"
+    effect: allow
+  - action: read
+    resource: "*.pem"
+    effect: deny
+  - action: glob
+    resource: "*"
+    effect: allow
+  - action: grep
+    resource: "*"
+    effect: allow
+  - action: list
+    resource: "*"
+    effect: allow
+  - action: lsp
+    resource: "*"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: ".plans/*.md"
+    effect: allow
+  - action: edit
+    resource: "plans/*.md"
+    effect: allow
+  - action: edit
+    resource: "**/.plans/*.md"
+    effect: allow
+  - action: edit
+    resource: "**/plans/*.md"
+    effect: allow
+  - action: edit
+    resource: "skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.config/opencode/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.agents/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.claude/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.agent-configs/skills/**"
+    effect: deny
+  - action: external_directory
+    resource: "*"
+    effect: deny
+  - action: external_directory
+    resource: "~/.config/opencode/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agents/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.claude/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agent-configs/skills/**"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git status"
+    effect: allow
+  - action: shell
+    resource: "git status --short"
+    effect: allow
+  - action: shell
+    resource: "git rev-parse --show-toplevel"
+    effect: allow
+  - action: shell
+    resource: "git diff --no-ext-diff --no-textconv"
+    effect: allow
+  - action: shell
+    resource: "git diff --cached --no-ext-diff --no-textconv"
+    effect: allow
+  - action: shell
+    resource: "mkdir .plans"
+    effect: allow
+  - action: shell
+    resource: "mkdir -p .plans"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "economy-repository-analyst"
+    effect: allow
+  - action: skill
+    resource: "*"
+    effect: allow
+  - action: skill
+    resource: "code-audit"
+    effect: deny
+  - action: question
+    resource: "*"
+    effect: allow
+  - action: todowrite
+    resource: "*"
+    effect: allow
+  - action: webfetch
+    resource: "*"
+    effect: allow
+  - action: websearch
+    resource: "*"
+    effect: allow
+  - action: "context7_*"
+    resource: "*"
+    effect: allow
+  - action: "gh_grep_*"
+    resource: "*"
+    effect: allow
+  - action: worktree_create
+    resource: "*"
+    effect: deny
+  - action: worktree_delete
+    resource: "*"
+    effect: deny
+  - action: doom_loop
+    resource: "*"
+    effect: ask
 ---
 
 # Repository Planner

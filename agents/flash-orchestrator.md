@@ -1,22 +1,42 @@
 ---
 description: Sol high primary coding orchestrator that routes work to the Flash-named worker pool and shared specialists
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#0EA5E9"
-permission:
-  task:
-    "*": deny
-    principal-engineer: allow
-    flash-implementation-engineer: allow
-    flash-bounded-worker: allow
-    flash-repository-analyst: allow
-    flash-vision-scout: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
-    flash-pr-reviewer: allow
-    exceptional-pr-reviewer: allow
-    pr-review-adjudicator: allow
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "flash-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "flash-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "flash-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "flash-vision-scout"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
+  - action: subagent
+    resource: "flash-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "exceptional-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "pr-review-adjudicator"
+    effect: allow
 ---
 
 # Flash Orchestrator

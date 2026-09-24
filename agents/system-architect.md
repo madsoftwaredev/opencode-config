@@ -1,46 +1,102 @@
 ---
 description: Architecture primary for clear, evidence-based decisions about application structure, responsibilities, dependencies, runtime behavior, and safe evolution
 mode: primary
-model: openai/gpt-6-astra
-variant: xhigh
+model: openai/gpt-6-astra#xhigh
 color: "#0EA5E9"
-permission:
-  edit:
-    "*": deny
-    "*.md": allow
-    "**/*.md": allow
-    "**/.aws/**": deny
-    "**/.env": deny
-    "**/.env.*": deny
-    "**/.ssh/**": deny
-    "**/secrets/**": deny
-    "skills/**": deny
-    "**/.config/opencode/skills/**": deny
-    "**/.agents/skills/**": deny
-    "**/.claude/skills/**": deny
-    "**/.agent-configs/skills/**": deny
-  external_directory:
-    "*": ask
-    "~/.config/opencode/skills/**": allow
-    "~/.agents/skills/**": allow
-    "~/.claude/skills/**": allow
-    "~/.agent-configs/skills/**": allow
-  bash:
-    "*": deny
-    "git diff*": allow
-    "git log*": allow
-    "git show*": allow
-    "git status*": allow
-  task:
-    "*": deny
-    code-auditor: allow
-    principal-engineer: allow
-    repository-analyst: allow
-    economy-repository-analyst: allow
-    ui-ux-analyst: allow
-  skill:
-    "*": allow
-    code-audit: allow
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*.md"
+    effect: allow
+  - action: edit
+    resource: "**/*.md"
+    effect: allow
+  - action: edit
+    resource: "**/.aws/**"
+    effect: deny
+  - action: edit
+    resource: "**/.env"
+    effect: deny
+  - action: edit
+    resource: "**/.env.*"
+    effect: deny
+  - action: edit
+    resource: "**/.ssh/**"
+    effect: deny
+  - action: edit
+    resource: "**/secrets/**"
+    effect: deny
+  - action: edit
+    resource: "skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.config/opencode/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.agents/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.claude/skills/**"
+    effect: deny
+  - action: edit
+    resource: "**/.agent-configs/skills/**"
+    effect: deny
+  - action: external_directory
+    resource: "*"
+    effect: ask
+  - action: external_directory
+    resource: "~/.config/opencode/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agents/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.claude/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agent-configs/skills/**"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git diff*"
+    effect: allow
+  - action: shell
+    resource: "git log*"
+    effect: allow
+  - action: shell
+    resource: "git show*"
+    effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "code-auditor"
+    effect: allow
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "economy-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: skill
+    resource: "*"
+    effect: allow
+  - action: skill
+    resource: "code-audit"
+    effect: allow
 ---
 
 # System Architect

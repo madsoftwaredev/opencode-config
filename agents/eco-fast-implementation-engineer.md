@@ -1,10 +1,11 @@
 ---
 description: Luna Fast implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: openai/gpt-5.6-luna-fast
-variant: xhigh
-permission:
-  task: deny
+model: openai/gpt-6-luna-fast#xhigh
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
 
 # Eco Fast Implementation Engineer

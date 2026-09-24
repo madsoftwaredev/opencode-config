@@ -1,20 +1,38 @@
 ---
-description: Direct DeepSeek vision-capable read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: DeepSeek vision-capable read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: deepseek/deepseek-v4.1-flash-expires-on-0910
-variant: max
-permission:
-  edit: deny
-  write: deny
-  task: deny
-  bash:
-    "*": deny
-    "git diff*": allow
-    "git log*": allow
-    "git show*": allow
-    "git status*": allow
-    "ls*": allow
-    "rg*": allow
+model: opencode-go/deepseek-v4.1-flash#max
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git diff*"
+    effect: allow
+  - action: shell
+    resource: "git log*"
+    effect: allow
+  - action: shell
+    resource: "git show*"
+    effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: shell
+    resource: "ls*"
+    effect: allow
+  - action: shell
+    resource: "rg*"
+    effect: allow
 ---
 
 # Flash Repository Analyst

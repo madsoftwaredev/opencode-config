@@ -1,40 +1,86 @@
 ---
 description: Business development strategist - partnerships, outreach, proposals, deal structuring, and growth opportunities
 mode: primary
-model: openai/gpt-5.6-sol
-variant: medium
-tools:
-  webfetch: true
-  bash: false
-permission:
-  external_directory:
-    "*": ask
-    "/Users/mm/.config/opencode": allow
-    "/Users/mm/.config/opencode/**": allow
-    "/Users/mm/.claude/skills": allow
-    "/Users/mm/.claude/skills/**": allow
-    "/Users/mm/.agents": allow
-    "/Users/mm/.agents/**": allow
-    "/Users/mm/Pictures/Screenshots": allow
-    "/Users/mm/Pictures/Screenshots/*": allow
-  edit:
-    "*": deny
-    "*.md": allow
-    "*.mdx": allow
-    "*.txt": allow
-    "*.yaml": allow
-    "*.yml": allow
-    "*.csv": allow
-  write:
-    "*": deny
-    "*.md": allow
-    "*.mdx": allow
-    "*.txt": allow
-    "*.yaml": allow
-    "*.yml": allow
-    "*.csv": allow
-  task:
-    "*": allow
+model: openai/gpt-6-sol#medium
+permissions:
+  - action: webfetch
+    resource: "*"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: external_directory
+    resource: "*"
+    effect: ask
+  - action: external_directory
+    resource: "/Users/mm/.config/opencode"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/.config/opencode/**"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/.claude/skills"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/.claude/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/.agents"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/.agents/**"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/Pictures/Screenshots"
+    effect: allow
+  - action: external_directory
+    resource: "/Users/mm/Pictures/Screenshots/*"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*.md"
+    effect: allow
+  - action: edit
+    resource: "*.mdx"
+    effect: allow
+  - action: edit
+    resource: "*.txt"
+    effect: allow
+  - action: edit
+    resource: "*.yaml"
+    effect: allow
+  - action: edit
+    resource: "*.yml"
+    effect: allow
+  - action: edit
+    resource: "*.csv"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*.md"
+    effect: allow
+  - action: edit
+    resource: "*.mdx"
+    effect: allow
+  - action: edit
+    resource: "*.txt"
+    effect: allow
+  - action: edit
+    resource: "*.yaml"
+    effect: allow
+  - action: edit
+    resource: "*.yml"
+    effect: allow
+  - action: edit
+    resource: "*.csv"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: allow
 ---
 
 # Business Development Agent

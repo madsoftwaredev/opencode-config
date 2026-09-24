@@ -1,11 +1,14 @@
 ---
 description: Astra high 3D asset specialist for Blender modeling, scene editing, materials, UVs, lighting, rigging, animation, optimization, and verified exports
 mode: subagent
-model: openai/gpt-6-astra
-variant: high
-permission:
-  task: deny
-  question: deny
+model: openai/gpt-6-astra#high
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: question
+    resource: "*"
+    effect: deny
 ---
 
 # 3D Modeler

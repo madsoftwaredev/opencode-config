@@ -1,10 +1,11 @@
 ---
 description: Direct DeepSeek vision-capable implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: deepseek/deepseek-v4.1-flash-expires-on-0910
-variant: max
-permission:
-  task: deny
+model: deepseek/deepseek-flash#max
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
 
 # Flash Implementation Engineer

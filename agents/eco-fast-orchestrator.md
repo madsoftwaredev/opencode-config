@@ -1,22 +1,42 @@
 ---
 description: Vision-capable coding orchestrator with fast, standard, and deep execution lanes using fast economy workers
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#06B6D4"
-permission:
-  task:
-    "*": deny
-    eco-fast-implementation-engineer: allow
-    eco-fast-bounded-worker: allow
-    eco-fast-repository-analyst: allow
-    principal-engineer: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
-    pr-reviewer: allow
-    exceptional-pr-reviewer: allow
-    eco-fast-pr-reviewer: allow
-    pr-review-adjudicator: allow
+permissions:
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "eco-fast-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
+  - action: subagent
+    resource: "pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "exceptional-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "eco-fast-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "pr-review-adjudicator"
+    effect: allow
 ---
 
 # Eco Fast Orchestrator

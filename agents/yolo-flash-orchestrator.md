@@ -1,20 +1,36 @@
 ---
 description: Fully autonomous Sol high orchestrator that completes projects with the Flash-named worker pool plus shared UI/UX, 3D, and principal specialists
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#38BDF8"
-permission:
-  doom_loop: allow
-  task:
-    "*": deny
-    principal-engineer: allow
-    flash-implementation-engineer: allow
-    flash-bounded-worker: allow
-    flash-repository-analyst: allow
-    flash-vision-scout: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
+permissions:
+  - action: doom_loop
+    resource: "*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "flash-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "flash-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "flash-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "flash-vision-scout"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
 ---
 
 # YOLO Flash Orchestrator

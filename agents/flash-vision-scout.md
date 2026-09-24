@@ -1,13 +1,20 @@
 ---
 description: Direct DeepSeek vision-only scout for factual inspection of supplied local images, screenshots, rendered PDF pages, and extracted video frames
 mode: subagent
-model: deepseek/deepseek-v4.1-flash-expires-on-0910
-variant: max
-permission:
-  edit: deny
-  write: deny
-  task: deny
-  bash: deny
+model: deepseek/deepseek-flash#max
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
 ---
 
 # Flash Vision Scout

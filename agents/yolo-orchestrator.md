@@ -1,22 +1,42 @@
 ---
 description: Fully autonomous primary orchestrator that drives a project through planning, implementation, verification, and cleanup
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#EF4444"
-permission:
-  doom_loop: allow
-  task:
-    "*": deny
-    principal-engineer: allow
-    implementation-engineer: allow
-    economy-implementation-engineer: allow
-    bounded-worker: allow
-    economy-bounded-worker: allow
-    repository-analyst: allow
-    economy-repository-analyst: allow
-    ui-ux-analyst: allow
-    3d-modeler: allow
+permissions:
+  - action: doom_loop
+    resource: "*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "economy-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "economy-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "economy-repository-analyst"
+    effect: allow
+  - action: subagent
+    resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "3d-modeler"
+    effect: allow
 ---
 
 # YOLO Orchestrator

@@ -1,51 +1,114 @@
 ---
 description: Standard primary agent for coordinating isolated PR reviews, artifacts, necessary adjudication, and authorized GitHub publication
 mode: primary
-model: openai/gpt-5.6-sol
-variant: high
+model: openai/gpt-6-sol#high
 color: "#A855F7"
-permission:
-  read:
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  edit:
-    "*": deny
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  write:
-    "*": deny
-    ".pr-reviews/*.md": allow
-    ".pr-reviews/**/*.md": allow
-  external_directory:
-    "*": deny
-    "~/.config/opencode/skills/**": allow
-    "~/.agents/skills/**": allow
-    "~/.claude/skills/**": allow
-    "~/.agent-configs/skills/**": allow
-  task:
-    "*": deny
-    pr-reviewer: allow
-    exceptional-pr-reviewer: allow
-    economy-pr-reviewer: allow
-    pr-review-adjudicator: allow
-  bash:
-    "*": deny
-    "gh auth status*": allow
-    "gh repo view *": allow
-    "gh pr view *": allow
-    "gh pr diff *": allow
-    "gh pr checks *": allow
-    "gh pr review *": allow
-    "gh api --method GET *": allow
-    "gh api -X GET *": allow
-    "gh api --method POST repos/*/pulls/*/comments*": allow
-    "gh api -X POST repos/*/pulls/*/comments*": allow
-    "gh api --method POST repos/*/pulls/*/reviews*": allow
-    "gh api -X POST repos/*/pulls/*/reviews*": allow
-    "git check-ignore *": allow
-    "git status*": allow
-    "mkdir .pr-reviews": allow
-    "mkdir -p .pr-reviews": allow
+permissions:
+  - action: read
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: read
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: edit
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: edit
+    resource: ".pr-reviews/*.md"
+    effect: allow
+  - action: edit
+    resource: ".pr-reviews/**/*.md"
+    effect: allow
+  - action: external_directory
+    resource: "*"
+    effect: deny
+  - action: external_directory
+    resource: "~/.config/opencode/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agents/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.claude/skills/**"
+    effect: allow
+  - action: external_directory
+    resource: "~/.agent-configs/skills/**"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
+  - action: subagent
+    resource: "pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "exceptional-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "economy-pr-reviewer"
+    effect: allow
+  - action: subagent
+    resource: "pr-review-adjudicator"
+    effect: allow
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "gh auth status*"
+    effect: allow
+  - action: shell
+    resource: "gh repo view *"
+    effect: allow
+  - action: shell
+    resource: "gh pr view *"
+    effect: allow
+  - action: shell
+    resource: "gh pr diff *"
+    effect: allow
+  - action: shell
+    resource: "gh pr checks *"
+    effect: allow
+  - action: shell
+    resource: "gh pr review *"
+    effect: allow
+  - action: shell
+    resource: "gh api --method GET *"
+    effect: allow
+  - action: shell
+    resource: "gh api -X GET *"
+    effect: allow
+  - action: shell
+    resource: "gh api --method POST repos/*/pulls/*/comments*"
+    effect: allow
+  - action: shell
+    resource: "gh api -X POST repos/*/pulls/*/comments*"
+    effect: allow
+  - action: shell
+    resource: "gh api --method POST repos/*/pulls/*/reviews*"
+    effect: allow
+  - action: shell
+    resource: "gh api -X POST repos/*/pulls/*/reviews*"
+    effect: allow
+  - action: shell
+    resource: "git check-ignore *"
+    effect: allow
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: shell
+    resource: "mkdir .pr-reviews"
+    effect: allow
+  - action: shell
+    resource: "mkdir -p .pr-reviews"
+    effect: allow
 ---
 
 # PR Review Orchestrator
@@ -54,7 +117,7 @@ Load `pr-review-orchestrator-contract` before repository inspection, planning, d
 
 ## Standard Reviewer Default
 
-- Use `pr-reviewer` (Sol medium) by default for consequential and normal expert-level PRs.
-- Use `economy-pr-reviewer` for clear, low-risk, well-bounded PRs or on user request.
+- Use `pr-reviewer` (DeepSeek v4.1 Flash max via opencode-go) by default for consequential and normal expert-level PRs.
+- Use `economy-pr-reviewer` (DeepSeek v4.1 Flash max via opencode-go) for clear, low-risk, well-bounded PRs or on user request.
 - Use `exceptional-pr-reviewer` only for a named beyond-expert reasoning need under the review escalation policy, not as a routine second pass.
 - Use `pr-review-adjudicator` when the contract trigger applies.
