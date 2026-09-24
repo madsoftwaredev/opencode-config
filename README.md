@@ -72,48 +72,76 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 | Agent                       | Model                 | Reasoning | Responsibility                                                |
 | --------------------------- | --------------------- | --------- | ------------------------------------------------------------- |
-| **orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Primary commander, integrator, and final validator            |
+| **orchestrator**            | `openai/gpt-6-sol`  | `high`    | Primary commander, integrator, and final validator            |
 | **principal-engineer**      | `openai/gpt-6-astra`  | `high`    | Architecture, high-risk work, deep debugging, and rescue work |
-| **implementation-engineer** | `openai/gpt-5.6-sol`  | `medium`  | Implementation, debugging, testing, and integration           |
-| **bounded-worker**          | `openai/gpt-5.6-luna` | `high`    | Narrow, repetitive, isolated, and testable work               |
-| **repository-analyst**      | `openai/gpt-5.6-sol`  | `medium`  | Read-only repository mapping and migration planning           |
+| **implementation-engineer** | `openai/gpt-6-sol`  | `medium`  | Implementation, debugging, testing, and integration           |
+| **bounded-worker**          | `openai/gpt-6-luna` | `high`    | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `openai/gpt-6-sol`  | `medium`  | Read-only repository mapping and migration planning           |
 
-The global default agent is `economy-orchestrator`; the global model fallback remains Astra for roles that inherit it. All ten named coding, YOLO, and PR-review orchestrators explicitly use Sol high. Other primaries and non-orchestrator roles retain their role-specific assignments below. Workers use the role-specific assignments below, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to the eight coding and YOLO orchestrators. Other permissions and depth 1 are preserved. Restart OpenCode after configuration or prompt edits and start a new session; existing sessions or explicit overrides can retain different settings.
+The global default agent is `exp-orchestrator` (the experimental mixed-model suite below); the global model fallback remains Astra for roles that inherit it. The ten non-experimental coding, YOLO, and PR-review orchestrators explicitly use Sol high. Other primaries and non-orchestrator roles retain their role-specific assignments below. Workers use the role-specific assignments below, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to the eight non-experimental coding and YOLO orchestrators. Other permissions and depth 1 are preserved. V2 normally reloads configuration and prompt edits automatically; existing sessions keep their selected model. Start a new session with the intended agent/model, or explicitly change the current session's model.
 
 #### Economy tier
 
 | Agent                               | Model                 | Reasoning | Responsibility                     |
 | ----------------------------------- | --------------------- | --------- | ---------------------------------- |
-| **economy-orchestrator**            | `openai/gpt-5.6-sol`  | `high`    | Weekly default coordinator         |
-| **economy-implementation-engineer** | `openai/gpt-5.6-luna` | `xhigh`   | Cost-efficient implementation      |
-| **economy-bounded-worker**          | `openai/gpt-5.6-luna` | `high`    | Mechanical and tightly scoped work |
-| **economy-repository-analyst**      | `openai/gpt-5.6-luna` | `high`    | Read-only repository analysis      |
+| **economy-orchestrator**            | `openai/gpt-6-sol`  | `high`    | Weekly default coordinator         |
+| **economy-implementation-engineer** | `openai/gpt-6-luna` | `xhigh`   | Cost-efficient implementation      |
+| **economy-bounded-worker**          | `openai/gpt-6-luna` | `high`    | Mechanical and tightly scoped work |
+| **economy-repository-analyst**      | `openai/gpt-6-luna` | `high`    | Read-only repository analysis      |
 
 Use the `eco-max` profile deliberately for substantial implementation that justifies Luna max; file count alone is not the trigger. Route unfamiliar terminal/debugging/integration work to Mid, or use a permitted stronger specialist for a named capability gap. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
 #### Flash tier
 
-| Agent                             | Model                                          | Reasoning | Responsibility                      |
-| --------------------------------- | ---------------------------------------------- | --------- | ----------------------------------- |
-| **flash-orchestrator**            | `openai/gpt-5.6-sol`                           | `high`    | Coordinator for the Flash pool      |
-| **flash-implementation-engineer** | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek implementation      |
-| **flash-bounded-worker**          | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek mechanical work     |
-| **flash-repository-analyst**      | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Direct DeepSeek read-only analysis  |
-| **flash-vision-scout**            | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Factual local image inspection only |
+| Agent                             | Model                     | Reasoning | Responsibility                      |
+| --------------------------------- | ------------------------- | --------- | ----------------------------------- |
+| **flash-orchestrator**            | `openai/gpt-6-sol`      | `high`    | Coordinator for the Flash pool      |
+| **flash-implementation-engineer** | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek implementation      |
+| **flash-bounded-worker**          | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek mechanical work     |
+| **flash-repository-analyst**      | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek read-only analysis  |
+| **flash-vision-scout**            | `deepseek/deepseek-flash` | `max`     | Factual local image inspection only |
 
-Flash workers use the vision-capable V4.1 Flash beta directly at `https://api.deepseek.com`, not an intermediary provider. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high`; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
+Flash workers use the official, vision-capable V4.1 Flash release directly at `https://api.deepseek.com`. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high`; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
 
-The temporary `deepseek/deepseek-v4.1-flash-expires-on-0910` beta is also available through `/models`, using the existing DeepSeek connection. Its announcement indicates expiry on September 10, 2026; the exact cutoff is unconfirmed. The configuration carries forward V4 Flash's pricing metadata and 384K output limit pending published beta specifications, but caps context at 258K so Flash sessions auto-compact earlier (per-model lever; `compaction.reserved` is global-only), with text/image input and `low`/`high`/`max` reasoning variants. Both normal and YOLO Flash use the updated worker pool without changing the global default. Reassign these workers when the beta expires; no automatic fallback is configured.
+The official `deepseek/deepseek-flash` model is available through `/models`, using the existing DeepSeek connection ([release announcement](https://api-docs.deepseek.com/news/news260910)). OpenCode's built-in catalog supplies the release metadata, pricing, text/image input, tool support, and `low`/`high`/`max` reasoning variants. Its local model override keeps context at 258K for earlier automatic compaction, with the published 384K output limit; DeepSeek supports a 1M context window ([model details](https://api-docs.deepseek.com/quick_start/pricing)).
+
+#### Experimental orchestration suite (`exp-*`)
+
+A prompt-based experiment targeting high-quality coding output at lower routine cost. MiMo V2.6 Flash handles coordination, research, and log/environment triage; GPT-6 Sol writes code and tests; MiMo V2.6 Pro owns routine verification and independent QA. GPT-6 Luna supplies an optional second opinion, and Astra handles rare architecture escalation. The base `default_agent` is `exp-orchestrator`.
+
+| Agent                | Mode     | Model                          | Reasoning        | Responsibility                                                                    |
+| -------------------- | -------- | ------------------------------ | ---------------- | --------------------------------------------------------------------------------- |
+| **exp-orchestrator** | primary  | `opencode-go/mimo-v2.6-flash` | Provider default | Inspect, freeze acceptance criteria, delegate, route QA verdicts, escalate          |
+| **exp-implementer**  | subagent | `openai/gpt-6-sol`            | `xhigh`          | Scoped production-code and test implementation                                     |
+| **exp-qa**           | subagent | `opencode-go/mimo-v2.6-pro`   | Provider default | Runs required checks and independently reviews code against original intent        |
+| **exp-architect**    | subagent | `openai/gpt-6-astra`          | `max`            | Escalation-only architecture and root-cause reasoning; never routine code           |
+| **exp-deep-audit**   | subagent | `openai/gpt-6-luna`           | `max`            | Manual-only second opinion on QA-passed work                                        |
+
+Normal implementation path: **MiMo Flash brief → Sol code/test implementation → fresh MiMo Pro runs required checks and independent QA → done**. Simple read-only questions stay with the orchestrator. Parallel workers require independent coding boundaries; a cohesive feature and its test code stay together. The implementer reads relevant code and makes implementation decisions, but does not repeat broad research or planning. The original request/amendments are preserved separately from interpretation and numbered criteria. The implementer can challenge a mistaken brief with evidence instead of faithfully implementing the wrong requirement.
+
+The initial QA invocation starts a separate task without reusing a parent or implementation task ID. It receives original requirements, criteria, the review base and complete task change set (including uncommitted files), contracts, and actual check evidence or exact artifact paths. Parent reasoning and persuasive worker summaries are excluded by the prompt. QA retains its own context for related re-reviews; implementation repairs likewise resume their owner with only new evidence. Agent instructions and shared repository guidance still apply to each session; independence depends on the packet and review behavior, not just the model name.
+
+**Verification belongs to MiMo Pro QA.** The orchestrator discovers commands and handles setup/environment issues; the fresh `exp-qa` runs applicable required checks and independent review in one task. It records commands, working directories, exit status, output references, and tested source state. Unrun checks are QA's work, not a reason to call the implementer again. The implementer may run a narrow check when its feedback is needed to write/debug code, but does not own routine post-implementation checks, browser QA, long-log analysis, or verification reports. Reuse valid current results; rerun only for changes, integration needs, stale/missing/questionable evidence, or concrete uncovered risks. Required failing checks cannot be overruled by a model. Environmental/pre-existing failures go to the orchestrator, and verification that cannot be trusted is BLOCKED rather than PASS. Send the implementer only confirmed code defects or concrete implementation blockers, not speculative findings or requests to run tools.
+
+**Repairs and escalation:** a rejected completed implementation delivery counts as an attempt; individual failing commands during normal debugging do not. One failed initial delivery permits one repair by the same owner. If the same problem survives both, `exp-architect` analyzes the root cause, then the orchestrator re-plans and the implementer codes. Earlier Max use needs a named unresolved consequential architecture decision or evidence-backed technical deadlock; several files, security/database labels, or initial uncertainty alone do not qualify. Missing user intent goes to the user. Continued failure after the revised approach is reported instead of opening an endless loop. This is the exp suite's principal-engineer escalation slot, with analysis-only output.
+
+**UI/UX:** the existing `ui-ux-analyst` (Astra xHigh) remains available for concrete design decisions, substantial redesigns, or requested visual acceptance. Sol implements routine frontend changes; MiMo Pro QA owns routine browser verification. Before/after specialist calls are not automatic. For substantial specialist artifacts, preserve the existing [UI/UX handoff and acceptance protocol](skills/orchestrator-contract/ui-ux-handoff.md): the implementer supplies its read acknowledgment/code references, QA gathers verification evidence and maintains the record/runs the checker, and the UI/UX owner performs required bounded acceptance. It does not replace independent QA.
+
+**Deep audit is manual-only.** Automatic 10% sampling is off. `/exp-audit <target and evidence/artifact paths>` starts a fresh GPT-6 Luna Max second opinion; it needs the original requirements and verification packet because the command subtask does not inherit the conversation. It returns CONFIRMED, ISSUES FOUND, or BLOCKED. A clean QA PASS does not trigger another review.
+
+Routing and completion rules live in the agent prompts; the global background-subagent plugin only changes the native subagent default and is not an analytics system. These model assignments are a starting hypothesis, not a measured quality or savings result. Compare model usage, completion time, repair attempts, and observed defects on representative work. MiMo uses the existing OpenCode Go connection; its catalog exposes no named reasoning variants, so those roles use provider defaults. All five models resolve to the existing 256K input / 384K context / 128K output budget; V2 uses these for compaction rather than a hard billing cap.
+
+V2 normally reloads these files automatically. New subagents use the configured role models; existing sessions can retain their selected model. Start a new session with `exp-orchestrator` and MiMo V2.6 Flash, or explicitly select `opencode-go/mimo-v2.6-flash` in an existing session. Selecting an agent alone does not replace that session's selected model. Select another primary or use `opencode --agent build` to leave the experiment; existing profiles may override the base default.
 
 #### Eco Fast tier
 
 | Agent                                | Model                      | Reasoning | Responsibility                             |
 | ------------------------------------ | -------------------------- | --------- | ------------------------------------------ |
-| **eco-fast-orchestrator**            | `openai/gpt-5.6-sol`       | `high`    | Coordinator for the Eco Fast pool          |
-| **eco-fast-implementation-engineer** | `openai/gpt-5.6-luna-fast` | `xhigh`   | Complete implementation ownership          |
-| **eco-fast-bounded-worker**          | `openai/gpt-5.6-luna-fast` | `high`    | Narrow mechanical work                     |
-| **eco-fast-repository-analyst**      | `openai/gpt-5.6-luna-fast` | `high`    | Read-only repository analysis              |
-| **eco-fast-pr-reviewer**             | `openai/gpt-5.6-luna-fast` | `max`     | Target-branch review and findings artifact |
+| **eco-fast-orchestrator**            | `openai/gpt-6-sol`       | `high`    | Coordinator for the Eco Fast pool          |
+| **eco-fast-implementation-engineer** | `openai/gpt-6-luna-fast` | `xhigh`   | Complete implementation ownership          |
+| **eco-fast-bounded-worker**          | `openai/gpt-6-luna-fast` | `high`    | Narrow mechanical work                     |
+| **eco-fast-repository-analyst**      | `openai/gpt-6-luna-fast` | `high`    | Read-only repository analysis              |
+| **eco-fast-pr-reviewer**             | `openai/gpt-6-luna-fast` | `max`     | Target-branch review and findings artifact |
 
 Fast routes are installed OpenCode model aliases mapping to the same underlying model with `serviceTier: priority`. They preserve reasoning effort and verification requirements. Bare Eco Fast entry points accelerate their named pool; shared specialists retain their normal settings unless the `fast` profile is selected. Priority processing may consume more allowance or cost and does not guarantee a measured end-to-end speedup.
 
@@ -146,7 +174,7 @@ These profile directories load after normal project configuration in OpenCode 1.
 
 | Agent             | Model                | Reasoning | Responsibility                                                                 |
 | ----------------- | -------------------- | --------- | ------------------------------------------------------------------------------ |
-| **ui-ux-analyst** | `openai/gpt-6-astra` | `medium`  | UI/UX consultation, planning, validation, and frontend review; no product code |
+| **ui-ux-analyst** | `openai/gpt-6-astra` | `xhigh`   | UI/UX consultation, planning, validation, and frontend review; no product code |
 
 Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
 
@@ -192,21 +220,21 @@ The other delegating non-coding primaries use Sol: `biz-dev` uses medium and `op
 
 | Agent            | Mode | Model                | Reasoning | Responsibility                                                   |
 | ---------------- | ---- | -------------------- | --------- | ---------------------------------------------------------------- |
-| **code-auditor** | all  | `openai/gpt-5.6-sol` | `medium`  | Explicit read-only audits for named code and system risk domains |
+| **code-auditor** | all  | `openai/gpt-6-sol` | `medium`  | Explicit read-only audits for named code and system risk domains |
 
 Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Auditor. Normal orchestrators and implementation workers are denied the `code-audit` skill, and the Code Auditor cannot edit or delegate. It may identify missing controls because audit is explicit, but its findings remain recommendations until the user selects them in a separate implementation request. System Architect is the only role with a controlled exception, limited to an explicitly named current-state audit inside an architecture mission.
 
 #### PR review pipeline
 
-| Agent                              | Mode     | Model                                          | Reasoning | Responsibility                                      |
-| ---------------------------------- | -------- | ---------------------------------------------- | --------- | --------------------------------------------------- |
-| **pr-review-orchestrator**         | primary  | `openai/gpt-5.6-sol`                           | `high`    | Standard single and batch PR-review coordination    |
-| **economy-pr-review-orchestrator** | primary  | `openai/gpt-5.6-sol`                           | `high`    | Economy single and batch PR-review coordination     |
-| **pr-reviewer**                    | subagent | `openai/gpt-5.6-sol`                           | `medium`  | Consequential and normal expert-level PR review     |
-| **economy-pr-reviewer**            | subagent | `openai/gpt-5.6-luna`                          | `max`     | Economy target-branch review and findings artifact  |
-| **exceptional-pr-reviewer**        | subagent | `openai/gpt-6-astra`                           | `xhigh`   | Only necessary beyond-expert reasoning              |
-| **flash-pr-reviewer**              | subagent | `deepseek/deepseek-v4.1-flash-expires-on-0910` | `max`     | Flash target-branch review and findings artifact    |
-| **pr-review-adjudicator**          | subagent | `openai/gpt-6-astra`                           | `high`    | Unresolved material disputes or explicit validation |
+| Agent                              | Mode     | Model                     | Reasoning | Responsibility                                      |
+| ---------------------------------- | -------- | ------------------------- | --------- | --------------------------------------------------- |
+| **pr-review-orchestrator**         | primary  | `openai/gpt-6-sol`      | `high`    | Standard single and batch PR-review coordination    |
+| **economy-pr-review-orchestrator** | primary  | `openai/gpt-6-sol`      | `high`    | Economy single and batch PR-review coordination     |
+| **pr-reviewer**                    | subagent | `openai/gpt-6-sol`      | `medium`  | Consequential and normal expert-level PR review     |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-6-luna`     | `max`     | Economy target-branch review and findings artifact  |
+| **exceptional-pr-reviewer**        | subagent | `openai/gpt-6-astra`      | `xhigh`   | Only necessary beyond-expert reasoning              |
+| **flash-pr-reviewer**              | subagent | `deepseek/deepseek-flash` | `max`     | Flash target-branch review and findings artifact    |
+| **pr-review-adjudicator**          | subagent | `openai/gpt-6-astra`      | `high`    | Unresolved material disputes or explicit validation |
 
 PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is grounded in PR intent, an existing contract, or a regression introduced by the diff and appears as an inline comment on its smallest relevant current-diff line; optional suggestions and generalized hardening belong to audit instead. Summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
@@ -218,10 +246,10 @@ All eight review roles permit external access to the global skill trees under `~
 
 | Agent                          | Command         | Default model        | Reasoning | Worker pool                                                                     |
 | ------------------------------ | --------------- | -------------------- | --------- | ------------------------------------------------------------------------------- |
-| **yolo-orchestrator**          | `yolo`          | `openai/gpt-5.6-sol` | `high`    | Mid and economy workers plus shared UI/UX, 3D, and principal specialists        |
-| **yolo-eco-orchestrator**      | `yolo-eco`      | `openai/gpt-5.6-sol` | `high`    | Economy workers plus shared UI/UX, 3D, and principal specialists                |
-| **yolo-flash-orchestrator**    | `yolo-flash`    | `openai/gpt-5.6-sol` | `high`    | Flash workers and vision scout plus shared UI/UX, 3D, and principal specialists |
-| **yolo-eco-fast-orchestrator** | `yolo-eco-fast` | `openai/gpt-5.6-sol` | `high`    | Eco Fast workers plus shared UI/UX, 3D, and principal specialists               |
+| **yolo-orchestrator**          | `yolo`          | `openai/gpt-6-sol` | `high`    | Mid and economy workers plus shared UI/UX, 3D, and principal specialists        |
+| **yolo-eco-orchestrator**      | `yolo-eco`      | `openai/gpt-6-sol` | `high`    | Economy workers plus shared UI/UX, 3D, and principal specialists                |
+| **yolo-flash-orchestrator**    | `yolo-flash`    | `openai/gpt-6-sol` | `high`    | Flash workers and vision scout plus shared UI/UX, 3D, and principal specialists |
+| **yolo-eco-fast-orchestrator** | `yolo-eco-fast` | `openai/gpt-6-sol` | `high`    | Eco Fast workers plus shared UI/UX, 3D, and principal specialists               |
 
 Launch the desired mode from the project it should own:
 
@@ -282,7 +310,7 @@ flowchart TD
 
 The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All eight coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
 
-Economy is already the global default. A project can explicitly retain that choice with:
+The base default is the experimental `exp-orchestrator`. Select another primary explicitly when needed, for example the economy orchestrator:
 
 ```json
 {
@@ -600,15 +628,35 @@ $ARGUMENTS will be replaced with user input
 | `mcp`            | Model Context Protocol server configurations                                   |
 | `provider`       | LLM provider settings (OpenAI, Anthropic, etc.)                                |
 
-### Compaction Model
+### V2 Formatting and Lint Feedback
 
-The hidden `compaction` agent is pinned globally to `opencode-go/deepseek-v4-flash` with the `max` variant in `opencode.json` (1M context / 384K output per Models.dev, so it fits large sessions; Go allowance instead of OpenAI spend). Normal and YOLO sessions, including worker sessions and the High/Fast presets, use this setting unless a project or profile explicitly overrides it. Coding agents, title generation, and session-summary generation retain their existing model routing; automatic compaction and pruning remain enabled.
+V2 formatting and diagnostics are separate. The global `formatter` object enables project-aware built-ins for JS/TS and other languages, including Dart; only the existing `bundle exec rubocop -a` override remains. There are no unconditional `npx eslint --fix` or `npx prettier --write` formatter overrides.
 
-OpenCode 1.18.29 selects the compaction model correctly but applies the conversation's variant when preparing the request. The auto-loaded `plugin/compaction-variant.ts` hook reapplies the configured compaction variant to request options only when the compaction model matches. It preserves the built-in summary prompt and does not change the conversation's model or variant. An unsupported configured variant fails explicitly. See the [version-matched request builder](https://github.com/anomalyco/opencode/blob/v1.18.29/packages/opencode/src/session/llm/request.ts).
+The auto-discovered [`local.lint-feedback` plugin](plugins/lint-feedback/README.md) appends bounded, check-only ESLint feedback after successful native write/edit/patch calls. It uses supported project-installed ESLint and project rules, checks only changed JS/TS-family files, and preserves native shell permissions and direnv. Unsupported or unconfigured projects are reported as skipped, not clean. See the plugin README for ESLint 9/10 flat-config support, limits, local tests, and reload instructions.
 
-**Temporary workaround, remove when upstream fixes it:** On an OpenCode upgrade, check whether native automatic and manual compaction both honor `agent.compaction.variant`, including when the conversation uses `medium` or `xhigh` and compaction is configured as `max`. Once confirmed without the hook, delete `plugin/compaction-variant.ts` and `scripts/compaction-variant.test.js`, and remove this workaround documentation. Keep the `agent.compaction` model/variant configuration. This is a maintenance reminder, not automatic monitoring or permission to remove the hook before the native fix is verified.
+[V2 does not run language servers or produce LSP diagnostics](https://opencode.ai/v2/docs/migrate-v1); setting `lsp: true` does not restore them. Use `/lint` for project-local safe corrections and re-checks, `/format` for formatting, and explicit project typecheck/compiler commands for full verification.
 
-Run the focused regression checks with `bun test scripts/compaction-variant.test.js`. Quit and restart OpenCode after changing the compaction configuration or hook.
+### V2 Background Subagents
+
+The auto-discovered [`local.background-subagent`](plugins/background-subagent/README.md) plugin makes omitted `subagent.background` calls run in the background. It preserves explicit `background: false` for dependent work that needs the child result before the parent continues. The native child session, permissions, prompt, and returned session ID are unchanged.
+
+The separate [`local.subagent-sidebar`](plugins/subagent-sidebar/README.md) CLI/TUI plugin adds a live `SUBAGENTS` section to the session sidebar with each child session's status and a shortened current task or tool activity. Click a row to open that session; `+N more` expands all children into a scrollable list with a collapse button. Clickable rows and controls have a subtle theme-colored hover highlight.
+
+### OpenAI GPT Input Budget
+
+The OpenAI provider gives all currently available GPT models an input budget of at most 256,000 tokens. Explicit overrides cover GPT-5.4, GPT-5.4 Mini, GPT-5.5, GPT-5.6 Luna/Sol/Terra, and GPT-6 Astra, including their `-fast` entries. Each sets `limit.input` to 256,000, retains the 128,000 output allowance, and sets total `limit.context` to 384,000. GPT-5.3 Codex Spark already has a smaller native input limit of 100,000. Newly added model IDs need their own overrides.
+
+[Astra's long-context pricing](https://developers.openai.com/api/docs/models/gpt-6-astra) applies when actual request input exceeds 272,000 tokens; the output allowance does not trigger it. Other models have their own pricing rules. The output allowance is a ceiling, and generated reasoning also counts toward output usage. OpenCode 1.18.30 subtracts its default 20,000-token compaction buffer from `limit.input`, so these overrides trigger compaction around 236,000 counted tokens ([overflow calculation](https://github.com/anomalyco/opencode/blob/v1.18.30/packages/opencode/src/session/overflow.ts)). This is an automatic-compaction budget, not a hard per-request billing guard against a large new message or tool result.
+
+Quit and restart OpenCode after changing model limits.
+
+### Compaction
+
+Automatic compaction remains enabled through top-level `compaction.auto`. V2 replaced V1's pruning with checkpoint-based compaction plus `compaction.keep.tokens`, so there is no prune setting. See the [V2 compaction guide](https://opencode.ai/v2/docs/compaction/).
+
+V2 local compaction uses the session's selected agent, model, and variant; it does not use the hidden `compaction` agent, and there is no separate compaction model or fallback model. The retained `agents.compaction` entry (`opencode-go/deepseek-v4.1-flash#max`) is kept for parity with the V1 configuration but is not consulted by local compaction. Coding agents, title generation, and session-summary generation keep their existing model routing.
+
+The V1 workaround is gone: `plugin/compaction-variant.ts` and `scripts/compaction-variant.test.js` were removed during the V2 migration because the plugin cannot load under V2's plugin API and V2 has no per-agent compaction model whose variant could be reapplied.
 
 ### MCP Servers Configured
 
