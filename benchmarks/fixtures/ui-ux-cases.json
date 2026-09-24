@@ -1,0 +1,26 @@
+[
+  {
+    "id": "UXQ-01",
+    "prompt": "Recommend a concrete simplification for a desktop shipment work queue. Supplied evidence: operators compare promised date, stock state and quantity across about 1000 shipments. Around 90% of Dispatch operations apply to batches of 10-30 selected shipments. Export is used once or twice per shift. Every row currently has equally prominent View, Dispatch, Export and Cancel buttons. Selection is possible across pages, but the toolbar only says Selected. A compact layout is also required. Existing tokens must stay. A reviewer has called its 16 CSS px icon too small, but measured button bounds are 32 by 32 CSS px. What would you change, why, and what would you verify?",
+    "baseline_leaves": ["composition.md", "interaction-ux.md"],
+    "candidate_leaves": ["cases/invoice-workspace.md", "platform-and-accessibility.md"]
+  },
+  {
+    "id": "UXQ-02",
+    "prompt": "Verify the submitted visual update from the supplied evidence. The accepted direction deliberately uses a blue gradient and equal cards because the four products are peers. Supplied wide and compact screenshots show the accepted order, consistent typography, no clipping, and legible copy. The change is only spacing and colors. There is no observed defect, and no keyboard or screen-reader evidence was supplied. Give your verdict and any actionable findings; do not invent additional evidence.",
+    "baseline_leaves": ["critique.md", "visual-direction.md"],
+    "candidate_leaves": ["evaluation.md", "visual-design.md"]
+  },
+  {
+    "id": "UXQ-03",
+    "prompt": "We have a five-step mobile wholesale checkout. Should we cut it to three steps? Supplied facts: returning business buyers usually have a saved delivery address; 80% of orders have a different billing address. Every buyer is shown both full address forms and optional company-reference fields. Server responses distinguish a missing email @ from a request timeout, but the UI says Invalid details for both. A proposed mockup fixes the layout and displays a total next to Place order; no pricing-update, keyboard, failure, or post-submit behavior has been inspected. Recommend the form/review experience and say what can actually be accepted now.",
+    "baseline_leaves": ["interaction-ux.md", "responsive-accessibility.md"],
+    "candidate_leaves": ["forms-and-validation.md", "cases/checkout-review.md"]
+  },
+  {
+    "id": "UXQ-04",
+    "prompt": "Give a distinctive, implementation-ready homepage opening for a ceramics studio's wholesale collection. Buyers are shop owners deciding whether the work fits their store and then comparing dimensions, glaze, price and stock. Existing identity is cream/charcoal with sans-serif labels; keep it. Real product photographs are available, but there are no customer testimonials, outcome statistics or interactive demos. The desired character is warm and precise. Specify content, composition, hierarchy, type/color use, actual next action, compact adaptation, one rejected alternative with a reason, and a first rendered checkpoint. Do not just list design adjectives.",
+    "baseline_leaves": ["visual-direction.md", "composition.md"],
+    "candidate_leaves": ["visual-design.md", "cases/product-story.md"]
+  }
+]
