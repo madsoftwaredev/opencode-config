@@ -12,6 +12,13 @@ and sends the **originating session ID** to the chat-completions endpoint. It do
 not store an API key or change the session's model. Other providers use the native
 `ctx.generate.text()` API.
 
+Credential lookup resolves the **model's own provider integration first**
+(`opencode-go`), then the integration ID the provider reports. A provider payload
+can name a different integration than the one serving the model — `opencode-go`
+reports the OpenCode Console integration, whose active connection is an OAuth
+credential with no API key. Trusting only the reported ID made every compaction
+fall back to the session model from 2026-09-24 onward.
+
 The Go adapter currently supports models using
 `@opencode/ai/providers/openai-compatible` (including the default DeepSeek model).
 Other Go protocols produce a diagnostic and fall back to normal compaction.

@@ -69,8 +69,16 @@ function completion(text, finish = "stop") {
   return Response.json({ choices: [{ finish_reason: finish, message: { content: text } }] });
 }
 
-async function setup(options = {}, generate = async () => ({ text: summary })) {
+async function setup(
+  options = {},
+  generate = async () => ({ text: summary }),
+  providerIntegrationID = "opencode-go",
+  // Mirrors the real integration registry: opencode-go holds one API key, while the
+  // OpenCode Console integration's active connection is an OAuth credential.
+  credentials = { "opencode-go": { type: "key", key: "TEST_SECRET" }, opencode: { type: "oauth", access: "TEST_ACCESS" } }
+) {
   let callback;
+  const activeCalls = [];
   const ctx = {
     app: { version: "2.0.9" },
     options,
@@ -94,16 +102,19 @@ async function setup(options = {}, generate = async () => ({ text: summary })) {
     },
     provider: {
       async get() {
-        return { data: { integrationID: "opencode-go" } };
+        return { data: { integrationID: providerIntegrationID } };
       },
     },
     integration: {
       connection: {
-        async active() {
-          return { type: "credential", id: "test-credential" };
+        async active(integrationID) {
+          activeCalls.push(integrationID);
+          if (!(integrationID in credentials)) return undefined;
+          return { type: "credential", id: `${integrationID}-credential` };
         },
-        async resolve() {
-          return { type: "key", key: "TEST_SECRET" };
+        async resolve(connection) {
+          if (!connection) return undefined;
+          return credentials[connection.id.replace(/-credential$/, "")];
         },
       },
     },
@@ -117,7 +128,7 @@ async function setup(options = {}, generate = async () => ({ text: summary })) {
     },
   };
   await plugin.setup(ctx);
-  return callback;
+  return Object.assign(callback, { activeCalls });
 }
 
 function event(sessionID = "ses_test") {
@@ -144,6 +155,31 @@ test("Go summary uses the originating session, configured model and variant with
   expect(requests[0].body.model).toBe("deepseek-v4.1-flash");
   expect(requests[0].body.reasoning_effort).toBe("max");
   expect(requests[0].body.tools).toBeUndefined();
+});
+
+test("resolves the provider's own integration when the provider reports another one", async () => {
+  // opencode-go reports the OpenCode Console integration, whose active connection is an
+  // OAuth credential with no API key. Resolving only the reported integration makes every
+  // compaction fall back to the session model.
+  const hook = await setup({}, async () => ({ text: summary }), "opencode");
+  const input = event();
+  await hook(input);
+  expect(hook.activeCalls[0]).toBe("opencode-go");
+  expect(input.result.summary).toBe(summary);
+  expect(requests[0].headers.get("authorization")).toBe("Bearer TEST_SECRET");
+});
+
+test("falls back to the reported integration when the provider integration has no key", async () => {
+  const hook = await setup(
+    {},
+    async () => ({ text: summary }),
+    "opencode",
+    { opencode: { type: "key", key: "TEST_SECRET" } }
+  );
+  const input = event();
+  await hook(input);
+  expect(hook.activeCalls).toEqual(["opencode-go", "opencode"]);
+  expect(input.result.summary).toBe(summary);
 });
 
 test("long transcripts retain the middle and attachment descriptors", async () => {
