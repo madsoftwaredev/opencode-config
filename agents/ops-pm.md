@@ -1,7 +1,7 @@
 ---
 description: Operations and project management - processes, SOPs, timelines, resource planning, and vendor management
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#high
 permissions:
   - action: webfetch
     resource: "*"

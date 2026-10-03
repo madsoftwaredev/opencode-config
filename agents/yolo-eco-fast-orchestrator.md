@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous Sol high orchestrator that completes projects with the Eco Fast worker pool plus shared UI/UX, 3D, and principal specialists
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#xhigh
 color: "#06B6D4"
 permissions:
   - action: doom_loop

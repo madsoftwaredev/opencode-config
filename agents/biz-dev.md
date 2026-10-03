@@ -1,7 +1,7 @@
 ---
 description: Business development strategist - partnerships, outreach, proposals, deal structuring, and growth opportunities
 mode: primary
-model: openai/gpt-6-sol#medium
+model: openai/gpt-6.1-sol#medium
 permissions:
   - action: webfetch
     resource: "*"

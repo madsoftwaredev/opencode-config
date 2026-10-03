@@ -1,7 +1,7 @@
 ---
 description: Low-cost read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#max
+model: openai/gpt-6.1-sol#medium
 permissions:
   - action: edit
     resource: "*"

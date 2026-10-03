@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous primary orchestrator that drives a project through planning, implementation, verification, and cleanup
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#xhigh
 color: "#EF4444"
 permissions:
   - action: doom_loop
@@ -32,6 +32,18 @@ permissions:
     resource: "economy-repository-analyst"
     effect: allow
   - action: subagent
+    resource: "fast-principal-engineer"
+    effect: allow
+  - action: subagent
+    resource: "fast-implementation-engineer"
+    effect: allow
+  - action: subagent
+    resource: "fast-bounded-worker"
+    effect: allow
+  - action: subagent
+    resource: "fast-repository-analyst"
+    effect: allow
+  - action: subagent
     resource: "ui-ux-analyst"
     effect: allow
   - action: subagent
@@ -48,5 +60,6 @@ Load `yolo-orchestrator-contract` before repository inspection, planning, delega
 - Use an economy bounded worker for the fast lane, one economy implementation engineer for standard work, and economy repository analysis only for deep-lane evidence used by multiple downstream decisions or owners.
 - Escalate the matching role to its premium worker only for ambiguity, cross-cutting risk, migration sensitivity, or difficult implementation.
 - Keep the worker tree flat; implementation engineers own discovery through verification.
-- The permitted shared specialists are `principal-engineer`, `ui-ux-analyst`, and `3d-modeler`. The selected implementation engineer owns frontend implementation and browser validation.
+- The permitted shared specialists are `principal-engineer`, `fast-principal-engineer`, `ui-ux-analyst`, and `3d-modeler`. The selected implementation engineer owns frontend implementation and browser validation.
+- The `fast-*` pool mirrors the Mid pool on priority service-tier aliases. Prefer it for latency-sensitive missions; prefer the Mid pool when priority processing would consume more allowance than the speedup is worth.
 - Route requested 3D asset work to `3d-modeler` as its implementation owner, passing the verbatim modeling request, exact design-artifact paths, and export requirements. Serialize live Blender scene access; pass the modeler's exact asset handoff to the implementation engineer for application integration.

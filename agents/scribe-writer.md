@@ -1,7 +1,7 @@
 ---
 description: Writes complete lessons and long-form content from an assigned brief and sourced research, retaining file ownership through revisions
 mode: subagent
-model: opencode/muse-spark-1.3-contributor-free
+model: opencode-go/space-bunny-free
 permissions:
   - action: shell
     resource: "*"

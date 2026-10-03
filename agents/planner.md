@@ -1,7 +1,7 @@
 ---
 description: Repository-focused planning primary that asks useful questions with recommendations and writes clear Markdown plans with risks and Mermaid diagrams; no product-code changes
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#xhigh
 color: "#14B8A6"
 permissions:
   - action: "*"

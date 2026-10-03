@@ -1,11 +1,8 @@
 ---
-description: DeepSeek Fast read-only analyst for repository mapping, execution tracing, dependency analysis, and impact assessment
+description: Fast priority-tier read-only long-context analyst for repository mapping, execution tracing, dependency analysis, impact assessment, and migration planning
 mode: subagent
-model: openai/gpt-6.1-sol#medium
+model: openai/gpt-6.1-sol-fast#medium
 permissions:
-  - action: edit
-    resource: "*"
-    effect: deny
   - action: edit
     resource: "*"
     effect: deny
@@ -35,6 +32,8 @@ permissions:
     effect: allow
 ---
 
-# Eco Fast Repository Analyst
+# Fast Repository Analyst
 
 Load `repository-analyst-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
+
+This is the Mid repository analyst on a priority service-tier alias: same read-only contract, same reasoning effort.

@@ -4,7 +4,8 @@
     "yolo-orchestrator": { "permission": { "question": "allow" } },
     "yolo-eco-orchestrator": { "permission": { "question": "allow" } },
     "yolo-flash-orchestrator": { "permission": { "question": "allow" } },
-    "yolo-eco-fast-orchestrator": { "permission": { "question": "allow" } }
+    "yolo-eco-fast-orchestrator": { "permission": { "question": "allow" } },
+    "yolo-fast-orchestrator": { "permission": { "question": "allow" } }
   },
   "permission": {
     "external_directory": "ask",

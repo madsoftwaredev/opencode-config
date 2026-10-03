@@ -72,13 +72,25 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 
 | Agent                       | Model                 | Reasoning | Responsibility                                                |
 | --------------------------- | --------------------- | --------- | ------------------------------------------------------------- |
-| **orchestrator**            | `openai/gpt-6-sol`  | `high`    | Primary commander, integrator, and final validator            |
+| **orchestrator**            | `openai/gpt-6.1-sol` | `xhigh`   | Primary commander, integrator, and final validator            |
 | **principal-engineer**      | `openai/gpt-6-astra`  | `high`    | Architecture, high-risk work, deep debugging, and rescue work |
-| **implementation-engineer** | `openai/gpt-6-sol`  | `medium`  | Implementation, debugging, testing, and integration           |
-| **bounded-worker**          | `openai/gpt-6-luna` | `high`    | Narrow, repetitive, isolated, and testable work               |
-| **repository-analyst**      | `openai/gpt-6-sol`  | `medium`  | Read-only repository mapping and migration planning           |
+| **implementation-engineer** | `openai/gpt-6.1-sol` | `high`    | Implementation, debugging, testing, and integration           |
+| **bounded-worker**          | `openai/gpt-6-luna`   | `max`     | Narrow, repetitive, isolated, and testable work               |
+| **repository-analyst**      | `openai/gpt-6.1-sol` | `medium`  | Read-only repository mapping and migration planning           |
 
-The global default agent is `exp-orchestrator` (the experimental mixed-model suite below); the global model fallback remains Astra for roles that inherit it. The ten non-experimental coding, YOLO, and PR-review orchestrators explicitly use Sol high. Other primaries and non-orchestrator roles retain their role-specific assignments below. Workers use the role-specific assignments below, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to the eight non-experimental coding and YOLO orchestrators. Other permissions and depth 1 are preserved. V2 normally reloads configuration and prompt edits automatically; existing sessions keep their selected model. Start a new session with the intended agent/model, or explicitly change the current session's model.
+The global default agent is the visible built-in `build` primary, configured with `openai/gpt-6.1-sol` at `high`; the global model fallback is `openai/gpt-6.1-sol`. `build` denies every named tiered worker and instead spawns its own short-lived subagents through the `general` and `explore` built-ins, which have no configured model and therefore inherit `build`'s. Model-specific routing belongs to the tier orchestrators. Select `orchestrator` when you want the Mid routing contract instead of the generic default. Workers use their own role assignments, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to all coding and YOLO orchestrators. V2 normally reloads configuration and prompt edits automatically; existing sessions keep their selected model. Start a new session with the intended agent/model, or explicitly change the current session's model.
+
+#### Fast tier
+
+The Fast tier mirrors the Mid tier on OpenAI priority service-tier aliases (`-fast` suffix, `serviceTier: priority`): the same roles, contracts, reasoning effort, and verification requirements. Priority processing may consume more allowance or cost and does not guarantee a measured end-to-end speedup. `yolo-fast` launches the Fast tier autonomously.
+
+| Agent                           | Model                     | Reasoning | Responsibility                                       |
+| ------------------------------- | ------------------------- | --------- | ---------------------------------------------------- |
+| **fast-orchestrator**            | `openai/gpt-6.1-sol-fast`  | `xhigh`   | Coordinator for the Fast pool                               |
+| **fast-principal-engineer**      | `openai/gpt-6-astra-fast`  | `high`    | Fast-family architecture, high-risk review, and rescue work |
+| **fast-implementation-engineer** | `openai/gpt-6.1-sol-fast`  | `high`    | Fast priority-tier implementation                           |
+| **fast-bounded-worker**          | `openai/gpt-6-luna-fast`   | `max`     | Narrow, repetitive, isolated, objectively verifiable work   |
+| **fast-repository-analyst**      | `openai/gpt-6.1-sol-fast`  | `medium`  | Read-only repository mapping and migration planning         |
 
 #### Economy tier
 
@@ -87,7 +99,7 @@ The global default agent is `exp-orchestrator` (the experimental mixed-model sui
 | **economy-orchestrator**            | `openai/gpt-6-sol`  | `high`    | Weekly default coordinator         |
 | **economy-implementation-engineer** | `openai/gpt-6-luna` | `xhigh`   | Cost-efficient implementation      |
 | **economy-bounded-worker**          | `openai/gpt-6-luna` | `high`    | Mechanical and tightly scoped work |
-| **economy-repository-analyst**      | `openai/gpt-6-luna` | `high`    | Read-only repository analysis      |
+| **economy-repository-analyst**      | `openai/gpt-6.1-sol` | `medium`  | Read-only repository analysis      |
 
 Use the `eco-max` profile deliberately for substantial implementation that justifies Luna max; file count alone is not the trigger. Route unfamiliar terminal/debugging/integration work to Mid, or use a permitted stronger specialist for a named capability gap. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
 
@@ -96,42 +108,15 @@ Use the `eco-max` profile deliberately for substantial implementation that justi
 | Agent                             | Model                     | Reasoning | Responsibility                      |
 | --------------------------------- | ------------------------- | --------- | ----------------------------------- |
 | **flash-orchestrator**            | `openai/gpt-6-sol`      | `high`    | Coordinator for the Flash pool      |
+| **flash-principal-engineer**      | `openai/gpt-6.1-sol`    | `xhigh`   | Flash-family architecture, high-risk review, and rescue work |
 | **flash-implementation-engineer** | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek implementation      |
 | **flash-bounded-worker**          | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek mechanical work     |
-| **flash-repository-analyst**      | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek read-only analysis  |
+| **flash-repository-analyst**      | `opencode-go/deepseek-v4.1-flash` | `max` | Direct DeepSeek read-only analysis  |
 | **flash-vision-scout**            | `deepseek/deepseek-flash` | `max`     | Factual local image inspection only |
 
-Flash workers use the official, vision-capable V4.1 Flash release directly at `https://api.deepseek.com`. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high`; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
+Flash workers use the official, vision-capable V4.1 Flash release directly at `https://api.deepseek.com`. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high` and delegate named architecture, high-risk review, and rescue work to `flash-principal-engineer` instead of the shared Astra `principal-engineer` that the other families keep; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
 
 The official `deepseek/deepseek-flash` model is available through `/models`, using the existing DeepSeek connection ([release announcement](https://api-docs.deepseek.com/news/news260910)). OpenCode's built-in catalog supplies the release metadata, pricing, text/image input, tool support, and `low`/`high`/`max` reasoning variants. Its local model override keeps context at 258K for earlier automatic compaction, with the published 384K output limit; DeepSeek supports a 1M context window ([model details](https://api-docs.deepseek.com/quick_start/pricing)).
-
-#### Experimental orchestration suite (`exp-*`)
-
-A prompt-based experiment targeting high-quality coding output at lower routine cost. MiMo V2.6 Flash handles coordination, research, and log/environment triage; GPT-6 Sol writes code and tests; MiMo V2.6 Pro owns routine verification and independent QA. GPT-6 Luna supplies an optional second opinion, and Astra handles rare architecture escalation. The base `default_agent` is `exp-orchestrator`.
-
-| Agent                | Mode     | Model                          | Reasoning        | Responsibility                                                                    |
-| -------------------- | -------- | ------------------------------ | ---------------- | --------------------------------------------------------------------------------- |
-| **exp-orchestrator** | primary  | `opencode-go/mimo-v2.6-flash` | Provider default | Inspect, freeze acceptance criteria, delegate, route QA verdicts, escalate          |
-| **exp-implementer**  | subagent | `openai/gpt-6-sol`            | `xhigh`          | Scoped production-code and test implementation                                     |
-| **exp-qa**           | subagent | `opencode-go/mimo-v2.6-pro`   | Provider default | Runs required checks and independently reviews code against original intent        |
-| **exp-architect**    | subagent | `openai/gpt-6-astra`          | `max`            | Escalation-only architecture and root-cause reasoning; never routine code           |
-| **exp-deep-audit**   | subagent | `openai/gpt-6-luna`           | `max`            | Manual-only second opinion on QA-passed work                                        |
-
-Normal implementation path: **MiMo Flash brief → Sol code/test implementation → fresh MiMo Pro runs required checks and independent QA → done**. Simple read-only questions stay with the orchestrator. Parallel workers require independent coding boundaries; a cohesive feature and its test code stay together. The implementer reads relevant code and makes implementation decisions, but does not repeat broad research or planning. The original request/amendments are preserved separately from interpretation and numbered criteria. The implementer can challenge a mistaken brief with evidence instead of faithfully implementing the wrong requirement.
-
-The initial QA invocation starts a separate task without reusing a parent or implementation task ID. It receives original requirements, criteria, the review base and complete task change set (including uncommitted files), contracts, and actual check evidence or exact artifact paths. Parent reasoning and persuasive worker summaries are excluded by the prompt. QA retains its own context for related re-reviews; implementation repairs likewise resume their owner with only new evidence. Agent instructions and shared repository guidance still apply to each session; independence depends on the packet and review behavior, not just the model name.
-
-**Verification belongs to MiMo Pro QA.** The orchestrator discovers commands and handles setup/environment issues; the fresh `exp-qa` runs applicable required checks and independent review in one task. It records commands, working directories, exit status, output references, and tested source state. Unrun checks are QA's work, not a reason to call the implementer again. The implementer may run a narrow check when its feedback is needed to write/debug code, but does not own routine post-implementation checks, browser QA, long-log analysis, or verification reports. Reuse valid current results; rerun only for changes, integration needs, stale/missing/questionable evidence, or concrete uncovered risks. Required failing checks cannot be overruled by a model. Environmental/pre-existing failures go to the orchestrator, and verification that cannot be trusted is BLOCKED rather than PASS. Send the implementer only confirmed code defects or concrete implementation blockers, not speculative findings or requests to run tools.
-
-**Repairs and escalation:** a rejected completed implementation delivery counts as an attempt; individual failing commands during normal debugging do not. One failed initial delivery permits one repair by the same owner. If the same problem survives both, `exp-architect` analyzes the root cause, then the orchestrator re-plans and the implementer codes. Earlier Max use needs a named unresolved consequential architecture decision or evidence-backed technical deadlock; several files, security/database labels, or initial uncertainty alone do not qualify. Missing user intent goes to the user. Continued failure after the revised approach is reported instead of opening an endless loop. This is the exp suite's principal-engineer escalation slot, with analysis-only output.
-
-**UI/UX:** the existing `ui-ux-analyst` (Astra xHigh) remains available for concrete design decisions, substantial redesigns, or requested visual acceptance. Sol implements routine frontend changes; MiMo Pro QA owns routine browser verification. Before/after specialist calls are not automatic. For substantial specialist artifacts, preserve the existing [UI/UX handoff and acceptance protocol](skills/orchestrator-contract/ui-ux-handoff.md): the implementer supplies its read acknowledgment/code references, QA gathers verification evidence and maintains the record/runs the checker, and the UI/UX owner performs required bounded acceptance. It does not replace independent QA.
-
-**Deep audit is manual-only.** Automatic 10% sampling is off. `/exp-audit <target and evidence/artifact paths>` starts a fresh GPT-6 Luna Max second opinion; it needs the original requirements and verification packet because the command subtask does not inherit the conversation. It returns CONFIRMED, ISSUES FOUND, or BLOCKED. A clean QA PASS does not trigger another review.
-
-Routing and completion rules live in the agent prompts; the global background-subagent plugin only changes the native subagent default and is not an analytics system. These model assignments are a starting hypothesis, not a measured quality or savings result. Compare model usage, completion time, repair attempts, and observed defects on representative work. MiMo uses the existing OpenCode Go connection; its catalog exposes no named reasoning variants, so those roles use provider defaults. All five models resolve to the existing 256K input / 384K context / 128K output budget; V2 uses these for compaction rather than a hard billing cap.
-
-V2 normally reloads these files automatically. New subagents use the configured role models; existing sessions can retain their selected model. Start a new session with `exp-orchestrator` and MiMo V2.6 Flash, or explicitly select `opencode-go/mimo-v2.6-flash` in an existing session. Selecting an agent alone does not replace that session's selected model. Select another primary or use `opencode --agent build` to leave the experiment; existing profiles may override the base default.
 
 #### Eco Fast tier
 
@@ -140,10 +125,35 @@ V2 normally reloads these files automatically. New subagents use the configured 
 | **eco-fast-orchestrator**            | `openai/gpt-6-sol`       | `high`    | Coordinator for the Eco Fast pool          |
 | **eco-fast-implementation-engineer** | `openai/gpt-6-luna-fast` | `xhigh`   | Complete implementation ownership          |
 | **eco-fast-bounded-worker**          | `openai/gpt-6-luna-fast` | `high`    | Narrow mechanical work                     |
-| **eco-fast-repository-analyst**      | `openai/gpt-6-luna-fast` | `high`    | Read-only repository analysis              |
-| **eco-fast-pr-reviewer**             | `openai/gpt-6-luna-fast` | `max`     | Target-branch review and findings artifact |
+| **eco-fast-repository-analyst**      | `openai/gpt-6.1-sol`    | `medium`   | Read-only repository analysis              |
+| **eco-fast-pr-reviewer**             | `opencode-go/deepseek-v4.1-flash` | `high` | Target-branch review and findings artifact |
 
 Fast routes are installed OpenCode model aliases mapping to the same underlying model with `serviceTier: priority`. They preserve reasoning effort and verification requirements. Bare Eco Fast entry points accelerate their named pool; shared specialists retain their normal settings unless the `fast` profile is selected. Priority processing may consume more allowance or cost and does not guarantee a measured end-to-end speedup.
+
+#### MiMo tier
+
+A self-contained vision-capable family running entirely on OpenCode Go MiMo models. Thinking is always enabled in this catalog and exposes no named reasoning variants, so these roles use provider defaults.
+
+| Agent                        | Model                       | Responsibility                                            |
+| ---------------------------- | --------------------------- | --------------------------------------------------------- |
+| **mimo-orchestrator**         | `opencode-go/mimo-v2.6-pro` | Coordinator with fast, standard, and deep execution lanes   |
+| **mimo-implementation-engineer** | `opencode-go/mimo-v2.6-pro` | Normal features, fixes, tests, refactors, integrations    |
+| **mimo-repository-analyst**   | `opencode-go/mimo-v2.6-pro` | Read-only repository mapping and impact analysis          |
+| **mimo-bounded-worker**       | `opencode-go/mimo-v2.6-flash` | Low-cost narrow, repetitive, isolated work               |
+| **mimo-pr-reviewer**          | `opencode-go/mimo-v2.6-flash` | Routine read-only PR review and findings artifact        |
+
+This family supersedes the named Sol, Luna, and DeepSeek presets in `model-routing.md`; follow that document only for escalation, reserve, and effort principles. It is not an Economy, Eco Fast, or Flash worker family, so `economy-delegation` does not apply.
+
+#### Scribe tier
+
+A writing and curriculum family. All four roles run the free `opencode-go/space-bunny-free` model, which keeps long-form drafting at zero token cost.
+
+| Agent                  | Model                            | Responsibility                                                     |
+| ---------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| **scribe-orchestrator** | `opencode-go/space-bunny-free`   | Coordinates large writing projects with sourced research and durable handoffs |
+| **scribe-researcher**  | `opencode-go/space-bunny-free`   | Researches assigned units; writes evidence with claim-level sources and explicit gaps |
+| **scribe-writer**      | `opencode-go/space-bunny-free`   | Writes lessons and long-form content; retains file ownership through revisions |
+| **scribe-qa**          | `opencode-go/space-bunny-free`   | Independently reviews written units against the brief, sources, and teaching quality |
 
 #### Optional execution profiles
 
@@ -202,7 +212,7 @@ The System Architect is Markdown-only and can delegate bounded current-state ana
 
 #### Repository planner
 
-Use `/plan <task>` or select `planner` for a repository-focused implementation plan. `/update-plan <change>` revises the same document. The planner uses Sol high, leaves the default agent unchanged, and can investigate code but edit only Markdown plans under `.plans` or `plans`.
+Use `/plan <task>` or select `planner` for a repository-focused implementation plan. `/update-plan <change>` revises the same document. The planner uses Sol `xhigh` on `openai/gpt-6.1-sol`, leaves the default agent unchanged, and can investigate code but edit only Markdown plans under `.plans` or `plans`.
 
 The planner recommends an approach, asks consequential questions through OpenCode's question tool with a recommended answer, and explains risks, steps, and verification in plain language. Architecture and system-design skills support relevant decisions; they are not mandatory stages or separate document packages. All three use small Mermaid diagrams with text explanations in their main saved documents.
 
@@ -214,13 +224,13 @@ All configured MCP tools are available to the planner, including Context7, Cooli
 
 The main document explains what was found, the recommended approach, risks and unknowns, implementation steps, and verification or rollout. Skill guidance is shared through `skills/planning/`, `skills/architecture-design/`, and `skills/system-design/`; this installation's `skills` directory points to `~/.agent-configs/skills`. Restart OpenCode after changes to load the new agent, commands, and guidance.
 
-The other delegating non-coding primaries use Sol: `biz-dev` uses medium and `ops-pm` uses high. Their existing tool and artifact restrictions are unchanged. `raw` still inherits unless explicitly overridden; hidden built-in utilities are not retuned by this rollout. UI/UX, 3D modeling, adjudication, architecture, principal engineering, and exceptional review have explicit Astra assignments. Fast profiles use Sol Fast for the migrated implementation, repository, and standard-review roles; Astra exceptions retain their existing Fast routes where configured.
+The other delegating non-coding primaries use Sol: `biz-dev` uses `medium` and `ops-pm` uses `high`, both on `openai/gpt-6.1-sol`. Their existing tool and artifact restrictions are unchanged. `raw` still inherits unless explicitly overridden; hidden built-in utilities are not retuned by this rollout. UI/UX, 3D modeling, adjudication, architecture, principal engineering, and exceptional review have explicit Astra assignments. Fast profiles use Sol Fast for the migrated implementation, repository, and standard-review roles; Astra exceptions retain their existing Fast routes where configured.
 
 #### Explicit code audit
 
 | Agent            | Mode | Model                | Reasoning | Responsibility                                                   |
 | ---------------- | ---- | -------------------- | --------- | ---------------------------------------------------------------- |
-| **code-auditor** | all  | `openai/gpt-6-sol` | `medium`  | Explicit read-only audits for named code and system risk domains |
+| **code-auditor** | all  | `openai/gpt-6.1-sol` | `high`    | Explicit read-only audits for named code and system risk domains |
 
 Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Auditor. Normal orchestrators and implementation workers are denied the `code-audit` skill, and the Code Auditor cannot edit or delegate. It may identify missing controls because audit is explicit, but its findings remain recommendations until the user selects them in a separate implementation request. System Architect is the only role with a controlled exception, limited to an explicitly named current-state audit inside an architecture mission.
 
@@ -230,15 +240,15 @@ Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Au
 | ---------------------------------- | -------- | ------------------------- | --------- | --------------------------------------------------- |
 | **pr-review-orchestrator**         | primary  | `openai/gpt-6-sol`      | `high`    | Standard single and batch PR-review coordination    |
 | **economy-pr-review-orchestrator** | primary  | `openai/gpt-6-sol`      | `high`    | Economy single and batch PR-review coordination     |
-| **pr-reviewer**                    | subagent | `openai/gpt-6-sol`      | `medium`  | Consequential and normal expert-level PR review     |
-| **economy-pr-reviewer**            | subagent | `openai/gpt-6-luna`     | `max`     | Economy target-branch review and findings artifact  |
+| **pr-reviewer**                    | subagent | `openai/gpt-6.1-sol`     | `high`    | Consequential and normal expert-level PR review     |
+| **economy-pr-reviewer**            | subagent | `openai/gpt-6.1-sol`     | `medium`  | Economy target-branch review and findings artifact  |
 | **exceptional-pr-reviewer**        | subagent | `openai/gpt-6-astra`      | `xhigh`   | Only necessary beyond-expert reasoning              |
 | **flash-pr-reviewer**              | subagent | `deepseek/deepseek-flash` | `max`     | Flash target-branch review and findings artifact    |
-| **pr-review-adjudicator**          | subagent | `openai/gpt-6-astra`      | `high`    | Unresolved material disputes or explicit validation |
+| **pr-review-adjudicator**          | subagent | `openai/gpt-6.1-sol`     | `max`     | Unresolved material disputes or explicit validation |
 
 PR reviewer subagents use read-only GitHub operations and never checkout or modify the reviewed source. A request to either premium or economy PR-review orchestrator to review an assigned live PR authorizes it to publish one coherent review, including approve and request-changes events, unless the user asks for a draft, local, or artifact-only review. Every published code finding is grounded in PR intent, an existing contract, or a regression introduced by the diff and appears as an inline comment on its smallest relevant current-diff line; optional suggestions and generalized hardening belong to audit instead. Summaries state only the review event, scope, and residual risk. Before posting, the orchestrator reconfirms the reviewed head SHA and checks for duplicates. Findings follow [Conventional Comments](https://conventionalcomments.org/) with explicit intent and blocking decorations, while using an empathetic, collaborative, non-blaming tone. Reviewers write `.pr-reviews/<number>--<sanitized-title>.md`; batch orchestrators also maintain `.pr-reviews/INDEX.md`. Because these are intentional workspace artifacts, they appear in `git status` unless `.pr-reviews/` is added to the repository's local `.git/info/exclude` or tracked ignore rules.
 
-Choose one appropriate reviewer. Economy uses Luna max, Standard uses Sol medium, and Exceptional uses Astra xhigh only for a named beyond-expert correctness question. Large diffs, sensitive domains, or blocking findings alone do not trigger Exceptional review. Adjudication uses Astra high and is not a routine stage: use it only for unresolved material disputes after evidence exchange, conflicting findings affecting decisions, or explicitly requested independent validation. Accepted findings, clean reviews, and simple user filters do not need adjudication. See the [review routing policy](skills/pr-review-orchestrator-contract/review-routing.md). Effort labels are provider-specific, not comparable token budgets or quality guarantees.
+Choose one appropriate reviewer. Economy uses Sol medium, Standard uses Sol high, and Exceptional uses Astra xhigh only for a named beyond-expert correctness question. Large diffs, sensitive domains, or blocking findings alone do not trigger Exceptional review. Adjudication uses Sol max and is not a routine stage: use it only for unresolved material disputes after evidence exchange, conflicting findings affecting decisions, or explicitly requested independent validation. Accepted findings, clean reviews, and simple user filters do not need adjudication. See the [review routing policy](skills/pr-review-orchestrator-contract/review-routing.md). Effort labels are provider-specific, not comparable token budgets or quality guarantees.
 
 All eight review roles permit external access to the global skill trees under `~/.config/opencode/skills`, `~/.agents/skills`, `~/.claude/skills`, and the canonical `~/.agent-configs/skills` target. This lets contracts and their companion documents load from other project directories. Their read restrictions still apply; edits remain limited to review artifacts, and unrelated external access remains denied. Validate new required skill reads with the target agent's permissions from outside this configuration repository, not with the editing agent's broader access.
 
@@ -246,15 +256,17 @@ All eight review roles permit external access to the global skill trees under `~
 
 | Agent                          | Command         | Default model        | Reasoning | Worker pool                                                                     |
 | ------------------------------ | --------------- | -------------------- | --------- | ------------------------------------------------------------------------------- |
-| **yolo-orchestrator**          | `yolo`          | `openai/gpt-6-sol` | `high`    | Mid and economy workers plus shared UI/UX, 3D, and principal specialists        |
-| **yolo-eco-orchestrator**      | `yolo-eco`      | `openai/gpt-6-sol` | `high`    | Economy workers plus shared UI/UX, 3D, and principal specialists                |
-| **yolo-flash-orchestrator**    | `yolo-flash`    | `openai/gpt-6-sol` | `high`    | Flash workers and vision scout plus shared UI/UX, 3D, and principal specialists |
-| **yolo-eco-fast-orchestrator** | `yolo-eco-fast` | `openai/gpt-6-sol` | `high`    | Eco Fast workers plus shared UI/UX, 3D, and principal specialists               |
+| **yolo-orchestrator**          | `yolo`          | `openai/gpt-6.1-sol`      | `xhigh`   | Mid, Fast, and economy workers plus shared UI/UX, 3D, and principal specialists |
+| **yolo-fast-orchestrator**      | `yolo-fast`     | `openai/gpt-6.1-sol-fast` | `xhigh`   | Fast workers plus economy workers plus shared UI/UX, 3D, and principal specialists |
+| **yolo-eco-orchestrator**      | `yolo-eco`      | `openai/gpt-6.1-sol`      | `xhigh`   | Economy workers plus shared UI/UX, 3D, and principal specialists               |
+| **yolo-eco-fast-orchestrator** | `yolo-eco-fast` | `openai/gpt-6.1-sol`      | `xhigh`   | Eco Fast workers plus shared UI/UX, 3D, and principal specialists              |
+| **yolo-flash-orchestrator**    | `yolo-flash`    | `openai/gpt-6.1-sol`      | `xhigh`   | Flash workers and vision scout plus shared UI/UX, 3D, and principal specialists |
 
 Launch the desired mode from the project it should own:
 
 ```bash
 yolo
+yolo-fast
 yolo-eco
 yolo-flash
 yolo-eco-fast
@@ -264,16 +276,17 @@ Pass a project path or model override when needed:
 
 ```bash
 yolo /path/to/project
+yolo-fast /path/to/project
 yolo-eco /path/to/project
 yolo-flash /path/to/project
 yolo --model openai/gpt-6-astra --variant medium
 ```
 
-The versioned `opencode-yolo`, `yolo`, `yolo-eco`, `yolo-flash`, and `yolo-eco-fast` launchers select their named agent without a hardcoded model. They inject `profiles/yolo.json` as a late merged process-wide layer and enable OpenCode's `--auto` mode. Per-agent permissions still apply afterward. The profile allows routine work, marks consequential command patterns as `ask`, and denies raw token-display commands and worker use of the user-facing `question` tool; `--auto` approves permission asks, not denied tools.
+The versioned `opencode-yolo`, `yolo`, `yolo-fast`, `yolo-eco`, `yolo-flash`, and `yolo-eco-fast` launchers select their named agent without a hardcoded model. They inject `profiles/yolo.json` as a late merged process-wide layer and enable OpenCode's `--auto` mode. Per-agent permissions still apply afterward. The profile allows routine work, marks consequential command patterns as `ask`, and denies raw token-display commands and worker use of the user-facing `question` tool; `--auto` approves permission asks, not denied tools.
 
-Only the four YOLO parents retain the user-facing `question` tool under this profile. Workers decide routine in-scope details and return unresolved decisions, evidence, recommendations, and dependent work to the parent. The parent answers within existing authority, resumes the same worker, and continues; it asks the user only for genuinely unavailable information, access, or authorization after finishing unaffected work. This does not invent user approval, weaken destructive-operation or publication boundaries, or change normal-mode worker permissions. Selecting a YOLO agent without the YOLO profile does not install these profile-specific tool restrictions.
+Only the five YOLO parents retain the user-facing `question` tool under this profile. Workers decide routine in-scope details and return unresolved decisions, evidence, recommendations, and dependent work to the parent. The parent answers within existing authority, resumes the same worker, and continues; it asks the user only for genuinely unavailable information, access, or authorization after finishing unaffected work. This does not invent user approval, weaken destructive-operation or publication boundaries, or change normal-mode worker permissions. Selecting a YOLO agent without the YOLO profile does not install these profile-specific tool restrictions.
 
-All YOLO primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, integration, conflict repair, final verification, and cleanup. The selected implementation engineer owns frontend work and browser validation. Economy, Flash, and Eco Fast YOLO modes retain their named worker pools; Flash alone also has its factual-vision scout. All ten named coding and PR-review orchestrators use Sol high; the Flash worker pool uses direct DeepSeek Vision.
+All YOLO primaries are orchestration-first: substantive investigation, implementation, tests, documentation, and UI work must be delegated. They retain triage, ownership, integration, conflict repair, final verification, and cleanup. The selected implementation engineer owns frontend work and browser validation. Mid and Fast YOLO modes use their corresponding worker pools; Economy, Flash, and Eco Fast modes use their named pools. Flash alone also has its factual-vision scout. All five YOLO coordinators use `xhigh` reasoning; the Fast coordinator uses the Sol Fast priority alias. The Flash worker pool uses direct DeepSeek Vision.
 
 YOLO mode authorizes routine local edits, dependency installation, downloads, project containers, local Git history operations, tests, formatting, linting, type checks, builds, browser verification, repair loops, and cleanup. Outside-worktree access, privileged commands, Git pushes and GitHub writes, remote shell and file transfer, cloud and deployment CLIs, infrastructure or data mutation, publishing, system package tools, and destructive cleanup are consequential `ask` gates when the profile is used without `--auto`.
 
@@ -308,9 +321,9 @@ flowchart TD
     D --> V
 ```
 
-The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All eight coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
+The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All ten coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
 
-The base default is the experimental `exp-orchestrator`. Select another primary explicitly when needed, for example the economy orchestrator:
+The base default is the built-in `build` on `openai/gpt-6.1-sol#high`. Select another primary explicitly when needed, for example the economy orchestrator:
 
 ```json
 {

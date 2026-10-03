@@ -1,7 +1,7 @@
 ---
 description: Coordinates large writing and curriculum projects with sourced research, parallel writers, independent QA, and durable file handoffs
 mode: primary
-model: opencode/muse-spark-1.3-contributor-free
+model: opencode-go/space-bunny-free
 color: "#A855F7"
 permissions:
   - action: shell

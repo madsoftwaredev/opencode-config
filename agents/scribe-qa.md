@@ -1,7 +1,7 @@
 ---
 description: Independently reviews written units against the original brief, source evidence, and teaching quality; returns actionable findings without editing files
 mode: subagent
-model: openrouter/thinkingmachines/inkling:free
+model: opencode-go/space-bunny-free
 permissions:
   - action: shell
     resource: "*"

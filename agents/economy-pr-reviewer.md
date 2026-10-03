@@ -1,7 +1,7 @@
 ---
 description: Economy read-only PR reviewer that compares a GitHub PR with its target branch and writes complete actionable findings to a Markdown artifact
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#max
+model: openai/gpt-6.1-sol#medium
 permissions:
   - action: read
     resource: ".pr-reviews/*.md"

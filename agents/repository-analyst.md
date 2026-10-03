@@ -1,7 +1,7 @@
 ---
 description: Read-only long-context analyst for repository mapping, execution tracing, dependency analysis, impact assessment, and migration planning
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#max
+model: openai/gpt-6.1-sol#medium
 permissions:
   - action: edit
     resource: "*"

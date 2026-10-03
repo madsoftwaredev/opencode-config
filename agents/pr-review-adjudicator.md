@@ -1,7 +1,7 @@
 ---
 description: Read-only Astra adjudicator for unresolved material finding disputes or explicitly requested independent validation; never a routine review stage
 mode: subagent
-model: openai/gpt-6-astra#high
+model: openai/gpt-6.1-sol#max
 permissions:
   - action: read
     resource: ".pr-reviews/*.md"

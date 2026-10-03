@@ -1,7 +1,7 @@
 ---
 description: Default autonomous implementer for scoped features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: openai/gpt-6-sol#medium
+model: openai/gpt-6.1-sol#high
 permissions:
   - action: subagent
     resource: "*"

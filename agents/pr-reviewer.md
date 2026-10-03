@@ -1,7 +1,7 @@
 ---
 description: Standard DeepSeek read-only reviewer for consequential and normal expert-level PRs, with complete findings in a Markdown artifact
 mode: subagent
-model: opencode-go/deepseek-v4.1-flash#max
+model: openai/gpt-6.1-sol#high
 permissions:
   - action: read
     resource: ".pr-reviews/*.md"

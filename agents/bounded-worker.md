@@ -1,7 +1,7 @@
 ---
 description: Cost-efficient worker for narrow, repetitive, isolated, and objectively verifiable implementation tasks
 mode: subagent
-model: openai/gpt-6-luna#high
+model: openai/gpt-6-luna#max
 permissions:
   - action: subagent
     resource: "*"

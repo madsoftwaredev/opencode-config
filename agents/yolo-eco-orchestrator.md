@@ -1,7 +1,7 @@
 ---
 description: Fully autonomous Sol high orchestrator that completes projects with economy workers plus shared UI/UX, 3D, and principal specialists
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#xhigh
 color: "#F97316"
 permissions:
   - action: doom_loop

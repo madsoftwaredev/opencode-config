@@ -2,14 +2,20 @@
   "$schema": "https://opencode.ai/config.json",
   "agents": {
     "build": {
-      "model": "deepseek/deepseek-flash"
+      "description": "Default primary coding agent. Works directly and spawns its own short-lived subagents, which inherit this agent's model. The named tiered workers are denied; use the tier orchestrators when you need a specific model family",
+      "model": "openai/gpt-6.1-sol#high",
+      "permissions": [
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "subagent", "resource": "general", "effect": "allow" },
+        { "action": "subagent", "resource": "explore", "effect": "allow" }
+      ]
     }
   },
   "update": "auto",
   "compaction": {
     "auto": true
   },
-  "default_agent": "exp-orchestrator",
+  "default_agent": "build",
   "formatter": {
     "rubocop": {
       "command": ["bundle", "exec", "rubocop", "-a", "$FILE"],
@@ -64,11 +70,19 @@
         "disabled": true,
         "type": "local"
       },
+      "tripo": {
+        "type": "local",
+        "timeout": { "startup": 30000, "catalog": 30000, "execution": 1800000 },
+        "command": [
+          "/Users/mm/.nvm/versions/node/v26.9.0/bin/node",
+          "/Users/mm/.nvm/versions/node/v26.9.0/lib/node_modules/tripo-cli/dist/cli.js",
+          "mcp"
+        ]
+      },
       "blender-mcp": {
-        "command": ["/Users/mm/.local/bin/uvx", "blender-mcp"],
+        "command": ["/Users/mm/.local/bin/blender-mcp"],
         "environment": {
-          "BLENDER_HOST": "localhost",
-          "BLENDER_PORT": "9876"
+          "BLENDER_PATH": "/Applications/Blender.app/Contents/MacOS/Blender"
         },
         "type": "local"
       },
@@ -77,19 +91,39 @@
         "type": "remote",
         "url": "https://mcp.sentry.dev/mcp",
         "disabled": true
+      },
+      "elevenlabs": {
+        "type": "remote",
+        "url": "https://api.us.elevenlabs.io/v1/mcp"
+      },
+      "elevenlabs-audio": {
+        "type": "local",
+        "command": [
+          "/bin/zsh",
+          "-c",
+          "if [[ -z ${ELEVENLABS_API_KEY:-} ]]; then source \"$HOME/.zshrc\" >&2 || exit; fi; exec node \"$1\"",
+          "elevenlabs-audio",
+          "/Users/mm/.config/opencode/mcp/elevenlabs-audio/server.mjs"
+        ],
+        "environment": {
+          "ELEVENLABS_API_KEY": "{env:ELEVENLABS_API_KEY}"
+        }
       }
     }
   },
-  "model": "openai/gpt-6-astra",
+  "model": "openai/gpt-6.1-sol",
   "plugins": [
     {
       "package": "./plugins/compaction-model",
       "options": {
         "model": "opencode-go/deepseek-v4.1-flash#max"
       }
-    }
+    },
+    "@openchamber/opencode-claude"
   ],
   "permissions": [
+    { "action": "tripo_tripo_make", "resource": "*", "effect": "ask" },
+    { "action": "elevenlabs-audio_generate_*", "resource": "*", "effect": "ask" },
     { "action": "shell", "resource": "*", "effect": "allow" },
     { "action": "shell", "resource": "chmod *", "effect": "ask" },
     { "action": "shell", "resource": "chown *", "effect": "ask" },
@@ -155,7 +189,14 @@
   "share": "manual",
   "shell": "zsh",
   "experimental": {
-    "subagent_depth": 1
+    "subagent_depth": 1,
+    "policies": [
+      { "action": "permission", "resource": "elevenlabs_creative_generate_image:*", "effect": "deny" },
+      { "action": "permission", "resource": "elevenlabs_creative_edit_image:*", "effect": "deny" },
+      // Generic flow runners can execute image nodes; direct audio/video tools remain available.
+      { "action": "permission", "resource": "elevenlabs_creative_generate_in_flow:*", "effect": "deny" },
+      { "action": "permission", "resource": "elevenlabs_creative_run_flow_nodes:*", "effect": "deny" }
+    ]
   },
   "watcher": {
     "ignore": [
@@ -303,6 +344,27 @@
             "output": 128000
           }
         },
+        "gpt-6.1-sol": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6.1-sol-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "gpt-6-astra-fast": {
+          "limit": {
+            "context": 384000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
         "gpt-6-sol-fast": {
           "limit": {
             "context": 384000,
@@ -313,76 +375,35 @@
       }
     },
     "openrouter": {
-      "models": {
-        "xiaomi/mimo-v2.6-flash": {
-          "body": {
-            "chat_template_kwargs": {
-              "enable_thinking": true
-            }
-          },
-          "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
-          }
-        },
-        "xiaomi/mimo-v2.6-pro": {
-          "body": {
-            "chat_template_kwargs": {
-              "enable_thinking": true
-            }
-          },
-          "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
-          }
-        },
-        "xiaomi/mimo-v2.6-pro-ultraspeed": {
-          "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
-          }
-        }
-      }
+      "models": {}
     },
     "zai": {},
     "deepseek": {
-      "models": {
-        "deepseek-flash": {
-          "limit": {
-            "context": 258000,
-            "output": 384000
-          }
-        }
-      }
+      // "models": {
+      //   "deepseek-flash": {
+      //     "limit": {
+      //       "context": 258000,
+      //       "output": 384000
+      //     }
+      //   }
+      // }
     },
-    "opencode": {
-      "models": {
-        "mimo-v2.6-flash-free": {
-          "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
-          }
-        }
-      }
-    },
+    "opencode": {},
     "opencode-go": {
       "models": {
         "mimo-v2.6-flash": {
           "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
+            "context": 400000
           }
         },
         "mimo-v2.6-pro": {
           "limit": {
-            "context": 384000,
-            "input": 256000,
-            "output": 128000
+            "context": 400000
+          }
+        },
+        "space-bunny-free": {
+          "limit": {
+            "context": 400000
           }
         }
       }
