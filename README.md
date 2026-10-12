@@ -655,6 +655,10 @@ The auto-discovered [`local.background-subagent`](plugins/background-subagent/RE
 
 The separate [`local.subagent-sidebar`](plugins/subagent-sidebar/README.md) CLI/TUI plugin adds a live `SUBAGENTS` section to the session sidebar with each child session's status and a shortened current task or tool activity. Click a row to open that session; `+N more` expands all children into a scrollable list with a collapse button. Clickable rows and controls have a subtle theme-colored hover highlight.
 
+### V2 Goal Loop
+
+The auto-discovered [`local.goal` plugin](plugins/goal/README.md) turns `/goal` into a real goal runtime instead of a one-shot prompt. `/goal <text>` stores a durable goal for the session, re-injects it into every model call so compaction cannot drop it, and re-prompts the session with a `[goal loop]` nudge whenever it goes idle before the goal is verified done. The agent reports checkpoints through `goal_progress` and ends the loop with `goal_done`; `/goal status|update|pause|resume|done|clear|budget` manage the lifecycle. The loop is bounded by a per-goal nudge budget (default 12, auto-pauses when spent) and persists across restarts. Subtask sessions inherit the parent goal as context only. See the plugin README for options and `/gauntlet` differences.
+
 ### OpenAI GPT Input Budget
 
 The OpenAI provider gives all currently available GPT models an input budget of at most 256,000 tokens. Explicit overrides cover GPT-5.4, GPT-5.4 Mini, GPT-5.5, GPT-5.6 Luna/Sol/Terra, and GPT-6 Astra, including their `-fast` entries. Each sets `limit.input` to 256,000, retains the 128,000 output allowance, and sets total `limit.context` to 384,000. GPT-5.3 Codex Spark already has a smaller native input limit of 100,000. Newly added model IDs need their own overrides.
