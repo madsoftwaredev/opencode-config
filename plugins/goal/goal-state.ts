@@ -59,22 +59,23 @@ export interface CommandResult {
   error?: string;
 }
 
-const VERBS = new Set([
-  "set",
-  "status",
-  "show",
-  "update",
-  "done",
-  "finish",
-  "pause",
-  "stop",
-  "resume",
-  "clear",
-  "remove",
-  "budget",
-]);
+const BARE_VERBS: Record<string, GoalCommand["verb"]> = {
+  status: "status",
+  show: "status",
+  resume: "resume",
+  continue: "resume",
+  stop: "clear",
+  clear: "clear",
+  remove: "clear",
+};
 
-/** Parse `/goal ...` arguments. Unknown first words become goal text. */
+const ARG_VERBS = new Set(["set", "update", "done", "finish", "pause", "budget"]);
+
+/**
+ * Parse `/goal ...` arguments. Bare lifecycle words (`status`, `continue`,
+ * `stop`, …) only act when used alone, so goal text like "stop the bleeding"
+ * stays goal text. Unknown first words become goal text.
+ */
 export function parseCommand(raw: string): GoalCommand {
   let text = raw.trim();
   text = text.replace(/^\/goal\b\s*/i, "");
@@ -85,12 +86,11 @@ export function parseCommand(raw: string): GoalCommand {
   const word = (firstSpace === -1 ? text : text.slice(0, firstSpace)).toLowerCase();
   const rest = firstSpace === -1 ? "" : text.slice(firstSpace + 1).trim();
 
-  if (!VERBS.has(word)) return { verb: "set", text };
+  if (word in BARE_VERBS && !rest) return { verb: BARE_VERBS[word] };
+
+  if (!ARG_VERBS.has(word)) return { verb: "set", text };
 
   switch (word) {
-    case "status":
-    case "show":
-      return { verb: "status" };
     case "set":
       return rest ? { verb: "set", text: rest } : { verb: "error", message: "Usage: /goal set <goal text>" };
     case "update":
@@ -99,13 +99,7 @@ export function parseCommand(raw: string): GoalCommand {
     case "finish":
       return { verb: "done", summary: rest || undefined };
     case "pause":
-    case "stop":
       return { verb: "pause", reason: rest || undefined };
-    case "resume":
-      return { verb: "resume" };
-    case "clear":
-    case "remove":
-      return { verb: "clear" };
     case "budget": {
       const budget = Number(rest);
       if (!Number.isInteger(budget) || budget < 1) {
@@ -318,7 +312,7 @@ export function statusReport(state: GoalState | undefined): string {
   ];
   if (state.doneSummary) lines.push(`Done: ${state.doneSummary}`);
   lines.push(
-    "Manage: /goal set <text> · /goal update <text> · /goal pause · /goal resume · /goal done [summary] · /goal clear · /goal budget <n>",
+    "Manage: /goal set <text> · /goal update <text> · /goal continue · /goal pause [reason] · /goal done [summary] · /goal stop · /goal budget <n>",
   );
   return lines.join("\n");
 }

@@ -23,10 +23,14 @@ owns state and mechanics:
 | `/goal <text>` or `/goal set <text>` | Set (replace) the goal and start working |
 | `/goal status` | Show the goal, progress notes, and loop state |
 | `/goal update <text>` | Reword the goal; reopens a done goal |
-| `/goal done [summary]` | Mark done and stop the loop |
-| `/goal pause [reason]` / `/goal resume` | Stop / re-arm loop nudges |
-| `/goal clear` | Remove the goal |
+| `/goal continue` or `/goal resume` | Keep going: re-arm the loop and nudge now |
+| `/goal pause [reason]` | Pause the loop; the goal stays in context |
+| `/goal done [summary]` | Finished: mark done and stop the loop |
+| `/goal stop` or `/goal clear` | Abandon: remove the goal entirely |
 | `/goal budget <n>` | Set the loop budget for this goal |
+
+Bare lifecycle words (`status`, `continue`, `pause`, `stop`, …) only act when
+used alone, so goal text like `/goal stop the bleeding` is still a goal.
 
 ## Agent tools
 

@@ -271,7 +271,7 @@ export default {
       editor.add({
         name: "goal",
         description:
-          "Set or manage this session's goal: /goal <text>, set|update|status|done|pause|resume|clear|budget",
+          "Set or manage this session's goal: /goal <text>, set|update|status|continue|pause|done|stop|budget",
         execute: async ({ sessionID, prompt, delivery }) => {
           const command = parseCommand(prompt.text ?? "");
           const result = applyCommand(await readGoal(sessionID), command, {

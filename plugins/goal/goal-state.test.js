@@ -41,10 +41,22 @@ test("parseCommand maps verbs and keeps trailing text", () => {
   expect(parseCommand("done tests are green")).toEqual({ verb: "done", summary: "tests are green" });
   expect(parseCommand("finish")).toEqual({ verb: "done", summary: undefined });
   expect(parseCommand("pause waiting on review")).toEqual({ verb: "pause", reason: "waiting on review" });
-  expect(parseCommand("stop")).toEqual({ verb: "pause", reason: undefined });
-  expect(parseCommand("resume")).toEqual({ verb: "resume" });
-  expect(parseCommand("clear")).toEqual({ verb: "clear" });
   expect(parseCommand("budget 5")).toEqual({ verb: "budget", budget: 5 });
+});
+
+test("parseCommand maps bare lifecycle words to their verbs", () => {
+  expect(parseCommand("continue")).toEqual({ verb: "resume" });
+  expect(parseCommand("resume")).toEqual({ verb: "resume" });
+  expect(parseCommand("stop")).toEqual({ verb: "clear" });
+  expect(parseCommand("clear")).toEqual({ verb: "clear" });
+  expect(parseCommand("show")).toEqual({ verb: "status" });
+});
+
+test("bare lifecycle words with trailing text stay goal text", () => {
+  expect(parseCommand("continue the refactor")).toEqual({ verb: "set", text: "continue the refactor" });
+  expect(parseCommand("stop the bleeding")).toEqual({ verb: "set", text: "stop the bleeding" });
+  expect(parseCommand("clear the cache")).toEqual({ verb: "set", text: "clear the cache" });
+  expect(parseCommand("status report for the team")).toEqual({ verb: "set", text: "status report for the team" });
 });
 
 test("parseCommand treats unknown first words as goal text", () => {
