@@ -1,4 +1,5 @@
 import type { Plugin } from "@opencode/plugin";
+import { GoalRpc, toGoalView, type GoalView } from "./goal-rpc";
 import {
   applyCommand,
   asGoalState,
@@ -62,31 +63,10 @@ export default {
       return state;
     };
 
-    const writeGoal = async (state: GoalState): Promise<void> => {
-      cache.set(state.sessionID, state);
-      await ctx.storage.set(storageKey(state.sessionID), state);
-    };
-
     const clearGoal = async (sessionID: string): Promise<void> => {
       cache.set(sessionID, undefined);
       await ctx.storage.remove(storageKey(sessionID));
-    };
-
-    /** This instance owns the loop only for goals it created. */
-    const owns = (state: GoalState): boolean => !state.owner || state.owner === owner;
-
-    const sendNudge = async (state: GoalState, label: string): Promise<void> => {
-      await writeGoal({ ...state, nudges: state.nudges + 1, updatedAt: Date.now() });
-      await ctx.session.synthetic({
-        sessionID: state.sessionID,
-        text: nudgePrompt(state, label),
-        delivery: "queue",
-        resume: true,
-      });
-    };
-
-    const sendNotice = async (sessionID: string, text: string): Promise<void> => {
-      await ctx.session.synthetic({ sessionID, text, resume: false });
+      emitGoalUpdate(sessionID, { active: false });
     };
 
     // Subtask sessions inherit their parent's goal as context.
@@ -109,6 +89,46 @@ export default {
         if (goal && goal.status !== "done" && settings.inherit) return goal;
       }
       return undefined;
+    };
+
+    // 1. RPC for the TUI goal island: state reads plus `updated` events.
+    const rpcRegistration = await ctx.rpc.register(GoalRpc, {
+      state: async (input) => {
+        const { sessionID } = input as { sessionID: string };
+        const goal = await readGoal(sessionID);
+        if (goal && owns(goal)) return toGoalView(goal, false);
+        const inherited = await findAncestorGoal(sessionID);
+        return inherited ? toGoalView(inherited, true) : { active: false };
+      },
+    });
+
+    const emitGoalUpdate = (sessionID: string, view: GoalView): void => {
+      void rpcRegistration.events
+        .emit("updated", { sessionID, ...view })
+        .catch(() => {});
+    };
+
+    const writeGoal = async (state: GoalState): Promise<void> => {
+      cache.set(state.sessionID, state);
+      await ctx.storage.set(storageKey(state.sessionID), state);
+      emitGoalUpdate(state.sessionID, toGoalView(state, false));
+    };
+
+    /** This instance owns the loop only for goals it created. */
+    const owns = (state: GoalState): boolean => !state.owner || state.owner === owner;
+
+    const sendNudge = async (state: GoalState, label: string): Promise<void> => {
+      await writeGoal({ ...state, nudges: state.nudges + 1, updatedAt: Date.now() });
+      await ctx.session.synthetic({
+        sessionID: state.sessionID,
+        text: nudgePrompt(state, label),
+        delivery: "queue",
+        resume: true,
+      });
+    };
+
+    const sendNotice = async (sessionID: string, text: string): Promise<void> => {
+      await ctx.session.synthetic({ sessionID, text, resume: false });
     };
 
     // 1. Keep the goal in front of the model on every call, so it survives
@@ -304,6 +324,9 @@ export default {
       }
     }
 
-    return () => controller.abort();
+    return () => {
+      void rpcRegistration.dispose();
+      controller.abort();
+    };
   },
 } satisfies Plugin.Plugin;

@@ -29,6 +29,8 @@ async function makeCtx({ options = {}, parents = {}, startGoals = [] } = {}) {
   const commands = [];
   const tools = [];
   const sent = [];
+  const rpcEvents = [];
+  let rpcHandlers;
   const events = makeEventStream();
 
   const ctx = {
@@ -73,6 +75,19 @@ async function makeCtx({ options = {}, parents = {}, startGoals = [] } = {}) {
         return { dispose: async () => {} };
       },
     },
+    rpc: Object.assign(() => ({}), {
+      register: async (_definition, handlers) => {
+        rpcHandlers = handlers;
+        return {
+          events: {
+            emit: async (type, data) => {
+              rpcEvents.push({ type, data: structuredClone(data) });
+            },
+          },
+          dispose: async () => {},
+        };
+      },
+    }),
     tool: {
       transform: async (fn) => {
         fn({
@@ -98,6 +113,7 @@ async function makeCtx({ options = {}, parents = {}, startGoals = [] } = {}) {
     tools,
     sent,
     events,
+    rpc: { handlers: () => rpcHandlers, events: rpcEvents },
     command: (name) => commands.find((entry) => entry.name === name),
     tool: (name) => tools.find((entry) => entry.name === name),
   };
@@ -287,4 +303,55 @@ test("resumeOnStart re-arms open goals when the plugin loads", async () => {
 test("bad options are rejected", async () => {
   await expect(makeCtx({ options: { budget: 0 } })).rejects.toThrow("budget");
   await expect(makeCtx({ options: { inherit: "yes" } })).rejects.toThrow("inherit");
+});
+
+test("the goal RPC serves state for owners, subtasks, and empty sessions", async () => {
+  const harness = await makeCtx({ parents: { ses_child: "ses_1" } });
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+
+  const own = await harness.rpc.handlers().state({ sessionID: "ses_1" });
+  expect(own).toMatchObject({ active: true, text: "land the migration", status: "active", nudges: 0 });
+
+  const child = await harness.rpc.handlers().state({ sessionID: "ses_child" });
+  expect(child).toMatchObject({ active: true, text: "land the migration", inherited: true });
+
+  expect(await harness.rpc.handlers().state({ sessionID: "ses_none" })).toEqual({ active: false });
+});
+
+test("every state change emits goal.updated for the island", async () => {
+  const harness = await makeCtx();
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+
+  const afterSet = harness.rpc.events.at(-1);
+  expect(afterSet.type).toBe("updated");
+  expect(afterSet.data).toMatchObject({ sessionID: "ses_1", active: true, text: "land the migration" });
+
+  await harness.tool("progress").execute({ note: "unblocked" }, { sessionID: "ses_1" });
+  expect(harness.rpc.events.at(-1).data).toMatchObject({ sessionID: "ses_1", active: true, nudges: 0 });
+
+  await harness.tool("done").execute({ summary: "shipped" }, { sessionID: "ses_1" });
+  expect(harness.rpc.events.at(-1).data).toMatchObject({ sessionID: "ses_1", active: false, status: "done" });
+
+  await harness.command("goal").execute({ sessionID: "ses_1", prompt: { text: "clear" }, delivery: "steer" });
+  expect(harness.rpc.events.at(-1).data).toEqual({ sessionID: "ses_1", active: false });
+});
+
+test("loop nudges update the island counters", async () => {
+  const harness = await makeCtx();
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+  harness.events.push({ type: "session.idle", data: { sessionID: "ses_1" } });
+  await settle();
+  expect(harness.rpc.events.at(-1).data).toMatchObject({ sessionID: "ses_1", active: true, nudges: 1 });
 });

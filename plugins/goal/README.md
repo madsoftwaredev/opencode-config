@@ -13,6 +13,7 @@ owns state and mechanics:
 | `context` hook | Re-injects the goal into every model call (compaction-proof) |
 | `goal_*` tools | The agent records progress and ends the loop honestly |
 | `session.idle` loop | Re-prompts the session while the goal is open |
+| Goal island (TUI) | Fixed status row above the message composer |
 | Plugin storage | Goal state persists across restarts and reloads |
 
 ## Commands
@@ -45,6 +46,23 @@ owns state and mechanics:
 
 Subtask sessions inherit their parent's goal as context only; the parent session
 owns the goal and its tools.
+
+## Goal island (TUI)
+
+A fixed island above the message composer shows the active goal and its loop
+state:
+
+```
+⚑ GOAL · land the migration · loop 3/12
+⏸ GOAL · land the migration · paused (budget)
+⚑ GOAL (parent) · land the migration · loop 0/12
+```
+
+It hides when the session has no goal or the goal is done. Subtask sessions show
+the parent goal marked `(parent)`. The island reads state from the server plugin
+over the `goal` RPC (`goal.state` plus `goal.updated` events), so it updates live
+as nudges, pauses, and completions happen. TUI plugins load when the TUI starts:
+restart the TUI after plugin updates to see it.
 
 ## Options
 
