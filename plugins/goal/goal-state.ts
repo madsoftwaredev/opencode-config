@@ -358,3 +358,33 @@ export function asGoalState(raw: unknown): GoalState | undefined {
     doneSummary: typeof value.doneSummary === "string" ? value.doneSummary : undefined,
   };
 }
+
+/** Persisted in-flight work: executing sessions and running background shells. */
+export interface InflightSnapshot {
+  executing: string[];
+  /** shellID -> owning sessionID */
+  shells: Record<string, string>;
+}
+
+export function asInflightSnapshot(raw: unknown): InflightSnapshot {
+  const empty: InflightSnapshot = { executing: [], shells: {} };
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return empty;
+
+  const value = raw as Record<string, unknown>;
+  const executing = Array.isArray(value.executing)
+    ? value.executing.filter((id): id is string => typeof id === "string")
+    : [];
+
+  const shells: Record<string, string> = {};
+  if (typeof value.shells === "object" && value.shells !== null && !Array.isArray(value.shells)) {
+    for (const [id, sessionID] of Object.entries(value.shells as Record<string, unknown>)) {
+      if (typeof sessionID === "string") shells[id] = sessionID;
+    }
+  }
+  return { executing, shells };
+}
+
+/** Session IDs with in-flight work: mid-turn sessions plus shell-owning sessions. */
+export function inflightSessions(snapshot: InflightSnapshot): Set<string> {
+  return new Set([...snapshot.executing, ...Object.values(snapshot.shells)]);
+}

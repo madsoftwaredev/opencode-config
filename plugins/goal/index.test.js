@@ -23,8 +23,9 @@ function makeEventStream() {
   };
 }
 
-async function makeCtx({ options = {}, parents = {}, startGoals = [] } = {}) {
+async function makeCtx({ options = {}, parents = {}, startGoals = [], startInflight } = {}) {
   const store = new Map(startGoals.map((goal) => [`goal/${goal.sessionID}`, structuredClone(goal)]));
+  if (startInflight) store.set("inflight", structuredClone(startInflight));
   const hooks = {};
   const commands = [];
   const tools = [];
@@ -354,4 +355,120 @@ test("loop nudges update the island counters", async () => {
   harness.events.push({ type: "session.idle", data: { sessionID: "ses_1" } });
   await settle();
   expect(harness.rpc.events.at(-1).data).toMatchObject({ sessionID: "ses_1", active: true, nudges: 1 });
+});
+
+const goalLoopNudges = (harness) => harness.sent.filter((entry) => entry.text?.includes("[goal loop]"));
+
+test("the loop holds while subtasks run and nudges when the tree settles", async () => {
+  const harness = await makeCtx({ parents: { ses_child: "ses_1", ses_grandchild: "ses_child" } });
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+
+  // Main spawns a background worker (which spawns its own) and goes idle.
+  harness.events.push({ type: "session.execution.started", data: { sessionID: "ses_child" } });
+  harness.events.push({ type: "session.execution.started", data: { sessionID: "ses_grandchild" } });
+  harness.events.push({ type: "session.idle", data: { sessionID: "ses_1" } });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(0);
+  expect(harness.store.get("goal/ses_1").nudges).toBe(0);
+
+  // A mid-tree settle must not release the nudge while anything is busy.
+  harness.events.push({ type: "session.execution.succeeded", data: { sessionID: "ses_grandchild" } });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(0);
+
+  // The last worker settling releases the held nudge.
+  harness.events.push({ type: "session.execution.succeeded", data: { sessionID: "ses_child" } });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(1);
+  expect(harness.store.get("goal/ses_1").nudges).toBe(1);
+});
+
+test("running background shells hold the loop until they exit", async () => {
+  const harness = await makeCtx();
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+
+  harness.events.push({
+    type: "session.shell.started",
+    data: { shell: { id: "sh_1", status: "running" }, sessionID: "ses_1" },
+  });
+  harness.events.push({ type: "session.idle", data: { sessionID: "ses_1" } });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(0);
+
+  harness.events.push({
+    type: "session.shell.ended",
+    data: { shell: { id: "sh_1", status: "exited" }, sessionID: "ses_1" },
+  });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(1);
+});
+
+test("held nudges survive a reload through the persisted inventory", async () => {
+  const goal = {
+    sessionID: "ses_1",
+    owner: "ws_1:/proj",
+    text: "land the migration",
+    notes: [],
+    status: "active",
+    createdAt: 1,
+    updatedAt: 1,
+    nudges: 0,
+    budget: 12,
+  };
+  const harness = await makeCtx({
+    parents: { ses_child: "ses_1" },
+    startGoals: [goal],
+    startInflight: { executing: ["ses_child"], shells: { sh_9: "ses_1" } },
+  });
+  await settle();
+
+  // The reload must not nudge while the pre-reload work is still in flight.
+  expect(harness.sent.filter((entry) => entry.text?.includes("[goal resumed]"))).toHaveLength(0);
+
+  harness.events.push({ type: "session.execution.succeeded", data: { sessionID: "ses_child" } });
+  await settle();
+  expect(harness.sent.filter((entry) => entry.text?.includes("[goal resumed]"))).toHaveLength(0);
+
+  harness.events.push({
+    type: "session.shell.ended",
+    data: { shell: { id: "sh_9", status: "exited" }, sessionID: "ses_1" },
+  });
+  await settle();
+  expect(harness.sent.filter((entry) => entry.text?.includes("[goal resumed]"))).toHaveLength(1);
+  expect(harness.store.get("goal/ses_1").nudges).toBe(1);
+});
+
+test("user-invoked resume holds its nudge while work is in flight", async () => {
+  const harness = await makeCtx();
+  await harness.command("goal").execute({
+    sessionID: "ses_1",
+    prompt: { text: "set land the migration" },
+    delivery: "steer",
+  });
+  harness.events.push({
+    type: "session.shell.started",
+    data: { shell: { id: "sh_1", status: "running" }, sessionID: "ses_1" },
+  });
+  await harness.command("goal").execute({ sessionID: "ses_1", prompt: { text: "pause checking CI" }, delivery: "steer" });
+  await harness.command("goal").execute({ sessionID: "ses_1", prompt: { text: "resume" }, delivery: "steer" });
+  await settle();
+
+  expect(harness.store.get("goal/ses_1").status).toBe("active");
+  expect(goalLoopNudges(harness)).toHaveLength(0);
+  expect(harness.sent.some((entry) => entry.text?.includes("held until in-flight work"))).toBe(true);
+
+  harness.events.push({
+    type: "session.shell.ended",
+    data: { shell: { id: "sh_1", status: "exited" }, sessionID: "ses_1" },
+  });
+  await settle();
+  expect(goalLoopNudges(harness)).toHaveLength(1);
 });

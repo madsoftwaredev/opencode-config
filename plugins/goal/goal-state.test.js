@@ -2,7 +2,10 @@ import { expect, test } from "bun:test";
 import {
   applyCommand,
   asGoalState,
+  asInflightSnapshot,
   goalSystemBlock,
+  inheritedSystemBlock,
+  inflightSessions,
   kickoffPrompt,
   loopDecision,
   nudgePrompt,
@@ -198,4 +201,25 @@ test("asGoalState rejects junk and repairs partial state", () => {
   expect(state.nudges).toBe(0);
   expect(state.budget).toBe(DEFAULT_BUDGET);
   expect(state.notes).toHaveLength(1);
+});
+
+test("asInflightSnapshot rejects junk and keeps only string IDs", () => {
+  expect(asInflightSnapshot(undefined)).toEqual({ executing: [], shells: {} });
+  expect(asInflightSnapshot("junk")).toEqual({ executing: [], shells: {} });
+  expect(asInflightSnapshot({ executing: "ses_1", shells: [] })).toEqual({ executing: [], shells: {} });
+
+  const snapshot = asInflightSnapshot({
+    executing: ["ses_1", 7, null],
+    shells: { sh_1: "ses_2", sh_2: 9, bad: { deep: true } },
+  });
+  expect(snapshot.executing).toEqual(["ses_1"]);
+  expect(snapshot.shells).toEqual({ sh_1: "ses_2" });
+});
+
+test("inflightSessions joins mid-turn sessions and shell owners", () => {
+  const sessions = inflightSessions({
+    executing: ["ses_1", "ses_2"],
+    shells: { sh_1: "ses_3", sh_2: "ses_2" },
+  });
+  expect([...sessions].sort()).toEqual(["ses_1", "ses_2", "ses_3"]);
 });

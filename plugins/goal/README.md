@@ -39,10 +39,25 @@ owns state and mechanics:
 1. `/goal ...` stores the goal and kicks off a turn.
 2. Every model call in that session gets the goal block injected (goal text,
    progress notes, remaining budget, protocol), so compaction cannot drop it.
-3. When the session goes idle and the goal is still open, the plugin sends a
-   `[goal loop]` nudge and counts it against the budget.
-4. The loop pauses with a notice when the budget is spent, on `/goal pause`, or
-   when the goal is marked done. `/goal resume` resets the counter and re-arms.
+3. A nudge fires only when the session is **fully idle**: its turn is over and
+   no work is still in flight beneath it — no executing descendant sessions
+   (subtasks) and no running background shells. Otherwise the nudge is held and
+   fires the moment the tree settles. This reads OpenCode's own session and
+   shell lifecycle events, so it behaves the same with or without the
+   background-subagent plugin.
+4. Each `[goal loop]` nudge counts against the budget. The loop pauses with a
+   notice when the budget is spent, on `/goal pause`, or when the goal is marked
+   done. `/goal resume` resets the counter and re-arms (held if work is in
+   flight).
+
+### Reload survival
+
+Goal state (goal text, notes, nudges, budget, status) lives in durable plugin
+storage and survives `opencode reload`, plugin reloads, and service restarts.
+The in-flight inventory (executing sessions and running background shells) is
+persisted too, so held nudges survive a reload and release when the pre-reload
+work settles. Interactive PTY terminals are intentionally not treated as work
+in flight.
 
 Subtask sessions inherit their parent's goal as context only; the parent session
 owns the goal and its tools.

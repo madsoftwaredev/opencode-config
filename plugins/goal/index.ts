@@ -3,8 +3,10 @@ import { GoalRpc, toGoalView, type GoalView } from "./goal-rpc";
 import {
   applyCommand,
   asGoalState,
+  asInflightSnapshot,
   goalSystemBlock,
   inheritedSystemBlock,
+  inflightSessions,
   kickoffPrompt,
   loopDecision,
   nudgePrompt,
@@ -69,26 +71,62 @@ export default {
       emitGoalUpdate(sessionID, { active: false });
     };
 
-    // Subtask sessions inherit their parent's goal as context.
+    // Session parent links, resolved on demand and cached.
     const parentOf = new Map<string, string | undefined>();
 
+    const resolveParent = async (sessionID: string): Promise<string | undefined> => {
+      if (!parentOf.has(sessionID)) {
+        try {
+          const session = await ctx.session.get({ sessionID });
+          parentOf.set(sessionID, session.parentID);
+        } catch {
+          parentOf.set(sessionID, undefined);
+        }
+      }
+      return parentOf.get(sessionID);
+    };
+
+    // Subtask sessions inherit their parent's goal as context.
     const findAncestorGoal = async (sessionID: string): Promise<GoalState | undefined> => {
       let current: string | undefined = sessionID;
       for (let depth = 0; depth < 5 && current; depth += 1) {
-        if (!parentOf.has(current)) {
-          try {
-            const session = await ctx.session.get({ sessionID: current });
-            parentOf.set(current, session.parentID);
-          } catch {
-            parentOf.set(current, undefined);
-          }
-        }
-        current = parentOf.get(current);
+        current = await resolveParent(current);
         if (!current) return undefined;
         const goal = await readGoal(current);
         if (goal && goal.status !== "done" && settings.inherit) return goal;
       }
       return undefined;
+    };
+
+    // In-flight work inventory: sessions mid-turn and running background
+    // shells. Persisted so the fully-idle rule survives reload; live lifecycle
+    // events correct it from there.
+    const executing = new Set<string>();
+    const shells = new Map<string, string>();
+
+    const saveInflight = async (): Promise<void> => {
+      await ctx.storage.set("inflight", {
+        executing: [...executing],
+        shells: Object.fromEntries(shells),
+      });
+    };
+
+    const seeded = asInflightSnapshot(await ctx.storage.get("inflight"));
+    for (const id of seeded.executing) executing.add(id);
+    for (const [id, sessionID] of Object.entries(seeded.shells)) shells.set(id, sessionID);
+
+    /** True when the session or anything beneath it still has work in flight. */
+    const busyUnder = async (ownerID: string): Promise<boolean> => {
+      const inflight = inflightSessions({ executing: [...executing], shells: Object.fromEntries(shells) });
+      for (const sessionID of inflight) {
+        if (sessionID === ownerID) return true;
+        let current: string | undefined = sessionID;
+        for (let depth = 0; depth < 8 && current; depth += 1) {
+          current = await resolveParent(current);
+          if (current === ownerID) return true;
+        }
+      }
+      return false;
     };
 
     // 1. RPC for the TUI goal island: state reads plus `updated` events.
@@ -265,17 +303,20 @@ export default {
             });
           }
           if (result.nudge && result.state) {
-            await sendNudge(result.state, "loop");
+            await requestDrive(sessionID);
           }
         },
       });
     });
 
-    // 4. The loop: when a session with an open goal stalls, re-prompt it.
-    // Every idle event ends a turn, so every idle event is a chance to re-prompt.
-    // The nudge budget is what bounds the loop; duplicate events at worst cost
-    // one extra nudge against it.
-    const onIdle = async (sessionID: string): Promise<void> => {
+    // 4. The loop: nudge a goal owner only when it is FULLY idle — its own turn
+    // over and no work still in flight beneath it (executing descendant
+    // sessions, running background shells). Otherwise the nudge is held and
+    // fires when the tree settles. The nudge budget bounds the loop. Held
+    // owners keep their nudge label (loop vs resumed) until released.
+    const pending = new Map<string, string>();
+
+    const driveGoal = async (sessionID: string, label = "loop"): Promise<void> => {
       const goal = await readGoal(sessionID);
       if (!goal || !owns(goal)) return;
 
@@ -294,31 +335,102 @@ export default {
         return;
       }
       if (decision === "nudge") {
-        await sendNudge(goal, "loop").catch((error) =>
+        await sendNudge(goal, label).catch((error) =>
           console.error("[goal] failed to send loop nudge:", error),
         );
       }
+    };
+
+    /** Nudge every held goal owner whose work has now fully settled. */
+    const settleCheck = async (): Promise<void> => {
+      for (const [sessionID, label] of [...pending]) {
+        if (await busyUnder(sessionID)) continue;
+        pending.delete(sessionID);
+        await driveGoal(sessionID, label);
+      }
+    };
+
+    /** User-invoked re-arm (resume / budget raise): hold if work is in flight. */
+    const requestDrive = async (sessionID: string): Promise<void> => {
+      if (await busyUnder(sessionID)) {
+        pending.set(sessionID, "loop");
+        await sendNotice(
+          sessionID,
+          "[goal] Loop re-armed. A nudge is held until in-flight work (subtasks or background shells) settles.",
+        );
+        return;
+      }
+      await driveGoal(sessionID);
+    };
+
+    const onIdle = async (sessionID: string): Promise<void> => {
+      const goal = await readGoal(sessionID);
+      if (goal && owns(goal)) {
+        if (await busyUnder(sessionID)) {
+          pending.set(sessionID, "loop");
+          return;
+        }
+        await driveGoal(sessionID);
+        return;
+      }
+      // A subtask (or any other session) settled; release held owners.
+      await settleCheck();
     };
 
     const controller = new AbortController();
     void (async () => {
       for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
         if (event.type === "session.idle") {
+          executing.delete(event.data.sessionID);
+          await saveInflight().catch(() => {});
           await onIdle(event.data.sessionID).catch((error) =>
             console.error("[goal] idle handler failed:", error),
           );
+          continue;
+        }
+        if (event.type === "session.execution.started") {
+          executing.add(event.data.sessionID);
+          await saveInflight().catch(() => {});
+          continue;
+        }
+        if (
+          event.type === "session.execution.succeeded" ||
+          event.type === "session.execution.failed" ||
+          event.type === "session.execution.interrupted"
+        ) {
+          executing.delete(event.data.sessionID);
+          await saveInflight().catch(() => {});
+          await settleCheck().catch((error) => console.error("[goal] settle check failed:", error));
+          continue;
+        }
+        if (event.type === "session.shell.started") {
+          if (event.data.shell.status === "running") {
+            shells.set(event.data.shell.id, event.data.sessionID);
+            await saveInflight().catch(() => {});
+          }
+          continue;
+        }
+        if (event.type === "session.shell.ended") {
+          shells.delete(event.data.shell.id);
+          await saveInflight().catch(() => {});
+          await settleCheck().catch((error) => console.error("[goal] settle check failed:", error));
         }
       }
     })().catch((error) => console.error("[goal] event stream ended:", error));
 
-    // 5. Re-arm open goals after a restart or reload.
+    // 5. Re-arm open goals after a restart or reload. Owners with work still in
+    //    flight are held until their tree settles.
     if (settings.resumeOnStart) {
       const page = await ctx.storage.scan({ prefix: "goal/", limit: 100 });
       for (const entry of page.entries) {
         const goal = asGoalState(entry.value);
         if (!goal || !owns(goal)) continue;
-        if (loopDecision(goal) !== "nudge") continue;
-        await sendNudge(goal, "resumed").catch((error) =>
+        if (loopDecision(goal) === "skip") continue;
+        if (await busyUnder(goal.sessionID)) {
+          pending.set(goal.sessionID, "resumed");
+          continue;
+        }
+        await driveGoal(goal.sessionID, "resumed").catch((error) =>
           console.error("[goal] failed to resume goal loop:", error),
         );
       }
