@@ -1,0 +1,9 @@
+{
+  "name": "opencode-stats",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./tui.tsx",
+    "./tui": "./tui.tsx"
+  }
+}

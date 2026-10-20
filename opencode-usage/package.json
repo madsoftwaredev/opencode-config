@@ -1,0 +1,12 @@
+{
+  "name": "opencode-usage",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./tui.tsx",
+    "./tui": "./tui.tsx"
+  },
+  "scripts": {
+    "test": "node --test ./*.test.js"
+  }
+}

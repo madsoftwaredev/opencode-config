@@ -1,0 +1,9 @@
+{
+  "name": "opencode-local-background-subagent",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./tui": "./tui.tsx"
+  }
+}

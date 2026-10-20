@@ -1,8 +1,15 @@
 node_modules
 package.json
+!plugins/*/package.json
+!opencode-stats/package.json
+!opencode-usage/package.json
+!mcp/elevenlabs-audio/package.json
 bun.lock
+!plugins/sidebar-resize/bun.lock
 browser-outputs/
 .DS_Store
 /Archive.zip
 /service.json
 .docs
+/.backup/
+/opencode.json.before-*.bak
