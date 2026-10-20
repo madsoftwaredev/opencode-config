@@ -1,23 +1,43 @@
 # Compaction model (OpenCode V2)
 
 Uses `opencode-go/deepseek-v4.1-flash#max` for local checkpoint summaries while the
-session keeps its selected working model. Global plugin discovery loads this directory.
+session keeps its selected working model, except for the `claude-code` provider.
+Global plugin discovery loads this directory.
+
+## Claude Code compatibility
+
+Claude Code sessions use the bridge's normal summary request instead of this plugin.
+In `@openchamber/opencode-claude` 1.3.4, that request stops the parked Claude turn and
+clears its resume binding before generating a one-shot Haiku summary. The next working
+request starts a fresh Claude session from OpenCode's checkpoint and recent context.
+
+Installing an external summary through `event.result` bypasses that reset: OpenCode
+can report a completed compaction while the Claude bridge continues reading its old,
+full history. This plugin therefore leaves `result` unset for `claude-code`, regardless
+of the configured summarizer. Other providers, including native `anthropic`, keep
+using the configured summarizer. No stored transcript is deleted.
 
 ## Why the Go adapter exists
 
-In OpenCode 2.0.8–2.0.9, `ctx.generate.text()` makes a stateless request without
-`x-opencode-session`. OpenCode Go rejects that request. The plugin's Go adapter
-uses the existing OpenCode connection, catalog endpoint, model ID, and variant,
-and sends the **originating session ID** to the chat-completions endpoint. It does
-not store an API key or change the session's model. Other providers use the native
+In OpenCode 2.0.8–2.0.9, `ctx.generate.text()` made a stateless request without
+`x-opencode-session`, which Go rejected. The plugin's Go adapter uses the existing
+OpenCode connection, catalog endpoint, model ID, and variant, and sends the
+**originating session ID** to the chat-completions endpoint. It does not store a
+credential or change the session's model. Other providers use the native
 `ctx.generate.text()` API.
 
-Credential lookup resolves the **model's own provider integration first**
-(`opencode-go`), then the integration ID the provider reports. A provider payload
-can name a different integration than the one serving the model — `opencode-go`
-reports the OpenCode Console integration, whose active connection is an OAuth
-credential with no API key. Trusting only the reported ID made every compaction
-fall back to the session model from 2026-09-24 onward.
+Credential lookup follows the provider's **declared integration ID**, defaulting
+to the provider ID only when no integration ID is declared. Both API keys and
+resolved OAuth access tokens are supported; OpenCode owns OAuth refresh.
+
+In the inspected OpenCode 2.1.0 configuration, Console discovery routes Go to
+`https://opencode.ai/inference/go/openai/v1` through the `opencode` integration,
+with an organization header. The old adapter instead preferred a legacy
+`opencode-go` API key and ignored OAuth, sending the wrong credential to that
+endpoint. Logs show HTTP 401 fallbacks beginning on 2026-10-17. The adapter now
+keeps the discovered endpoint, headers, and integration together, matching
+OpenCode's model resolver. It never borrows a different integration's credential
+when the declared connection is missing.
 
 The Go adapter currently supports models using
 `@opencode/ai/providers/openai-compatible` (including the default DeepSeek model).
@@ -38,7 +58,7 @@ OpenCode still stamps the checkpoint's top-level `model` with the session's work
 model. Check `metadata.compactionModel` to identify the actual summarizer:
 
 ```sh
-opencode2 api get '/api/session/SESSION_ID/message?type=compaction&order=desc&limit=1'
+opencode api get '/api/session/SESSION_ID/message?type=compaction&order=desc&limit=1'
 ```
 
 Successes and fallbacks are logged in
@@ -84,9 +104,11 @@ exceeding it logs a fallback rather than silently deleting the middle of the his
 bun test plugins/compaction-model/index.test.js
 ```
 
-The regression suite covers Go session routing, concurrent sessions, variant selection,
-long-history preservation, invalid/truncated results, and logged fallback. A live scratch
-session using Muse was manually compacted with DeepSeek and its checkpoint metadata verified.
+The regression suite covers Claude Code delegation, Go session routing, Console OAuth
+and service-account credentials, concurrent sessions, variant selection, long-history
+preservation, invalid/truncated results, and logged fallback. The credential fix was
+checked against the running 2.1.0 server's provider, integration, and model metadata
+using authenticated read-only API calls; no paid generation was run for this fix.
 
 References: [V2 plugin hooks](https://opencode.ai/v2/docs/build/plugins/),
 [V2 compaction](https://opencode.ai/v2/docs/compaction/).
