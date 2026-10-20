@@ -1,7 +1,7 @@
 ---
 description: Researches assigned writing units and writes reusable Markdown evidence with claim-level sources and explicit gaps
 mode: subagent
-model: opencode-go/space-bunny-free
+model: opencode-go/minimax-m3.1-flash-free
 permissions:
   - action: shell
     resource: "*"

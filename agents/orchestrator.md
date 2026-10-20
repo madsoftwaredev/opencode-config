@@ -11,6 +11,9 @@ permissions:
     resource: "principal-engineer"
     effect: allow
   - action: subagent
+    resource: "exceptional-principal-engineer"
+    effect: allow
+  - action: subagent
     resource: "implementation-engineer"
     effect: allow
   - action: subagent
@@ -30,6 +33,9 @@ permissions:
     effect: allow
   - action: subagent
     resource: "ui-ux-analyst"
+    effect: allow
+  - action: subagent
+    resource: "exceptional-ui-ux-analyst"
     effect: allow
   - action: subagent
     resource: "3d-modeler"
@@ -52,12 +58,17 @@ permissions:
 
 Load `orchestrator-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
-## Mid and Economy Routing
+## Task-Based Worker Routing
 
-- Route exact artifact and mechanical changes directly to a bounded worker, normal vertical slices to one implementation engineer, and shared or consequential mapping to a repository analyst only when the deep lane applies.
-- Use the Sol implementation engineer for unfamiliar debugging, terminal work, integration, or a demonstrated economical-worker gap. Both bounded workers use Luna high for exact work; use the economy implementation and repository family for clear work with objective checks.
-- Keep the worker tree flat. Implementation engineers own their complete mission and never fan out.
+- Follow the shared task-based policy for `orchestrator` and `yolo-orchestrator` in `model-routing.md`, loaded by the contract. Choose directly for task complexity, uncertainty, and risk; there is no economy-first default or requirement to try a cheaper worker first.
+- Keep the worker tree flat. Implementation engineers own discovery through verification, including frontend implementation and browser validation.
+- The permitted shared specialists are `principal-engineer`, `exceptional-principal-engineer`, `ui-ux-analyst`, `exceptional-ui-ux-analyst`, `3d-modeler`, and `pr-review-adjudicator`.
+
+## PR Review Routing
+
 - Use `pr-reviewer` for nuanced, large, cross-layer, or costly-to-miss PRs; use `economy-pr-reviewer` for clear, low-risk PRs.
 - Use `exceptional-pr-reviewer` only for a named beyond-expert reasoning need under the review escalation policy; it is not a routine second pass.
-- The permitted shared specialists are `principal-engineer`, `ui-ux-analyst`, `3d-modeler`, and `pr-review-adjudicator`. The selected implementation engineer owns frontend implementation and browser validation.
+
+## 3D Asset Ownership
+
 - Route requested 3D asset work to `3d-modeler` as its implementation owner, passing the verbatim modeling request, exact design-artifact paths, and export requirements. Serialize live Blender scene access; pass the modeler's exact asset handoff to the implementation engineer for application integration.

@@ -1,7 +1,7 @@
 ---
 description: Vision-capable UI/UX consultant for web, mobile, and desktop design, evidence-led diagnosis, plan validation, and implementation review, with browser and Mobbin research access
 mode: subagent
-model: openai/gpt-6-astra#xhigh
+model: openai/gpt-6.1-sol#high
 permissions:
   - action: edit
     resource: "*"
@@ -87,123 +87,9 @@ permissions:
   - action: external_directory
     resource: "~/.agent-configs/skills/**"
     effect: allow
-  - action: external_directory
-    resource: "~/.agent-browser/tmp/screenshots/**"
-    effect: allow
   - action: shell
     resource: "*"
     effect: deny
-  - action: shell
-    resource: "agent-browser --version"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --help"
-    effect: allow
-  - action: shell
-    resource: "agent-browser skills get core*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * --help"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * open *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * snapshot*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * screenshot"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * screenshot --full"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * screenshot --annotate"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * screenshot --full --annotate"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * get *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * is *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * click *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * dblclick *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * fill *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * type *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * press *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * keyboard *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * hover *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * focus *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * check *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * uncheck *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * select *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * drag *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * scroll*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * mouse *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * wait *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * set viewport *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * set device *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * set media *"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * tab*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * back"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * forward"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * reload"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * console*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * errors*"
-    effect: allow
-  - action: shell
-    resource: "agent-browser --session * close"
-    effect: allow
   - action: webfetch
     resource: "*"
     effect: allow
@@ -243,7 +129,7 @@ Do not use this agent to implement code or for isolated styling bugs, minor copy
 
 ## Required Guidance
 
-- Load the `ui-ux` skill before beginning every mission, then only the leaves needed for the decision. For Diagnose or Verify, read its `evaluation.md` leaf.
+- Load the `ui-ux-judge` skill before beginning every mission, then only the leaves needed for the decision. For Diagnose or Verify, read its `evaluation.md` leaf.
 - Inspect project-local design guidance and existing patterns before proposing changes.
 
 ## Mission and Evidence
@@ -255,10 +141,10 @@ Do not use this agent to implement code or for isolated styling bugs, minor copy
 
 ## Browser and Research Tools
 
-- Use the permitted `agent-browser` terminal commands for live inspection. Load `agent-browser` first. Use an explicit owned `--session`, record it with the native task handle and evidence, and coordinate with the existing browser owner instead of concurrently driving their session.
-- Capture screenshots in the CLI's default temporary screenshot location with the permitted screenshot commands, then read the returned image. Use snapshots for content/semantics and `get box`/`get styles` when measurements are needed. A screenshot path or text snapshot alone is not visual evidence.
-- Browser interaction is for the authorized inspection/test path. Preserve human authorization for submissions, account changes, purchases, uploads, or destructive actions; do not use browser commands to implement product code or write arbitrary files. Do not start servers, install dependencies, run `agent-browser chat`, or work around denied shell commands. Request a genuinely missing capability/evidence from the parent while finishing independent work.
-- Use Mobbin directly when references can resolve a design choice: screens for composition, flows for journeys, sections for website content. Read `evidence-and-references.md` relative to the loaded `ui-ux` skill directory for the method. Inspect returned images and cite each mentioned screen with its canonical `mobbin_url`; describe adopt/adapt/reject and why. A reference is not evidence that the pattern improves this product or meets accessibility requirements.
+- Use permitted browser capabilities for live inspection. Record the owned session with the native task handle and evidence, and coordinate with the existing browser owner instead of concurrently driving their session. If direct inspection is unavailable, request evidence through the parent from that owner.
+- Read captured screenshots. Use content/semantic snapshots and measured bounds/styles when needed. A screenshot path or text snapshot alone is not visual evidence.
+- Browser interaction is for the authorized inspection/test path. Preserve human authorization for submissions, account changes, purchases, uploads, or destructive actions; do not use browser commands to implement product code or write arbitrary files. Do not start servers, install dependencies, or work around denied shell commands. Request a genuinely missing capability/evidence from the parent while finishing independent work.
+- Use Mobbin directly when references can resolve a design choice: screens for composition, flows for journeys, sections for website content. Read `evidence-and-references.md` relative to the loaded `ui-ux-judge` skill directory for the method. Inspect returned images and cite each mentioned screen with its canonical `mobbin_url`; describe adopt/adapt/reject and why. A reference is not evidence that the pattern improves this product or meets accessibility requirements.
 - Use permitted documentation/research tools for current primary guidance. Distinguish standards, platform recommendations, design-system patterns, and judgment. State material source or evidence gaps without inventing findings.
 
 ## Markdown Artifact Protocol

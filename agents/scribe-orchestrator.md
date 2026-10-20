@@ -1,7 +1,7 @@
 ---
 description: Coordinates large writing and curriculum projects with sourced research, parallel writers, independent QA, and durable file handoffs
 mode: primary
-model: opencode-go/space-bunny-free
+model: opencode-go/minimax-m3.1-flash-free
 color: "#A855F7"
 permissions:
   - action: shell

@@ -1,7 +1,7 @@
 ---
 description: Cost-efficient implementer for normal features, bug fixes, tests, refactors, integrations, and documentation
 mode: subagent
-model: openai/gpt-6-luna#xhigh
+model: openai/gpt-6.1-sol#medium
 permissions:
   - action: subagent
     resource: "*"

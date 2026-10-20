@@ -1,7 +1,7 @@
 ---
 description: Independently reviews written units against the original brief, source evidence, and teaching quality; returns actionable findings without editing files
 mode: subagent
-model: opencode-go/space-bunny-free
+model: opencode-go/minimax-m3.1-flash-free
 permissions:
   - action: shell
     resource: "*"

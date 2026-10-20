@@ -1,7 +1,7 @@
 ---
 description: Vision-capable coding orchestrator with fast, standard, and deep execution lanes using fast economy workers
 mode: primary
-model: openai/gpt-6-sol#high
+model: openai/gpt-6.1-sol#high
 color: "#06B6D4"
 permissions:
   - action: subagent

@@ -73,10 +73,13 @@ Agents define the model, execution boundary, permissions, and cost profile. Skil
 | Agent                       | Model                 | Reasoning | Responsibility                                                |
 | --------------------------- | --------------------- | --------- | ------------------------------------------------------------- |
 | **orchestrator**            | `openai/gpt-6.1-sol` | `xhigh`   | Primary commander, integrator, and final validator            |
-| **principal-engineer**      | `openai/gpt-6-astra`  | `high`    | Architecture, high-risk work, deep debugging, and rescue work |
+| **principal-engineer**      | `openai/gpt-6.1-sol`  | `max`     | Architecture, high-risk work, deep debugging, and rescue work |
+| **exceptional-principal-engineer** | `openai/gpt-6-astra` | `max` | Rare beyond-principal reasoning and unresolved rescue work |
 | **implementation-engineer** | `openai/gpt-6.1-sol` | `high`    | Implementation, debugging, testing, and integration           |
 | **bounded-worker**          | `openai/gpt-6-luna`   | `max`     | Narrow, repetitive, isolated, and testable work               |
 | **repository-analyst**      | `openai/gpt-6.1-sol` | `medium`  | Read-only repository mapping and migration planning           |
+
+`orchestrator` and `yolo-orchestrator` share the [same task-based worker policy](skills/orchestrator-contract/model-routing.md): Sol medium for straightforward implementation, Sol high for normal implementation with meaningful uncertainty, Sol max for difficult technical judgment, and Astra only for named exceptional gaps. Neither defaults to Economy or requires a cheaper worker to fail first. Workflow lanes select orchestration overhead, not model strength. YOLO retains its autonomy and extra Fast pool; the regular orchestrator retains PR-review delegation. Their model assignments, allowlists, and explicit profile overrides are unchanged by this routing policy.
 
 The global default agent is the visible built-in `build` primary, configured with `openai/gpt-6.1-sol` at `high`; the global model fallback is `openai/gpt-6.1-sol`. `build` denies every named tiered worker and instead spawns its own short-lived subagents through the `general` and `explore` built-ins, which have no configured model and therefore inherit `build`'s. Model-specific routing belongs to the tier orchestrators. Select `orchestrator` when you want the Mid routing contract instead of the generic default. Workers use their own role assignments, not the parent's model. Exceptional review is limited to the six PR-review-capable orchestrators; the shared 3D Modeler is available to all coding and YOLO orchestrators. V2 normally reloads configuration and prompt edits automatically; existing sessions keep their selected model. Start a new session with the intended agent/model, or explicitly change the current session's model.
 
@@ -96,25 +99,26 @@ The Fast tier mirrors the Mid tier on OpenAI priority service-tier aliases (`-fa
 
 | Agent                               | Model                 | Reasoning | Responsibility                     |
 | ----------------------------------- | --------------------- | --------- | ---------------------------------- |
-| **economy-orchestrator**            | `openai/gpt-6-sol`  | `high`    | Weekly default coordinator         |
-| **economy-implementation-engineer** | `openai/gpt-6-luna` | `xhigh`   | Cost-efficient implementation      |
+| **economy-orchestrator**            | `openai/gpt-6.1-sol`  | `high`    | Weekly default coordinator         |
+| **economy-implementation-engineer** | `openai/gpt-6.1-sol` | `medium` | Cost-efficient implementation      |
 | **economy-bounded-worker**          | `openai/gpt-6-luna` | `high`    | Mechanical and tightly scoped work |
 | **economy-repository-analyst**      | `openai/gpt-6.1-sol` | `medium`  | Read-only repository analysis      |
 
-Use the `eco-max` profile deliberately for substantial implementation that justifies Luna max; file count alone is not the trigger. Route unfamiliar terminal/debugging/integration work to Mid, or use a permitted stronger specialist for a named capability gap. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst.
+The shared Economy Implementation Engineer uses Sol 6.1 medium, including calls from `orchestrator` and `yolo-orchestrator`; other families using that same agent inherit this assignment. Route difficult debugging/integration work to Mid, or use a permitted stronger specialist for a named capability gap. The Economy Implementation Engineer owns frontend implementation; visual product judgment and acceptance review belong with the UI/UX Analyst. Explicit execution profiles can still override the base assignment.
 
 #### Flash tier
 
 | Agent                             | Model                     | Reasoning | Responsibility                      |
 | --------------------------------- | ------------------------- | --------- | ----------------------------------- |
-| **flash-orchestrator**            | `openai/gpt-6-sol`      | `high`    | Coordinator for the Flash pool      |
+| **flash-orchestrator**            | `openai/gpt-6.1-sol`      | `high`    | Coordinator for the Flash pool      |
 | **flash-principal-engineer**      | `openai/gpt-6.1-sol`    | `xhigh`   | Flash-family architecture, high-risk review, and rescue work |
 | **flash-implementation-engineer** | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek implementation      |
 | **flash-bounded-worker**          | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek mechanical work     |
-| **flash-repository-analyst**      | `opencode-go/deepseek-v4.1-flash` | `max` | Direct DeepSeek read-only analysis  |
+| **flash-repository-analyst**      | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek read-only analysis  |
 | **flash-vision-scout**            | `deepseek/deepseek-flash` | `max`     | Factual local image inspection only |
+| **flash-3d-modeler**              | `deepseek/deepseek-flash` | `max`     | Direct DeepSeek Blender asset work; escalates to the shared Astra 3D Modeler only for a named capability gap |
 
-Flash workers use the official, vision-capable V4.1 Flash release directly at `https://api.deepseek.com`. All five Flash subagents, including the reviewer and factual vision scout, use `max`. Both Flash orchestrators use Sol `high` and delegate named architecture, high-risk review, and rescue work to `flash-principal-engineer` instead of the shared Astra `principal-engineer` that the other families keep; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
+Flash workers use the official, vision-capable V4.1 Flash release directly at `https://api.deepseek.com`. All six Flash subagents, including the reviewer, factual vision scout, and Blender modeler, use `max`. Both Flash orchestrators use Sol `high` and delegate named architecture, high-risk review, and rescue work to `flash-principal-engineer` instead of the shared `principal-engineer` that the other families keep; shared specialists retain their own model assignments. Consider this reserve at roughly 15-20% remaining allowance, adjusted for hours until renewal; it still consumes OpenAI allowance for coordination and separately billed DeepSeek API usage for workers. Extra Astra specialist use is deliberate and bounded. No automatic switching, watcher, or reset is configured. The Flash Implementation Engineer owns implementation and browser validation. The scout accepts images, including rendered PDF pages and extracted video frames, not raw PDF/video attachments, and remains factual and exclusive to Flash.
 
 The official `deepseek/deepseek-flash` model is available through `/models`, using the existing DeepSeek connection ([release announcement](https://api-docs.deepseek.com/news/news260910)). OpenCode's built-in catalog supplies the release metadata, pricing, text/image input, tool support, and `low`/`high`/`max` reasoning variants. Its local model override keeps context at 258K for earlier automatic compaction, with the published 384K output limit; DeepSeek supports a 1M context window ([model details](https://api-docs.deepseek.com/quick_start/pricing)).
 
@@ -122,7 +126,7 @@ The official `deepseek/deepseek-flash` model is available through `/models`, usi
 
 | Agent                                | Model                      | Reasoning | Responsibility                             |
 | ------------------------------------ | -------------------------- | --------- | ------------------------------------------ |
-| **eco-fast-orchestrator**            | `openai/gpt-6-sol`       | `high`    | Coordinator for the Eco Fast pool          |
+| **eco-fast-orchestrator**            | `openai/gpt-6.1-sol`       | `high`    | Coordinator for the Eco Fast pool          |
 | **eco-fast-implementation-engineer** | `openai/gpt-6-luna-fast` | `xhigh`   | Complete implementation ownership          |
 | **eco-fast-bounded-worker**          | `openai/gpt-6-luna-fast` | `high`    | Narrow mechanical work                     |
 | **eco-fast-repository-analyst**      | `openai/gpt-6.1-sol`    | `medium`   | Read-only repository analysis              |
@@ -146,14 +150,14 @@ This family supersedes the named Sol, Luna, and DeepSeek presets in `model-routi
 
 #### Scribe tier
 
-A writing and curriculum family. All four roles run the free `opencode-go/space-bunny-free` model, which keeps long-form drafting at zero token cost.
+A writing and curriculum family. All four roles run `opencode-go/minimax-m3.1-flash-free`, currently listed at zero token cost, with a local 400,000-token context budget. They use the provider's default reasoning effort; no explicit variant is selected.
 
 | Agent                  | Model                            | Responsibility                                                     |
 | ---------------------- | -------------------------------- | ------------------------------------------------------------------ |
-| **scribe-orchestrator** | `opencode-go/space-bunny-free`   | Coordinates large writing projects with sourced research and durable handoffs |
-| **scribe-researcher**  | `opencode-go/space-bunny-free`   | Researches assigned units; writes evidence with claim-level sources and explicit gaps |
-| **scribe-writer**      | `opencode-go/space-bunny-free`   | Writes lessons and long-form content; retains file ownership through revisions |
-| **scribe-qa**          | `opencode-go/space-bunny-free`   | Independently reviews written units against the brief, sources, and teaching quality |
+| **scribe-orchestrator** | `opencode-go/minimax-m3.1-flash-free` | Coordinates large writing projects with sourced research and durable handoffs |
+| **scribe-researcher**  | `opencode-go/minimax-m3.1-flash-free` | Researches assigned units; writes evidence with claim-level sources and explicit gaps |
+| **scribe-writer**      | `opencode-go/minimax-m3.1-flash-free` | Writes lessons and long-form content; retains file ownership through revisions |
+| **scribe-qa**          | `opencode-go/minimax-m3.1-flash-free` | Independently reviews written units against the brief, sources, and teaching quality |
 
 #### Optional execution profiles
 
@@ -176,15 +180,18 @@ OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/fast" opencode --agent eco-
 OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/eco-max" opencode
 ```
 
-The same profile directories work with existing YOLO launchers, for example `OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/high-fast" yolo`. No launcher or YOLO permission changes are needed. `eco-max` can also be used with `yolo-eco` or `yolo-eco-fast`. Select High before a difficult mission; use the existing Astra high principal for a named deeper reasoning need. Worker-only overrides can be explicit, for example `OPENCODE_CONFIG_CONTENT='{"agent":{"implementation-engineer":{"variant":"high"}}}'` with a High profile and plain `opencode`. Existing YOLO launchers own `OPENCODE_CONFIG_CONTENT`, so do not use that variable to layer custom overrides through them.
+The same profile directories work with existing YOLO launchers, for example `OPENCODE_CONFIG_DIR="$HOME/.config/opencode/profiles/high-fast" yolo`. No launcher changes are needed. `eco-max` can also be used with `yolo-eco` or `yolo-eco-fast`. Select High before a difficult mission; use the permitted principal for a named deeper reasoning need. Worker-only overrides can be explicit, for example `OPENCODE_CONFIG_CONTENT='{"agent":{"implementation-engineer":{"variant":"high"}}}'` with a High profile and plain `opencode`. Existing YOLO launchers own `OPENCODE_CONFIG_CONTENT`, so do not use that variable to layer custom overrides through them.
 
 These profile directories load after normal project configuration in OpenCode 1.18.29; inline or managed settings can still override them. They are deliberate process-wide choices, not live task-level switches. Unset `OPENCODE_CONFIG_DIR` and restart to return to base assignments. Do not rewrite role files or discard unrelated changes to leave a preset. Validate actual accepted work before claiming savings; no paid performance calibration was performed.
 
-#### Shared UI specialist
+#### Shared UI specialists
 
 | Agent             | Model                | Reasoning | Responsibility                                                                 |
 | ----------------- | -------------------- | --------- | ------------------------------------------------------------------------------ |
-| **ui-ux-analyst** | `openai/gpt-6-astra` | `xhigh`   | UI/UX consultation, planning, validation, and frontend review; no product code |
+| **ui-ux-analyst** | `openai/gpt-6.1-sol` | `high` | Default UI/UX consultation, planning, validation, and frontend review; no product code |
+| **exceptional-ui-ux-analyst** | `openai/gpt-6-astra` | `high` | Escalation for concrete design or acceptance-review gaps the default analyst cannot resolve |
+
+`orchestrator` and `yolo-orchestrator` can invoke both exceptional specialists. Use the Sol principal and UI/UX analyst normally; the Astra roles are bounded escalations, not automatic second passes. Carry the existing evidence, exact artifact path/revision, requirement IDs, and unresolved question into a specialist handoff. Other orchestrators keep their existing specialist allowlists. The shared default UI/UX model changes for every consumer; explicit profiles may override it.
 
 Substantial UI/UX plans and reviews are written to Markdown artifacts. Orchestrators pass the exact artifact path to implementation and review workers instead of compressing the plan into a handoff summary, and workers treat the file as the authoritative requirements and acceptance checklist.
 
@@ -199,6 +206,8 @@ Before claiming completion, the parent runs `node "$HOME/.config/opencode/script
 | **3d-modeler** | `openai/gpt-6-astra` | `high`    | Blender asset creation, scene editing, and validated exports |
 
 Use `@3d-modeler` directly or let any coding/YOLO orchestrator assign requested 3D asset work. The modeler owns the asset lifecycle, including applicable geometry, UVs, materials, lighting, rigs, animation, optimization, and export checks. It uses the existing Blender MCP connection when available, preserves unrelated scene content, and does not delegate. Live scene mutation is serialized under one owner; it is not safe to run multiple modeling workers against the same Blender session.
+
+The two flash orchestrators are the exception: they assign 3D asset work to `flash-3d-modeler` on `deepseek/deepseek-flash#max`, which can use bounded same-model children but returns any non-DeepSeek capability-gap request to the parent. The shared Astra `3d-modeler` stays available to them as the 3D escalation only, invoked when the Flash modeler reports a demonstrated Blender or asset-pipeline limit, geometry or rigging complexity that already failed once after its own concrete attempt, or an export and validation path it cannot produce. Difficulty, scale, or an ordinary first failure is not an escalation trigger, and both modelers never run on the same asset. Live Blender scene access remains serialized, including between a Flash worker and its children.
 
 The orchestrator passes the verbatim modeling request, exact accepted design-artifact paths, and export requirements. The modeler returns exact source/export paths and, for substantial work, a task-local Markdown handoff covering applicable units, axes, origins, dependencies, clips, licensing, evidence, and remaining checks. The implementation engineer reads that handoff for application integration; UI/UX retains product-design judgment. Existing Fast profiles do not retarget this agent: it remains Astra high. Blender must be running with its MCP server connected for live scene work; configuring the agent does not start or repair Blender.
 
@@ -224,7 +233,7 @@ All configured MCP tools are available to the planner, including Context7, Cooli
 
 The main document explains what was found, the recommended approach, risks and unknowns, implementation steps, and verification or rollout. Skill guidance is shared through `skills/planning/`, `skills/architecture-design/`, and `skills/system-design/`; this installation's `skills` directory points to `~/.agent-configs/skills`. Restart OpenCode after changes to load the new agent, commands, and guidance.
 
-The other delegating non-coding primaries use Sol: `biz-dev` uses `medium` and `ops-pm` uses `high`, both on `openai/gpt-6.1-sol`. Their existing tool and artifact restrictions are unchanged. `raw` still inherits unless explicitly overridden; hidden built-in utilities are not retuned by this rollout. UI/UX, 3D modeling, adjudication, architecture, principal engineering, and exceptional review have explicit Astra assignments. Fast profiles use Sol Fast for the migrated implementation, repository, and standard-review roles; Astra exceptions retain their existing Fast routes where configured.
+The other delegating non-coding primaries use Sol: `biz-dev` uses `medium` and `ops-pm` uses `high`, both on `openai/gpt-6.1-sol`. Their existing tool and artifact restrictions are unchanged. `raw` still inherits unless explicitly overridden; hidden built-in utilities are not retuned by this rollout. Default UI/UX, principal engineering, and adjudication use Sol; exceptional principal engineering, exceptional UI/UX, 3D modeling, architecture, and exceptional review use Astra. Explicit Fast profiles retain their configured overrides; the two new exceptional specialists keep their base Astra assignments.
 
 #### Explicit code audit
 
@@ -238,8 +247,8 @@ Invoke `/audit <scope and domains>` or `/security <scope>` to select the Code Au
 
 | Agent                              | Mode     | Model                     | Reasoning | Responsibility                                      |
 | ---------------------------------- | -------- | ------------------------- | --------- | --------------------------------------------------- |
-| **pr-review-orchestrator**         | primary  | `openai/gpt-6-sol`      | `high`    | Standard single and batch PR-review coordination    |
-| **economy-pr-review-orchestrator** | primary  | `openai/gpt-6-sol`      | `high`    | Economy single and batch PR-review coordination     |
+| **pr-review-orchestrator**         | primary  | `openai/gpt-6.1-sol`      | `high`    | Standard single and batch PR-review coordination    |
+| **economy-pr-review-orchestrator** | primary  | `openai/gpt-6.1-sol`      | `high`    | Economy single and batch PR-review coordination     |
 | **pr-reviewer**                    | subagent | `openai/gpt-6.1-sol`     | `high`    | Consequential and normal expert-level PR review     |
 | **economy-pr-reviewer**            | subagent | `openai/gpt-6.1-sol`     | `medium`  | Economy target-branch review and findings artifact  |
 | **exceptional-pr-reviewer**        | subagent | `openai/gpt-6-astra`      | `xhigh`   | Only necessary beyond-expert reasoning              |
@@ -321,7 +330,9 @@ flowchart TD
     D --> V
 ```
 
-The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All ten coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration. Every implementation engineer owns its complete mission, including frontend work and browser validation, and cannot delegate. The global depth limit is 1, so every worker remains a direct child of the orchestrator.
+The Mid Orchestrator can choose either worker tier. The Economy Orchestrator uses economy workers for routine work but may invoke the Principal Engineer or UI/UX Analyst when their narrow escalation trigger applies. The Flash Orchestrator routes routine work only to Flash workers and its Flash PR reviewer, plus the DeepSeek vision scout for factual visual evidence; exceptional review and adjudication retain their separate gates. All ten coding/YOLO orchestrators can assign requested 3D asset work to the shared 3D Modeler, while implementation engineers retain application integration; the two flash orchestrators instead assign it to `flash-3d-modeler` and keep the shared 3D Modeler as the escalation-only path. Every implementation engineer owns its complete mission, including frontend work and browser validation.
+
+**Flash-only delegation exception:** each of the six direct DeepSeek Flash workers of either Flash orchestrator may create up to five generic helpers total: built-in `general` for implementation or `explore` for read-only evidence, inheriting the worker's `deepseek/deepseek-flash` model. Read-only workers may use only `explore`. Helpers are not named Flash specialists and cannot delegate. The global depth ceiling is 2 (orchestrator → worker → generic leaf); other worker families and non-DeepSeek specialists retain their non-delegating permissions. The owner's file/shell restrictions, read-only/scout boundaries, and exclusive Blender ownership are preserved. The [Flash delegation plugin](plugins/flash-delegation/README.md) enforces ancestry, generic-only same-model launches/resumes, and a durable per-worker budget, including concurrent launches. Existing generic helpers can be resumed without using another slot.
 
 The base default is the built-in `build` on `openai/gpt-6.1-sol#high`. Select another primary explicitly when needed, for example the economy orchestrator:
 
@@ -606,7 +617,7 @@ $ARGUMENTS will be replaced with user input
   "instructions": ["plugin/shell-strategy/shell_strategy.md"],
   "compaction": {
     "auto": true,
-    "prune": true
+    "keep": { "tokens": 15000 }
   },
   "subagent_depth": 1,
   "plugin": ["opencode-openai-codex-auth"],
@@ -635,7 +646,7 @@ $ARGUMENTS will be replaced with user input
 | ---------------- | ------------------------------------------------------------------------------ |
 | `instructions`   | Minimal process rules loaded into every context                                |
 | `permission`     | Fine-grained access control per tool type                                      |
-| `subagent_depth` | Global maximum delegation depth; agent `task` permissions define allowed edges |
+| `subagent_depth` | Global depth ceiling of 2; agent `subagent` permissions and the Flash guard define allowed edges |
 | `formatter`      | Auto-formatting on save per file type                                          |
 | `agent`          | Agent definitions with tools and permissions                                   |
 | `mcp`            | Model Context Protocol server configurations                                   |
@@ -661,17 +672,34 @@ The auto-discovered [`local.goal` plugin](plugins/goal/README.md) turns `/goal` 
 
 ### OpenAI GPT Input Budget
 
-The OpenAI provider gives all currently available GPT models an input budget of at most 256,000 tokens. Explicit overrides cover GPT-5.4, GPT-5.4 Mini, GPT-5.5, GPT-5.6 Luna/Sol/Terra, and GPT-6 Astra, including their `-fast` entries. Each sets `limit.input` to 256,000, retains the 128,000 output allowance, and sets total `limit.context` to 384,000. GPT-5.3 Codex Spark already has a smaller native input limit of 100,000. Newly added model IDs need their own overrides.
+Explicit OpenAI input-budget overrides cover GPT-5.4, GPT-5.4 Mini, GPT-5.5, GPT-5.6 Luna/Sol/Terra, GPT-6 Astra/Luna/Sol, and GPT-6.1 Sol, including their `-fast` entries. Each sets `limit.input` to 256,000, retains the 128,000 output allowance, and sets total `limit.context` to 384,000. Historical limit-only entries are retained. Newly selected model IDs need their own overrides; unconfigured speed aliases such as `gpt-6.1-sol-ultrafast` do not inherit these budgets.
 
 [Astra's long-context pricing](https://developers.openai.com/api/docs/models/gpt-6-astra) applies when actual request input exceeds 272,000 tokens; the output allowance does not trigger it. Other models have their own pricing rules. The output allowance is a ceiling, and generated reasoning also counts toward output usage. OpenCode 1.18.30 subtracts its default 20,000-token compaction buffer from `limit.input`, so these overrides trigger compaction around 236,000 counted tokens ([overflow calculation](https://github.com/anomalyco/opencode/blob/v1.18.30/packages/opencode/src/session/overflow.ts)). This is an automatic-compaction budget, not a hard per-request billing guard against a large new message or tool result.
 
 Quit and restart OpenCode after changing model limits.
 
+### Claude Context Budget
+
+Opus 5.5, Sonnet 5.5, and Fable 5.1 have explicit context and input budgets of at most
+256,000 tokens under both `anthropic` and `claude-code`, including the Claude Code
+`[1m]` entries. The regular Claude Code Sonnet entry retains its smaller native
+200,000-token context and 64,000-token output allowance; the 1M entries retain
+128,000-token output allowances. Other Claude model IDs are unchanged.
+
+Both `limit.context` and `limit.input` must be overridden: the Claude Code bridge
+supplies `input: 900000` for 1M models, and OpenCode 2.0.22 checks `input` before
+`context` for automatic compaction. With the default 10% buffer, the 256k budget
+triggers around 230,400 counted tokens (180,000 for regular Sonnet). These are
+compaction budgets, not hard request-size or subscription-spending guards; a large
+new message or tool result can overshoot them.
+
 ### Compaction
 
-Automatic compaction remains enabled through top-level `compaction.auto`. V2 replaced V1's pruning with checkpoint-based compaction plus `compaction.keep.tokens`, so there is no prune setting. See the [V2 compaction guide](https://opencode.ai/v2/docs/compaction/).
+Automatic compaction remains enabled through top-level `compaction.auto`. V2 uses checkpoint-based compaction plus `compaction.keep.tokens`. OpenCode 2.0.22 accepts the legacy `prune` field but does not use it in compaction; enabling it does not shrink context. See the [V2 compaction guide](https://opencode.ai/v2/docs/compaction/).
 
-V2 local compaction uses the session's selected agent, model, and variant; it does not use the hidden `compaction` agent, and there is no separate compaction model or fallback model. The retained `agents.compaction` entry (`opencode-go/deepseek-v4.1-flash#max`) is kept for parity with the V1 configuration but is not consulted by local compaction. Coding agents, title generation, and session-summary generation keep their existing model routing.
+Core V2 local compaction uses the session's selected agent, model, and variant; it does not consult the hidden `compaction` agent. The active [compaction-model plugin](plugins/compaction-model/README.md) supplies separate `opencode-go/deepseek-v4.1-flash#max` summaries for other providers, with a fallback to normal compaction on failure.
+
+Claude Code sessions deliberately bypass that plugin. Their summary request must pass through the Claude bridge so it stops the parked turn and clears the old full-history resume binding. Otherwise a completed OpenCode checkpoint can leave Claude reading the same oversized context and compacting repeatedly. The bridge uses a one-shot Haiku summary, then resumes working from the checkpoint in a fresh Claude session. Original transcripts remain stored.
 
 The V1 workaround is gone: `plugin/compaction-variant.ts` and `scripts/compaction-variant.test.js` were removed during the V2 migration because the plugin cannot load under V2's plugin API and V2 has no per-agent compaction model whose variant could be reapplied.
 
@@ -686,9 +714,9 @@ The V1 workaround is gone: `plugin/compaction-variant.ts` and `scripts/compactio
 
 ### Manual Browser Workflow
 
-Use the installed **agent-browser CLI** for agent-driven browsing, responsive inspection, screenshots, and manual UI QA. Load [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) only when browser interaction is needed. The installed version was verified as 0.27.0; consult its help or bundled skill for version-matched commands rather than assuming newer website flags exist.
+Use available, permitted browser capabilities for browsing, responsive inspection, screenshots, and manual UI QA. Record the inspected URL, viewport, state, and evidence; read screenshots before making visual claims.
 
-Each browser-owning worker uses a unique named session and preserves that name with its `task_id` for follow-ups. Parallel workers do not share a default browser. Shell-denied specialists receive evidence through the parent from the existing browser owner; no shell permission is widened. Headed mode or the local dashboard supports human viewing and handoff, with automation paused while the user interacts.
+Each browser-owning worker preserves its session with its `task_id` for follow-ups. Parallel workers do not concurrently drive the same session. Shell-denied specialists receive evidence through the parent from the existing browser owner; no shell permission is widened. Pause automation during human handoff; use headed mode only when explicitly requested.
 
 Playwright MCP remains configured but disabled so its tool schemas are not exposed by default. If a task needs it, enable `mcp.playwright.enabled` through OpenCode's MCP controls when available, or set it to `true` in the relevant configuration and restart OpenCode. Do not silently enable it or switch browser contexts mid-task.
 

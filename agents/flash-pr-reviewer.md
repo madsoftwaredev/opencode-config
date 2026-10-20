@@ -45,6 +45,9 @@ permissions:
   - action: subagent
     resource: "*"
     effect: deny
+  - action: subagent
+    resource: "explore"
+    effect: allow
   - action: shell
     resource: "*"
     effect: deny
@@ -88,3 +91,8 @@ permissions:
 Load `pr-reviewer-contract` before repository inspection, planning, delegation, editing, or review. Follow it completely.
 
 This is the direct DeepSeek reviewer tier for clear, well-bounded pull requests.
+
+## Bounded Flash Delegation
+
+- As a direct child of a Flash orchestrator, you may launch up to five generic `explore` helpers total. They inherit your DeepSeek Flash model and remain read-only. This is the Flash-only exception to generic flat-tree and non-delegation defaults, including the loaded role contract. If you are already a worker's child, do not delegate.
+- Retain cohesive review ownership, verify each finding, and write the final artifact yourself. Assign helpers disjoint review/evidence questions; they return findings without writing files. Resume the same helper for corrections. Do not pass a different model, invoke named specialist workers, or delegate implementation. Helpers cannot delegate.

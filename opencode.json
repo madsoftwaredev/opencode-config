@@ -108,6 +108,14 @@
         "environment": {
           "ELEVENLABS_API_KEY": "{env:ELEVENLABS_API_KEY}"
         }
+      },
+      "browsermcp": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "@browsermcp/mcp@0.1.3"
+        ]
       }
     }
   },
@@ -189,7 +197,7 @@
   "share": "manual",
   "shell": "zsh",
   "experimental": {
-    "subagent_depth": 1,
+    "subagent_depth": 2,
     "policies": [
       { "action": "permission", "resource": "elevenlabs_creative_generate_image:*", "effect": "deny" },
       { "action": "permission", "resource": "elevenlabs_creative_edit_image:*", "effect": "deny" },
@@ -374,6 +382,75 @@
         }
       }
     },
+    "anthropic": {
+      "models": {
+        "claude-opus-5-5": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "claude-sonnet-5-5": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "claude-fable-5-1": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        }
+      }
+    },
+    // The Claude Code provider ships the [1m] variants with limit.input = 900000,
+    // and OpenCode's compaction trigger reads limit.input, falling back to
+    // limit.context only when input is absent. Setting context alone therefore
+    // leaves the real trigger at ~810k tokens while the TUI divides by context
+    // and reports a misleading percentage. Both fields must be set together.
+    "claude-code": {
+      "models": {
+        "claude-opus-5-5[1m]": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "claude-opus-5-5": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "claude-sonnet-5-5[1m]": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        },
+        "claude-sonnet-5-5": {
+          "limit": {
+            "context": 200000,
+            "input": 200000,
+            "output": 64000
+          }
+        },
+        "claude-fable-5-1[1m]": {
+          "limit": {
+            "context": 256000,
+            "input": 256000,
+            "output": 128000
+          }
+        }
+      }
+    },
     "openrouter": {
       "models": {}
     },
@@ -401,7 +478,7 @@
             "context": 400000
           }
         },
-        "space-bunny-free": {
+        "minimax-m3.1-flash-free": {
           "limit": {
             "context": 400000
           }
