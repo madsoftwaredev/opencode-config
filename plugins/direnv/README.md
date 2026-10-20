@@ -2,7 +2,7 @@
 
 Loads the command's direnv environment through V2's `shell.create.before` hook.
 OpenCode discovers this directory automatically under `~/.config/opencode/plugins/`.
-The active plugin ID is `local.direnv` (`opencode2 plugin list`).
+The active plugin ID is `direnv` (`opencode plugin list`).
 
 Requires `direnv` on the OpenCode service's PATH and an approved `.envrc`:
 

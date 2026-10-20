@@ -1,6 +1,6 @@
 {
   "theme": {
-    "name": "aura",
+    "name": "palenight",
     "mode": "system"
   },
   "scroll": {
@@ -9,7 +9,8 @@
   "diffs": {
     "wrap": "word",
     "view": "unified",
-    "single": true
+    "single": true,
+    "tree": false
   },
   "terminal": {
     "title": true
@@ -18,16 +19,23 @@
     "sidebar": "auto",
     "scrollbar": true,
     "thinking": "hide",
-    "new_location": "launch"
+    "new_location": "launch",
+    "image_preview": true,
+    "tps": true,
+    "grouping": "auto",
+    "verbosity": "low",
+    "permissions": "prompt"
   },
   "animations": true,
   "tabs": {
     "layout": "vertical",
-    "scope": "cwd"
+    "scope": "cwd",
+    "mode": "auto"
   },
   "prompt": {
     "image_preview": true,
-    "paste": "compact"
+    "paste": "compact",
+    "editor": false
   },
   "leader": {
     "timeout": 3000
@@ -36,5 +44,29 @@
   "attention": {
     "notifications": true,
     "sound": false
-  }
+  },
+  "plugins": [
+    {
+      "package": "./opencode-stats",
+      "options": {
+        "speed": true,
+        "turns": true,
+        "steps": true
+      }
+    },
+    {
+      "package": "./opencode-usage",
+      "options": {
+        "sidebar": true,
+        "includeSubagents": true
+      }
+    },
+    "-btw",
+    {
+      "package": "/Users/mm/Development/madsoftwaredev/opencode-plugins/packages/compaction-fold",
+      "options": {
+        "defaultExpanded": false
+      }
+    }
+  ]
 }

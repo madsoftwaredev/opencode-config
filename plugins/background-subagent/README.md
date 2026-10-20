@@ -1,6 +1,6 @@
 # Background subagents for OpenCode V2
 
-`local.background-subagent` makes the native V2 `subagent` tool run in the
+`background-subagent` makes the native V2 `subagent` tool run in the
 background when the caller omits `background`. This is a dispatch default, not
 a new subagent implementation.
 
@@ -27,7 +27,7 @@ opencode api post /api/location/reload
 opencode api get /api/plugin
 ```
 
-Look for `local.background-subagent`. A service restart is not required.
+Look for `background-subagent`. A service restart is not required.
 
 ## Local check
 

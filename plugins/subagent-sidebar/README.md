@@ -1,6 +1,6 @@
 # Subagent sidebar for OpenCode V2
 
-`local.subagent-sidebar` is a CLI/TUI-only plugin. It adds a live `SUBAGENTS`
+`subagent-sidebar` is a CLI/TUI-only plugin. It adds a live `SUBAGENTS`
 section to the session sidebar without changing server-side subagent execution.
 
 - Shows child and nested subagent sessions with live status.
