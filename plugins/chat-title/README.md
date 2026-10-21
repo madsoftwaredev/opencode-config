@@ -33,24 +33,22 @@ OpenTUI renderer to insert the header into the session column that owns the
 Sidebar visibility is read through the documented `sidebar.content` slot, which
 mounts only while the sidebar renders. No private API is involved in that check.
 
+Requires **OpenCode 2.1.0** and **OpenTUI 0.6.6** or later. The adapter uses
+renderable style getters instead of the removed `getLayoutNode()` API.
+
 The adapter for the insert matches the layout inspected in **OpenCode 2.0.27**:
 the column must hold exactly three rows — the transcript (a box wrapping the
 scrollbox), the one-row "jump to latest" bar, and the composer block containing
 the plugin's own anchor. Anything else is left alone and reported with a warning
-toast rather than painting a header in the wrong place. An OpenCode update may
-require updating the adapter. No installed binaries or OpenCode source files are
-patched.
+toast rather than painting a header in the wrong place. Initial layout-discovery
+errors also leave the transcript intact rather than crashing the composer slot.
+An OpenCode update may require updating the adapter. No installed binaries or
+OpenCode source files are patched.
 
-Two host behaviours the adapter depends on, both verified against the running
-TUI rather than the published API:
-
-- Inserting a child deep in the tree does not mark the root Yoga node dirty, so
-  `requestRender()` is needed for the new row to be measured.
-- A renderable emits `resize` when Yoga gives it a new size. `resized` is only
-  emitted by `RootRenderable.resize()` and never fires for layout changes.
-
-Calling `markDirty()` on the Yoga node crashes the native renderer. It is not
-needed, since `add()` already dirties the tree.
+The header requests a frame after insertion and uses `onSizeChange` to refit its
+text after native layout and terminal resizes. It never accesses or modifies a
+raw Yoga node. Host structure remains an implementation dependency, not a public
+layout guarantee.
 
 ## Development checks
 
@@ -62,7 +60,8 @@ bun run test
 bun run typecheck
 ```
 
-Tests cover title fitting and the render-tree match: the column is rejected when
-the scrollbox, the one-row bar, the padding, the row count, or the parent
-direction changes, and header disposal restores the original rows. Development
-dependencies are not needed to load the plugin in OpenCode.
+Unit tests cover title fitting and render-tree matching. Headless OpenTUI 0.6.6
+integration tests cover rendering, title updates, narrow-terminal resizing,
+sidebar visibility, saved-toggle wiring, disposal, and safe layout rejection.
+They use the inspected host shape, not a live installed OpenCode release.
+Development dependencies are not needed to load the plugin in OpenCode.
